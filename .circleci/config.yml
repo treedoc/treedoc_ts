@@ -3,6 +3,8 @@
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
 version: 2
+orbs:
+  codecov: codecov/codecov@1.0.2
 jobs:
   build:
     docker:
@@ -35,3 +37,5 @@ jobs:
 
       # run tests!
       - run: yarn test
+      - codecov/upload:
+        file: coverage/*.json
