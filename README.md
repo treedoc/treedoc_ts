@@ -1,4 +1,3 @@
-[![Codecov Coverage](https://img.shields.io/codecov/c/github/caki0915/my-awesome-greeter/coverage.svg?style=flat-square)](https://codecov.io/gh/caki0915/my-awesome-greeter/)
+[![Codecov Coverage](https://img.shields.io/codecov/c/github/jianwu/jsonextreedoc_js/coverage.svg?style=flat-square)](https://codecov.io/gh/jianwu/jsonextreedoc_js/)
 
-# My Awesome Greeter
 # jsonextreedoc_js
