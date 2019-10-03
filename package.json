@@ -1,7 +1,7 @@
 {
-  "name": "jsonex-parser",
+  "name": "jsonex-treedoc",
   "version": "1.0.2",
-  "description": "JSONex parsor",
+  "description": "JSONex TreeDoc Json Parser",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jianwu/jsonexparser_js.git"
+    "url": "git+https://github.com/jianwu/jsonextreedoc_js.git"
   },
   "keywords": [
     "jsonex",
@@ -26,7 +26,7 @@
   ],
   "author": "jianwu",
   "license": "ISC",
-  "homepage": "https://github.com/jianwu/jsonex_parsoer_js/#readme",
+  "homepage": "https://github.com/jianwu/jsonex_treedoc_js/#readme",
   "devDependencies": {
     "@types/jest": "^22.2.3",
     "codecov": "^3.1.0",

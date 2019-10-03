@@ -3,7 +3,7 @@ import EOFRuntimeException from "./EOFRuntimeException";
 import Predicate from "./Predicate";
 import StringBuilder from "./StringBuilder";
 
-export default class ArrayCharSource extends CharSource {
+export default class StringCharSource extends CharSource {
   public readonly str: string;
   public constructor(str: string) {super(); this.str = str; }
 
@@ -21,12 +21,12 @@ export default class ArrayCharSource extends CharSource {
 
   public isEof(idx = 0) { return this.bookmark.pos + idx >= this.str.length; }
 
-  public readUntil(predicate: Predicate<CharSource>, target?: StringBuilder, length = Number.MAX_VALUE) {
+  public readUntil(predicate: Predicate<CharSource>, target: StringBuilder | null, minLen = 0, maxLen = Number.MAX_VALUE): boolean {
     const startPos = this.bookmark.pos;
     let len = 0;
     let matched = false;
-    for (; len < length && !(this.isEof()); len++) {
-      matched = predicate(this);
+    for (; len < maxLen && !(this.isEof()); len++) {
+      matched = len >= minLen && predicate(this);
       if (matched)
         break;
       this.read();

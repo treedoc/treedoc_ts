@@ -1,4 +1,6 @@
-export default class StringBuilder {
+import Appendable from "./Appendable";
+
+export default class StringBuilder implements Appendable {
   private readonly strs = new Array<string>();
   private s: string;
   private dirty = false;

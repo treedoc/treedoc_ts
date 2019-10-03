@@ -19,7 +19,9 @@
       "request": "launch",
       "name": "Jest All",
       "program": "${workspaceFolder}/node_modules/.bin/jest",
-      "args": ["--runInBand"],
+      "args": ["--runInBand",
+        "--config",
+        "jestconfig_debug.json"],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "disableOptimisticBPs": true,
@@ -35,7 +37,7 @@
       "args": [
         "${fileBasenameNoExtension}",
         "--config",
-        "jestconfig.json"
+        "jestconfig_debug.json"
       ],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",

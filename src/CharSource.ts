@@ -23,44 +23,42 @@ export default abstract class CharSource {
    *
    * @return true The terminate condition matches. otherwise, could be EOF or length matches
    */
-  public /*abstract*/ readUntil(predicate: Predicate<CharSource>, target?: StringBuilder, length = Number.MAX_VALUE) { return true; }
-  public skipUntil(predicate: Predicate<CharSource>): boolean { return this.readUntil(predicate); }
+  public abstract readUntil(predicate: Predicate<CharSource>, target: StringBuilder | null, minLen?: number, maxLen?: number): boolean;
+  public skipUntil(predicate: Predicate<CharSource>): boolean { return this.readUntil(predicate, null); }
 
-  public readUntilTermintor(terminator: string, target?: StringBuilder, include = true, length = Number.MAX_VALUE): boolean {
-    return this.readUntil(s => (terminator.indexOf(s.peek(0)) >= 0) === include, target, length);
+  public readUntilTermintorToString(terminator: string, target: StringBuilder | null, include = true, minLen = 0, maxLen = Number.MAX_VALUE) {
+    return this.readUntil(s => (terminator.indexOf(s.peek(0)) >= 0) === include, target, minLen, maxLen);
   }
 
-  public readUntilTermintorAsString(terminator: string, include = true): string {
+  public readUntilTermintor(terminator: string, minLen = 0, maxLen = Number.MAX_VALUE): string {
     const sb = new StringBuilder();
-    this.readUntilTermintor(terminator, sb, include);
+    this.readUntilTermintorToString(terminator, sb, true, minLen, maxLen);
     return sb.toString();
   }
   
-  public skipUntilTerminator(terminator: string, include = true): boolean { return this.readUntilTermintor(terminator, undefined, include); }
+  public skipUntilTerminator(terminator: string, include = true): boolean { return this.readUntilTermintorToString(terminator, null, include); }
   public skipSpaces(): boolean { return this.skipUntilTerminator(CharSource.SPACE_CHARS, false); }
  
-  public readTostring(length: number, target?: StringBuilder): boolean {
-    return this.readUntil(s => false, target, length);
+  public readTostring(target: StringBuilder | null, len: number): boolean {
+    return this.readUntil(s => false, target, len, len);
   }
 
-  public readString(length: number):  string {
+  public readString(len: number):  string {
     const sb = new StringBuilder();
-    this.readTostring(length, sb);
+    this.readTostring(sb, len);
     return sb.toString();
   }
 
-  public skipLength(length: number): boolean { return this.readTostring(length); }
+  public skip(len: number): boolean { return this.readTostring(null, len); }
 
-  public readUntilMatch(str: string, skipStr: boolean, target?: StringBuilder, length = CharSource.MAX_STRING_LEN): boolean {
-    const matches = this.readUntil(s => s.startsWidth(str), target, length);
+  public readUntilMatch(str: string, skipStr: boolean, target: StringBuilder | null, minLen = 0, maxLen = CharSource.MAX_STRING_LEN): boolean {
+    const matches = this.readUntil(s => s.startsWidth(str), target, minLen, maxLen);
     if (matches && skipStr)
-      this.skipLength(str.length);
+      this.skip(str.length);
     return matches;
   }
 
-  public skipUntilMatch(str: string, skipStr: boolean): boolean {
-    return this.readUntilMatch(str, skipStr);
-  }
+  public skipUntilMatch(str: string, skipStr: boolean): boolean { return this.readUntilMatch(str, skipStr, null); }
 
   // TODO: performance optimization with string.substr()
   public peekString(len: number): string {
@@ -100,8 +98,8 @@ export default abstract class CharSource {
   public readQuotedToString(quote: string, sb: StringBuilder): StringBuilder {
     const terminator = this.getTermStrWithQuoteAndEscape(quote);
     const pos = this.getPos();
-    while(true) {
-      if(!this.readUntilTermintor(terminator, sb))
+    while (true) {
+      if (!this.readUntilTermintorToString(terminator, sb))
         throw new EOFRuntimeException("Can't find matching quote at position:" + pos);
       let c = this.read();
       if (c === quote) {
@@ -127,8 +125,9 @@ export default abstract class CharSource {
           break;
         case 'u':
           const code = parseInt(this.readString(4), 16);
-          if(Number.isNaN(code))
-            throw this.createParseRuntimeException("escaped unicode with invalid number: " + code);
+          if (Number.isNaN(code))
+            throw this.createParseRuntimeException("Escaped unicode with invalid number: " + code);
+          sb.append(String.fromCharCode(code));
           break;
         case '\n':
         case '\r':
@@ -141,10 +140,9 @@ export default abstract class CharSource {
           sb.append(c);
           break;
         default:
-          throw this.createParseRuntimeException("invalid escape sequence:" + c);
+          throw this.createParseRuntimeException("Invalid escape sequence:" + c);
       }
     }
-
     return sb;
   }
 

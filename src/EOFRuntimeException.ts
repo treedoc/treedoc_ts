@@ -1,6 +1,5 @@
-export default class EOFRuntimeException {
-  public readonly message: string;
+export default class EOFRuntimeException extends Error {
   public constructor(message = "") {
-    this.message = message;
+    super(message);
   }
 }

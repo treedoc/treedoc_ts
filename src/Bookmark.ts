@@ -10,11 +10,11 @@ export default class Bookmark {
   }
 
   public append(c: string): string {
-    this.pos ++;
+    this.pos++;
     this.col++;
-    if(c === '\n'){
+    if (c === '\n') {
       this.line++;
-      this.col =0;
+      this.col = 0;
     }
     return c;
   }
@@ -22,4 +22,6 @@ export default class Bookmark {
   public clone() {
     return new Bookmark(this.line, this.col, this.pos);
   }
+
+  public toString() { return `Bookmark(line=${this.line}, col=${this.col}, pos=${this.pos})`; }
 }
