@@ -1,6 +1,6 @@
 {
   "name": "jsonex-treedoc",
-  "version": "1.0.2",
+  "version": "0.1.0",
   "description": "JSONex TreeDoc Json Parser",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

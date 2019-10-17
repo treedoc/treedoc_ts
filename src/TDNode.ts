@@ -55,7 +55,7 @@ export default class TDNode {
     return cn;
   }
 
-  public addChild(node: TDNode): TDNode {
+  public addChild(node: TDNode) {
     if (!this.children)
       this.children = [];
     this.children.push(node);

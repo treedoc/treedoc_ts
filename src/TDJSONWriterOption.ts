@@ -5,7 +5,7 @@ export default class TDJSONWriterOption {
   /** @internal */
   public indentStr = "";  // Used internally
 
-  public setIndentFactor(indentFactor: number): TDJSONWriterOption {
+  public setIndentFactor(indentFactor: number) {
     this.indentFactor = indentFactor;
     this.indentStr = ' '.repeat(this.indentFactor);
     return this;

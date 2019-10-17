@@ -4,8 +4,7 @@ import Predicate from "./Predicate";
 import StringBuilder from "./StringBuilder";
 
 export default class StringCharSource extends CharSource {
-  public readonly str: string;
-  public constructor(str: string) {super(); this.str = str; }
+  public constructor(public readonly str: string) { super(); }
 
   public read(): string {
     if (this.isEof(0))

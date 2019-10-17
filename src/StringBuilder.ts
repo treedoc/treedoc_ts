@@ -2,10 +2,8 @@ import Appendable from "./Appendable";
 
 export default class StringBuilder implements Appendable {
   private readonly strs = new Array<string>();
-  private s: string;
   private dirty = false;
-  public constructor(s = "") {
-    this.s = s;
+  public constructor(private s = "") {
     if (s)
       this.strs.push(s)
   }
