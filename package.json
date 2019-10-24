@@ -19,14 +19,21 @@
     "type": "git",
     "url": "git+https://github.com/jianwu/jsonextreedoc_js.git"
   },
+  "bugs": {
+    "url": "https://github.com/jianwu/jsonextreedoc_js/issues"
+  },
   "keywords": [
     "jsonex",
     "json5",
-    "prototext"
+    "hjson",
+    "prototext",
+    "json configuration",
+    "configuration",
+    "typescript"
   ],
-  "author": "jianwu",
-  "license": "ISC",
-  "homepage": "https://github.com/jianwu/jsonex_treedoc_js/#readme",
+  "author": "Jianwu Chen",
+  "license": "MIT",
+  "homepage": "https://github.com/jianwu/jsonextreedoc_js/#readme",
   "devDependencies": {
     "@types/jest": "^22.2.3",
     "codecov": "^3.1.0",
