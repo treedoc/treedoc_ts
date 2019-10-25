@@ -1,9 +1,15 @@
-export enum TDNodeType { MAP, ARRAY, SIMPLE }
+export enum TDNodeType {
+  MAP,
+  ARRAY,
+  SIMPLE,
+}
 
 type ValueType = string | number | boolean | null | undefined;
-function isDigitOnly(str : string) { return str.match(/^[0-9]+$/) != null; }
+function isDigitOnly(str: string) {
+  return str.match(/^[0-9]+$/) != null;
+}
 
-export default class TDNode {  
+export default class TDNode {
   public parent?: TDNode;
   public type = TDNodeType.SIMPLE;
   /** The key of the node, null for root or array element */
@@ -20,7 +26,9 @@ export default class TDNode {
   public deduped = false;
 
   // Create a root node if parent is undefined
-  public constructor(key?: string) { this.key = key; }
+  public constructor(key?: string) {
+    this.key = key;
+  }
 
   public setValue(val?: ValueType): TDNode {
     this.value = val;
@@ -41,7 +49,7 @@ export default class TDNode {
     // special handling for textproto due to it's bad design that allows duplicated keys
     if (!existNode.deduped) {
       const listNode = new TDNode(name);
-      listNode.parent = this; 
+      listNode.parent = this;
       listNode.deduped = true;
       listNode.type = TDNodeType.ARRAY;
 
@@ -56,8 +64,7 @@ export default class TDNode {
   }
 
   public addChild(node: TDNode) {
-    if (!this.children)
-      this.children = [];
+    if (!this.children) this.children = [];
     this.children.push(node);
     node.parent = this;
     return this;
@@ -69,12 +76,9 @@ export default class TDNode {
   }
 
   public indexOf(name?: string): number {
-    if (!this.children || name == null)
-      return -1;
+    if (!this.children || name == null) return -1;
 
-    for (let i = 0; i < this.children.length; i++)
-      if (name === this.children[i].key)
-        return i;
+    for (let i = 0; i < this.children.length; i++) if (name === this.children[i].key) return i;
     return -1;
   }
 
@@ -84,49 +88,53 @@ export default class TDNode {
   }
 
   public getChildByIdx(idx: number): TDNode | null {
-    if (!this.children || idx >= this.children.length)
-      return null;
+    if (!this.children || idx >= this.children.length) return null;
     return this.children[idx];
   }
 
-  public getChildByPath(path: string): TDNode | null { return this.getChildByPathIdx(path.split("/"), 0); }
-  public getValueByPath(path: string): ValueType  {
+  public getChildByPath(path: string): TDNode | null {
+    return this.getChildByPathIdx(path.split('/'), 0);
+  }
+  public getValueByPath(path: string): ValueType {
     const cn = this.getChildByPath(path);
     return cn == null ? null : cn.value;
   }
 
   public getChildByPathIdx(path: string[], idx: number): TDNode | null {
-    if (idx === path.length)
-      return this;
+    if (idx === path.length) return this;
 
     const pi = path[idx];
     const cn = isDigitOnly(pi) ? this.getChildByIdx(parseInt(pi, 10)) : this.getChild(pi);
     return cn == null ? null : cn.getChildByPathIdx(path, idx + 1);
   }
 
-  public hasChildren() { return this.children && this.children.length > 0; }
-  public getChildrenSize() { return !this.children ? 0 : this.children.length; }
+  public hasChildren() {
+    return this.children && this.children.length > 0;
+  }
+  public getChildrenSize() {
+    return !this.children ? 0 : this.children.length;
+  }
 
-  public isRoot() { return !this.parent; }
+  public isRoot() {
+    return !this.parent;
+  }
 
   public toObject(): any {
-    switch(this.type) {
+    switch (this.type) {
       case TDNodeType.SIMPLE:
         return this.value;
       case TDNodeType.MAP: {
         const obj: any = {};
-        if (this.children)
-          this.children.forEach(c => c.key && (obj[c.key] = c.toObject()));
+        if (this.children) this.children.forEach(c => c.key && (obj[c.key] = c.toObject()));
         return obj;
       }
       case TDNodeType.ARRAY: {
         const obj: any[] = [];
-        if (this.children)
-          this.children.forEach(c => obj.push(c.toObject()));
+        if (this.children) this.children.forEach(c => obj.push(c.toObject()));
         return obj;
       }
       default:
-        throw new Error("Unknown type");
+        throw new Error('Unknown type');
     }
   }
 }

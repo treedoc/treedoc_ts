@@ -1,6 +1,6 @@
-import CharSource from "./CharSource";
-import TDNode, {TDNodeType} from "./TDNode";
-import StringCharSource from "./StringCharSource";
+import CharSource from './CharSource';
+import TDNode, { TDNodeType } from './TDNode';
+import StringCharSource from './StringCharSource';
 
 export default class TDJSONParserOption {
   /** The source */
@@ -15,11 +15,9 @@ export default class TDJSONParserOption {
   //   return this;
   // }
 
-  public constructor(source : CharSource | string) {
-    if (source instanceof CharSource)
-      this.source = source;
-    else
-      this.source = new StringCharSource(source);
+  public constructor(source: CharSource | string) {
+    if (source instanceof CharSource) this.source = source;
+    else this.source = new StringCharSource(source);
   }
 
   public setDefaultRootType(type: TDNodeType) {

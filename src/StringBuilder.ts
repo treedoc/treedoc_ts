@@ -1,16 +1,15 @@
-import Appendable from "./Appendable";
+import Appendable from './Appendable';
 
 export default class StringBuilder implements Appendable {
   private readonly strs = new Array<string>();
   private dirty = false;
-  public constructor(private s = "") {
-    if (s)
-      this.strs.push(s)
+  public constructor(private s = '') {
+    if (s) this.strs.push(s);
   }
 
   public append(s: string) {
     if (s) {
-      this.strs.push(s)
+      this.strs.push(s);
       this.dirty = true;
     }
     return this;

@@ -1,5 +1,5 @@
 export default class EOFRuntimeException extends Error {
-  public constructor(message = "") {
+  public constructor(message = '') {
     super(message);
   }
 }
