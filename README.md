@@ -1,5 +1,5 @@
-[![CircleCI](https://circleci.com/gh/jianwu/jsonextreedoc_js.svg?style=svg)](https://circleci.com/gh/jianwu/jsonextreedoc_js)
-[![codecov](https://codecov.io/gh/jianwu/jsonextreedoc_js/branch/master/graph/badge.svg)](https://codecov.io/gh/jianwu/jsonextreedoc_js)
+[![CircleCI](https://circleci.com/gh/jianwu/jsonextreedoc_ts.svg?style=svg)](https://circleci.com/gh/jianwu/jsonextreedoc_ts)
+[![codecov](https://codecov.io/gh/jianwu/jsonextreedoc_ts/branch/master/graph/badge.svg)](https://codecov.io/gh/jianwu/jsonextreedoc_ts)
 
 # JSONEX parser in Type Script
 
