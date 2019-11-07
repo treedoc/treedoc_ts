@@ -58,7 +58,6 @@ test('testReadQuotedStringWithOctEscape', () => {
   assertReadQuotedString("'\\0220\\022'", '\u00120\u0012');
 });
 
-
 function assertReadQuotedString(source: string, expected: string) {
   const cs = new StringCharSource(source);
   const c = cs.read(); // skip first quote
