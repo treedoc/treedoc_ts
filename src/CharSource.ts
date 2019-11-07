@@ -183,14 +183,17 @@ export default abstract class CharSource {
   }
 
   private readOctNumber(num: number) {
-    while (true) {
+    for (let i = 0; i < 2; i++) {
       const d = this.peek();
-      if (!this.isOctDigit(d)) return num;
+      if (!this.isOctDigit(d)) 
+        break;
       const newNum = num * 8 + Number(d);
-      if (newNum > 255) return num;
+      if (newNum > 255)
+        break;
       num = newNum;
       this.read();
     }
+    return num;
   }
 
   private isOctDigit(c: string) {

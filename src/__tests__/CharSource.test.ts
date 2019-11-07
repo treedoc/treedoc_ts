@@ -55,6 +55,7 @@ test('testReadQuotedStringWithOctEscape', () => {
   assertReadQuotedString("'\\40b'", ' b');
   assertReadQuotedString("'\\401b'", ' 1b');
   assertReadQuotedString("'\\491b'", '\u000491b');
+  assertReadQuotedString("'\\0220\\022'", "\u00120\u0012");
 });
 
 // @Test public void testReadQuotedStringWithOctEscape() {
