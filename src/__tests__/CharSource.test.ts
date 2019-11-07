@@ -45,16 +45,16 @@ test('testParseText', () => {
 
 test('testReadQuotedString', () => {
   assertReadQuotedString(
-    "'It\\'s a quoted \\\"string\\\" with escape \\n \\r \\f \\t \\u9829'", 
-    'It\'s a quoted "string" with escape \n \r \f \t \u9829'
+    "'It\\'s a quoted \\\"string\\\" with escape \\n \\r \\f \\t \\u9829'",
+    'It\'s a quoted "string" with escape \n \r \f \t \u9829',
   );
 });
 
 test('testReadQuotedStringWithOctEscape', () => {
-  assertReadQuotedString("'\\040b'", " b");
-  assertReadQuotedString("'\\40b'", " b");
-  assertReadQuotedString("'\\401b'", " 1b");
-  assertReadQuotedString("'\\491b'", "\u000491b");
+  assertReadQuotedString("'\\040b'", ' b');
+  assertReadQuotedString("'\\40b'", ' b');
+  assertReadQuotedString("'\\401b'", ' 1b');
+  assertReadQuotedString("'\\491b'", '\u000491b');
 });
 
 // @Test public void testReadQuotedStringWithOctEscape() {
@@ -69,7 +69,6 @@ function assertReadQuotedString(source: string, expected: string) {
   const c = cs.read(); // skip first quote
   expect(cs.readQuotedString(c)).toBe(expected);
 }
-
 
 test('testReadQuotedStringError', () => {
   let cs = new StringCharSource("'Missing closing quote");
