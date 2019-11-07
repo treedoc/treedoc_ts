@@ -25,6 +25,7 @@ test('testParse', () => {
   {
     "total": 100000000000000000000,
     "limit": 10,
+    "valueWithoutKey",
 
     /* block comments */
     "data": [
@@ -49,13 +50,15 @@ test('testParse', () => {
     ],
   }`;
   const node = TDJSONParser.get().parse(new TDJSONParserOption(testData));
+  const json = TDJSONWriter.get().writeAsString(node);
+  
+  console.log(`testParse:json=${json}`);
+
+  expect(node.getChildValue('2')).toBe('valueWithoutKey');
   expect(node.getChildValue('limit')).toBe(10);
   expect(node.getChildValue('total')).toBe(100000000000000000000);
   expect(node.getValueByPath('data/0/name')).toBe('Some Name 1');
   expect(node.getValueByPath('data/1/address/streetLine')).toBe('2nd st');
-
-  const json = TDJSONWriter.get().writeAsString(node);
-  console.log(`testParse:json=${json}`);
 
   const node1 = TDJSONParser.get().parse(new TDJSONParserOption(json));
   expect(TDJSONWriter.get().writeAsString(node1)).toBe(json);

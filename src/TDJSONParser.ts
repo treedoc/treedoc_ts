@@ -40,7 +40,7 @@ export default class TDJSONParser {
         return node.setValue(sb.toString());
       }
 
-      const str = src.readUntilTermintor(',}]\n\r\t', 1, Number.MAX_VALUE).trim();
+      const str = src.readUntilTermintor(',}]\n\r', 1, Number.MAX_VALUE).trim();
       if ('null' === str) return node.setValue(null);
       if ('true' === str) return node.setValue(true);
       if ('false' === str) return node.setValue(false);
@@ -94,7 +94,7 @@ export default class TDJSONParser {
     node.type = TDNodeType.MAP;
     if (withStartBracket) src.read();
 
-    while (true) {
+    for (let i = 0;;) {
       if (!TDJSONParser.skipSpaceAndComments(src)) {
         if (withStartBracket) throw src.createParseRuntimeException("EOF encountered while expecting matching '}'");
         break;
@@ -116,17 +116,23 @@ export default class TDJSONParser {
       if (c === '"' || c === "'" || c === '`') {
         src.read();
         key = src.readQuotedString(c);
-        if (!TDJSONParser.skipSpaceAndComments(src)) break;
+        if (!TDJSONParser.skipSpaceAndComments(src))
+          break;
         c = src.peek();
-        if (c !== ':' && c !== '{' && c !== '[') throw src.createParseRuntimeException("No ':' after key:" + key);
+        if (c !== ':' && c !== '{' && c !== '['  && c !== ',' && c !== '}')
+          throw src.createParseRuntimeException("No ':' after key:" + key);
       } else {
-        key = src.readUntilTermintor(':{[', 1, Number.MAX_VALUE).trim();
+        key = src.readUntilTermintor(':{[,}\n\r"', 1, Number.MAX_VALUE).trim();
         if (src.isEof()) throw src.createParseRuntimeException("No ':' after key:" + key);
         c = src.peek();
       }
       if (c === ':') src.read();
 
-      this.parseFromSource(src, opt, node.createChild(key));
+      if (c === ',' || c === '}')  // If there's no ':', we consider it as indexed value (array)
+        node.createChild(i + "").setValue(key);
+       else
+        this.parseFromSource(src, opt, node.createChild(key));
+      i++;
     }
     return node;
   }

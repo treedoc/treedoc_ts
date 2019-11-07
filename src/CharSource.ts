@@ -195,6 +195,6 @@ export default abstract class CharSource {
   }
 
   public createParseRuntimeException(message: string) {
-    return new ParseRuntimeException(message, this.getBookmark(), this.peekString(5));
+    return new ParseRuntimeException(message, this.getBookmark(), this.peekString(10));
   }
 }
