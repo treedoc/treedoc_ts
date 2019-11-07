@@ -45,8 +45,8 @@ test('testParseText', () => {
 
 test('testReadQuotedString', () => {
   assertReadQuotedString(
-    "'It\\'s a quoted \\\"string\\\" with escape \\n \\r \\f \\t \\u9829'",
-    'It\'s a quoted "string" with escape \n \r \f \t \u9829',
+    "'It\\'s a quoted \\\"string\\\" with escape \\n \\r \\f \\t \\v \\? \\u9829'",
+    'It\'s a quoted "string" with escape \n \r \f \t \u000b ? \u9829',
   );
 });
 
@@ -58,12 +58,6 @@ test('testReadQuotedStringWithOctEscape', () => {
   assertReadQuotedString("'\\0220\\022'", '\u00120\u0012');
 });
 
-// @Test public void testReadQuotedStringWithOctEscape() {
-//   assertReadQuotedString("'\\040b'", "\040b");
-//   assertReadQuotedString("'\\40b'", "\040b");
-//   assertReadQuotedString("'\\401b'", "\0401b");
-//   assertReadQuotedString("'\\491b'", "\0491b");
-// }
 
 function assertReadQuotedString(source: string, expected: string) {
   const cs = new StringCharSource(source);
@@ -72,14 +66,8 @@ function assertReadQuotedString(source: string, expected: string) {
 }
 
 test('testReadQuotedStringError', () => {
-  let cs = new StringCharSource("'Missing closing quote");
-  let c = cs.read(); // skip first quote
+  const cs = new StringCharSource("'Missing closing quote");
+  const c = cs.read(); // skip first quote
 
   expect(() => cs.readQuotedString(c)).toThrow("Can't find matching quote at position:1");
-
-  cs = new StringCharSource('`Invalid escape \\p abcdefg`');
-  c = cs.read(); // skip first quote
-  expect(() => cs.readQuotedString(c)).toThrowError(
-    'Invalid escape sequence:p, Bookmark(line=0, col=18, pos=18), digest: abcd',
-  );
 });

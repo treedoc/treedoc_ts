@@ -158,6 +158,9 @@ export default abstract class CharSource {
         case 'r':
           sb.append('\r');
           break;
+        case 'v':
+            sb.append('\u000B');  
+            break;  
         case 'u':
           const code = parseInt(this.readString(4), 16);
           if (Number.isNaN(code))
@@ -167,16 +170,11 @@ export default abstract class CharSource {
         case '\n':
         case '\r':
           break; // Assume it's a line continuation
-        case '"':
-        case "'":
-        case '\\':
-        case '`':
-        case '/':
-          sb.append(c);
-          break;
         default:
-          if (this.isOctDigit(c)) sb.append(String.fromCharCode(this.readOctNumber(Number(c))));
-          else throw this.createParseRuntimeException('Invalid escape sequence:' + c);
+          if (this.isOctDigit(c))
+            sb.append(String.fromCharCode(this.readOctNumber(Number(c))));
+          else
+            sb.append(c);
       }
     }
     return sb;
