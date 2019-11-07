@@ -175,11 +175,29 @@ export default abstract class CharSource {
           sb.append(c);
           break;
         default:
-          throw this.createParseRuntimeException('Invalid escape sequence:' + c);
+          if (this.isOctDigit(c))
+            sb.append(String.fromCharCode(this.readOctNumber(Number(c))));
+          else
+            throw this.createParseRuntimeException('Invalid escape sequence:' + c);
       }
     }
     return sb;
   }
+
+  private readOctNumber(num: number) {
+    while (true) {
+      const d = this.peek();
+      if (!this.isOctDigit(d))
+        return num;
+      const newNum = num * 8 + Number(d);
+      if (newNum > 255)
+        return num;
+      num = newNum;
+      this.read();
+    }
+  }
+
+  private isOctDigit(c: string) { return '0' <= c && c <= '8'; }
 
   public createParseRuntimeException(message: string) {
     return new ParseRuntimeException(message, this.getBookmark(), this.peekString(5));
