@@ -51,7 +51,7 @@ test('testParse', () => {
   }`;
   const node = TDJSONParser.get().parse(new TDJSONParserOption(testData));
   const json = TDJSONWriter.get().writeAsString(node);
-  
+
   console.log(`testParse:json=${json}`);
 
   expect(node.getChildValue('2')).toBe('valueWithoutKey');
