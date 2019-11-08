@@ -130,8 +130,7 @@ export default class TDJSONParser {
         // If there's no ':', we consider it as indexed value (array)
         node.createChild(i + '').setValue(key);
       else {
-        if (c === ':')
-          src.read();
+        if (c === ':') src.read();
         this.parseFromSource(src, opt, node.createChild(key));
       }
       i++;
