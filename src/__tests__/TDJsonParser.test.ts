@@ -48,6 +48,7 @@ test('testParse', () => {
       \`Multiple line literal
       Line2\`
     ],
+    lastValueWithoutKey
   }`;
   const node = TDJSONParser.get().parse(new TDJSONParserOption(testData));
   const json = TDJSONWriter.get().writeAsString(node);
@@ -55,6 +56,7 @@ test('testParse', () => {
   console.log(`testParse:json=${json}`);
 
   expect(node.getChildValue('2')).toBe('valueWithoutKey');
+  expect(node.getChildValue('4')).toBe('lastValueWithoutKey');
   expect(node.getChildValue('limit')).toBe(10);
   expect(node.getChildValue('total')).toBe(100000000000000000000);
   expect(node.getValueByPath('data/0/name')).toBe('Some Name 1');

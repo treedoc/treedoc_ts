@@ -121,16 +121,19 @@ export default class TDJSONParser {
         if (c !== ':' && c !== '{' && c !== '[' && c !== ',' && c !== '}')
           throw src.createParseRuntimeException("No ':' after key:" + key);
       } else {
-        key = src.readUntilTermintor(':{[,}\n\r"', 1, Number.MAX_VALUE).trim();
+        key = src.readUntilTermintor(':{[,}"', 1, Number.MAX_VALUE).trim();
         if (src.isEof()) throw src.createParseRuntimeException("No ':' after key:" + key);
         c = src.peek();
       }
-      if (c === ':') src.read();
 
       if (c === ',' || c === '}')
         // If there's no ':', we consider it as indexed value (array)
         node.createChild(i + '').setValue(key);
-      else this.parseFromSource(src, opt, node.createChild(key));
+      else {
+        if (c === ':')
+          src.read();
+        this.parseFromSource(src, opt, node.createChild(key));
+      }
       i++;
     }
     return node;
