@@ -17,7 +17,7 @@ export default class TDJSONParser {
     if (!TDJSONParser.skipSpaceAndComments(src)) return node;
 
     const c = src.peek();
-    node.start = src.getPos();
+    node.start = src.getBookmark();
     try {
       if (c === '{') return this.parseMap(src, opt, node, true);
 
@@ -40,7 +40,7 @@ export default class TDJSONParser {
         return node.setValue(sb.toString());
       }
 
-      const str = src.readUntilTermintor(',}]\n\r', 1, Number.MAX_VALUE).trim();
+      const str = src.readUntilTermintor(',}]\n\r', 0, Number.MAX_VALUE).trim();
       if ('null' === str) return node.setValue(null);
       if ('true' === str) return node.setValue(true);
       if ('false' === str) return node.setValue(false);
@@ -49,7 +49,7 @@ export default class TDJSONParser {
         return node.setValue(this.parseNumber(str, false));
       return node.setValue(str);
     } finally {
-      node.length = src.getPos() - node.start;
+      node.end = src.getBookmark();
     }
   }
 

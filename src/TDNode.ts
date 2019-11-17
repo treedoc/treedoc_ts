@@ -1,10 +1,12 @@
+import Bookmark from "./Bookmark";
+
 export enum TDNodeType {
   MAP,
   ARRAY,
   SIMPLE,
 }
 
-type ValueType = string | number | boolean | null | undefined;
+export type ValueType = string | number | boolean | null | undefined;
 function isDigitOnly(str: string) {
   return str.match(/^[0-9]+$/) != null;
 }
@@ -19,9 +21,9 @@ export default class TDNode {
   /** Children of node. Use List instead of Map to avoid performance overhead of HashMap for small number of elements */
   public children?: TDNode[];
   /** Start position in the source */
-  public start?: number;
+  public start?: Bookmark;
   /** Length of this node in the source */
-  public length?: number;
+  public end?: Bookmark;
   /** indicate this node is a deduped Array node for textproto which allows duplicated keys */
   public deduped = false;
 
@@ -55,6 +57,8 @@ export default class TDNode {
 
       children[childIndex] = listNode;
       listNode.addChild(existNode);
+      listNode.start = existNode.start;  // Reuse first node's start and length
+      listNode.end = existNode.end;
       existNode = listNode;
     }
 
@@ -119,17 +123,24 @@ export default class TDNode {
     return !this.parent;
   }
 
+  /** JS specific logic */
   public toObject(): any {
+    const $ = {
+      start: this.start,
+      end: this.end,
+    };
+
     switch (this.type) {
       case TDNodeType.SIMPLE:
         return this.value;
       case TDNodeType.MAP: {
-        const obj: any = {};
+        const obj: any = {$};
         if (this.children) this.children.forEach(c => c.key && (obj[c.key] = c.toObject()));
         return obj;
       }
       case TDNodeType.ARRAY: {
         const obj: any[] = [];
+        (obj as any).$ = $;
         if (this.children) this.children.forEach(c => obj.push(c.toObject()));
         return obj;
       }

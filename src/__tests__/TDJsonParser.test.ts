@@ -155,7 +155,7 @@ test('testRootArray', () => {
 
 test('testInvalid', () => {
   let node = TDJSONParser.get().parse(new TDJSONParserOption('}'));
-  expect(node.value).toBe('}');
+  expect(node.value).toBe('');
 
   node = TDJSONParser.get().parse(new TDJSONParserOption(''));
   expect(node.value).toBeUndefined();
