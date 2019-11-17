@@ -90,6 +90,7 @@ test('testParseProto', () => {
     n2: [1,2,3]
     n2 [3,4,5]  # ':' is emitted before '['
     "n3" [6, 7, 8, 9]
+    noVal:
   }`;
 
   let node = TDJSONParser.get().parse(new TDJSONParserOption(testData).setDefaultRootType(TDNodeType.MAP));
