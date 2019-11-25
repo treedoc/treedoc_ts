@@ -36,7 +36,7 @@ test('testToObject', () => {
           col: 5,
           pos: 61,
         },
-      }
+      },
       a: 1,
       b: [1, 2, 3],
       c: 'str',

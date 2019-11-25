@@ -1,4 +1,4 @@
-import Bookmark from "./Bookmark";
+import Bookmark from './Bookmark';
 
 export enum TDNodeType {
   MAP,
@@ -57,7 +57,7 @@ export default class TDNode {
 
       children[childIndex] = listNode;
       listNode.addChild(existNode);
-      listNode.start = existNode.start;  // Reuse first node's start and length
+      listNode.start = existNode.start; // Reuse first node's start and length
       listNode.end = existNode.end;
       existNode = listNode;
     }
@@ -134,7 +134,7 @@ export default class TDNode {
       case TDNodeType.SIMPLE:
         return this.value;
       case TDNodeType.MAP: {
-        const obj: any = {$};
+        const obj: any = { $ };
         if (this.children) this.children.forEach(c => c.key && (obj[c.key] = c.toObject()));
         return obj;
       }
