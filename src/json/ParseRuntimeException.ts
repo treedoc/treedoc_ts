@@ -1,5 +1,4 @@
-import Bookmark from './Bookmark';
-import CharSource from './CharSource';
+import Bookmark from '../Bookmark';
 
 export default class ParseRuntimeException extends Error {
   public constructor(message: string, public readonly bookmark: Bookmark, public readonly digest: string) {

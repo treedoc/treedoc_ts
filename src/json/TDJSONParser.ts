@@ -1,4 +1,4 @@
-import TDNode, { TDNodeType } from './TDNode';
+import TDNode, { TDNodeType } from '../TDNode';
 import TDJSONParserOption from './TDJSONParserOption';
 import CharSource from './CharSource';
 import StringBuilder from './StringBuilder';

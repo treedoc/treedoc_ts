@@ -1,9 +1,9 @@
-import StringCharSource from '../StringCharSource';
-import TDJSONParser from '../TDJSONParser';
-import TDJSONParserOption from '../TDJSONParserOption';
-import { TDNodeType } from '../TDNode';
-import TDJSONWriter from '../TDJSONWriter';
-import TDJSONWriterOption from '../TDJSONWriterOption';
+import StringCharSource from '../../json/StringCharSource';
+import TDJSONParser from '../../json/TDJSONParser';
+import TDJSONParserOption from '../../json/TDJSONParserOption';
+import { TDNodeType } from '../../TDNode';
+import TDJSONWriter from '../../json/TDJSONWriter';
+import TDJSONWriterOption from '../../json/TDJSONWriterOption';
 
 test('testSkipSpaceAndComments', () => {
   let src = new StringCharSource('  //abcd \n // defghi \n abc');

@@ -1,5 +1,5 @@
-import TDJSONParser from '../TDJSONParser';
-import TDJSONParserOption from '../TDJSONParserOption';
+import TDJSONParser from '../json/TDJSONParser';
+import TDJSONParserOption from '../json/TDJSONParserOption';
 
 test('testToObject', () => {
   const testData = `

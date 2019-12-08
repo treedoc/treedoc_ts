@@ -1,5 +1,5 @@
 import CharSource from './CharSource';
-import TDNode, { TDNodeType } from './TDNode';
+import TDNode, { TDNodeType } from '../TDNode';
 import StringCharSource from './StringCharSource';
 
 export default class TDJSONParserOption {

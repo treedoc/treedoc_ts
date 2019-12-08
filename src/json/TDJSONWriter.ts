@@ -1,5 +1,5 @@
 import TDJSONWriterOption from './TDJSONWriterOption';
-import TDNode, { TDNodeType } from './TDNode';
+import TDNode, { TDNodeType } from '../TDNode';
 import StringBuilder from './StringBuilder';
 import Appendable from './Appendable';
 import StringUtil from './StringUtil';

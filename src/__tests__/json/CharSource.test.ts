@@ -1,6 +1,6 @@
-import StringCharSource from '../StringCharSource';
-import EOFRuntimeException from '../EOFRuntimeException';
-import StringBuilder from '../StringBuilder';
+import StringCharSource from '../../json/StringCharSource';
+import EOFRuntimeException from '../../json/EOFRuntimeException';
+import StringBuilder from '../../json/StringBuilder';
 
 test('testCharArraySource', () => {
   const cs = new StringCharSource('0123\n');

@@ -1,4 +1,4 @@
-import Bookmark from './Bookmark';
+import Bookmark from '../Bookmark';
 import Predicate from './Predicate';
 import StringBuilder from './StringBuilder';
 import EOFRuntimeException from './EOFRuntimeException';
