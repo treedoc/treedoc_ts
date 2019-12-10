@@ -1,4 +1,6 @@
 import Bookmark from './Bookmark';
+import TreeDoc from './TreeDoc';
+import TDPath, { Part, PathPartType } from './TDPath';
 
 export enum TDNodeType {
   MAP,
@@ -14,8 +16,6 @@ function isDigitOnly(str: string) {
 export default class TDNode {
   public parent?: TDNode;
   public type = TDNodeType.SIMPLE;
-  /** The key of the node, null for root or array element */
-  public readonly key?: string;
   /** The value of the node, only available for leave node */
   public value?: ValueType;
   /** Children of node. Use List instead of Map to avoid performance overhead of HashMap for small number of elements */
@@ -28,9 +28,11 @@ export default class TDNode {
   public deduped = false;
 
   // Create a root node if parent is undefined
-  public constructor(key?: string) {
-    this.key = key;
-  }
+  public constructor(
+    public readonly doc: TreeDoc,
+    /** The key of the node, null for root or array element */
+    public readonly key : string | null = null
+  ) {}
 
   public setValue(val?: ValueType): TDNode {
     this.value = val;
@@ -40,7 +42,7 @@ export default class TDNode {
   public createChild(name?: string): TDNode {
     const childIndex = this.indexOf(name);
     if (childIndex < 0) {
-      const cnode = new TDNode(name);
+      const cnode = new TDNode(this.doc, name);
       this.addChild(cnode);
       return cnode;
     }
@@ -50,7 +52,7 @@ export default class TDNode {
 
     // special handling for textproto due to it's bad design that allows duplicated keys
     if (!existNode.deduped) {
-      const listNode = new TDNode(name);
+      const listNode = new TDNode(this.doc, name);
       listNode.parent = this;
       listNode.deduped = true;
       listNode.type = TDNodeType.ARRAY;
@@ -62,7 +64,7 @@ export default class TDNode {
       existNode = listNode;
     }
 
-    const cn = new TDNode();
+    const cn = new TDNode(this.doc);
     existNode.addChild(cn);
     return cn;
   }
@@ -92,14 +94,16 @@ export default class TDNode {
   }
 
   public getChildByIdx(idx: number): TDNode | null {
-    if (!this.children || idx >= this.children.length) return null;
-    return this.children[idx];
+    return this.hasChildren() ? this.children![idx] : null;
   }
+
+  public hasChildren() { return this.children && this.children.length > 0; }
+  public getChildrenSize() { return !this.children ? 0 : this.children.length; }
 
   public getChildByPath(path: string): TDNode | null {
     return this.getChildByPathIdx(path.split('/'), 0);
   }
-  public getValueByPath(path: string): ValueType {
+  public getValueByPath1(path: string): ValueType {
     const cn = this.getChildByPath(path);
     return cn == null ? null : cn.value;
   }
@@ -112,11 +116,40 @@ export default class TDNode {
     return cn == null ? null : cn.getChildByPathIdx(path, idx + 1);
   }
 
-  public hasChildren() {
-    return this.children && this.children.length > 0;
+  public getValueByPathStr(path: string): ValueType { return this.getValueByPath(TDPath.parse(path)); }
+  public getValueByPath(path: TDPath): ValueType {
+    const cn = this.getByPath(path);
+    return cn == null ? null : cn.value;
   }
-  public getChildrenSize() {
-    return !this.children ? 0 : this.children.length;
+
+  public getByPathStr(path: string): TDNode | null { return this.getByPath(TDPath.parse(path)); }
+  /** If noNull is true, it will return the last matched node */
+  public getByPath(path: TDPath, noNull = false, idx = 0): TDNode | null {
+    if (idx === path.parts.length)
+      return this;
+
+    const next = this.getNextNode(path.parts[idx]);
+    if (next == null)
+      return noNull ? this : null;
+
+    return next.getByPath(path, noNull, idx + 1);
+  }
+
+  private getNextNode(part: Part): TDNode | null {
+    switch (part.type) {
+      case PathPartType.ROOT: return this.doc.root;
+      case PathPartType.ID: return this.doc.idMap[part.key!];
+      case PathPartType.RELATIVE: return this.getAncestor(part.level!);
+      case PathPartType.CHILD: return isDigitOnly(part.key!) ? this.getChildByIdx(parseInt(part.key!)) : this.getChild(part.key!);
+      default: return null;  // Impossible
+    }
+  }
+
+  private getAncestor(level: number): TDNode | null {
+    let result: TDNode | null = this;
+    for (let i = 0; i < level && result != null; i++, result = result.parent || null)
+      ;
+    return result;
   }
 
   public isRoot() {

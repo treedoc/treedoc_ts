@@ -47,7 +47,7 @@ export default class TDJSONWriter {
   ): void {
     out.append('{');
     if (node.children != null) {
-      for (let i = 0; i < node.children.length; i++) {
+      for (let i = 0; i < node.getChildrenSize(); i++) {
         const cn = node.children[i];
         if (opt.indentFactor > 0) {
           out.append('\n');
@@ -59,12 +59,12 @@ export default class TDJSONWriter {
         else out.append(cn.key as string); // Map key will never be null
         out.append(':');
         this.write(out, cn, opt, childIndentStr);
-        if (i < node.children.length - 1)
+        if (i < node.getChildrenSize() - 1)
           // No need "," for last entry
           out.append(',');
       }
 
-      if (opt.indentFactor > 0 && node.children.length > 0) {
+      if (opt.indentFactor > 0 && node.hasChildren()) {
         out.append('\n');
         out.append(indentStr);
       }
@@ -82,14 +82,14 @@ export default class TDJSONWriter {
   ): void {
     out.append('[');
     if (node.children != null) {
-      for (let i = 0; i < node.children.length; i++) {
+      for (let i = 0; i < node.getChildrenSize(); i++) {
         const cn = node.children[i];
         if (opt.indentFactor > 0) {
           out.append('\n');
           out.append(childIndentStr);
         }
         this.write(out, cn, opt, childIndentStr);
-        if (i < node.children.length - 1)
+        if (i < node.getChildrenSize() - 1)
           // No need "," for last entry
           out.append(',');
       }

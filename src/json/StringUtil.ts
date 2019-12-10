@@ -5,7 +5,7 @@ const C_ESC_SYMB = '\'"`\\bfnrt';
 const MIN_PRINTABLE_CHAR = ' ';
 
 export default class StringUtil {
-  public static isJavaIdentifier(str?: string): boolean {
+  public static isJavaIdentifier(str?: string | null): boolean {
     if (str == null || str.length < 1) return false;
     return !!str.match('^[a-zA-Z_$][0-9a-zA-Z_$]*$');
   }

@@ -1,5 +1,8 @@
 export default class Bookmark {
-  public constructor(public line: number = 0, public col: number = 0, public pos: number = 0) {}
+  public constructor(
+    public line: number = 0, 
+    public col: number = 0, 
+    public pos: number = 0) {}
 
   public append(c: string): string {
     this.pos++;

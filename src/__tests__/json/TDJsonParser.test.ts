@@ -4,6 +4,40 @@ import TDJSONParserOption from '../../json/TDJSONParserOption';
 import { TDNodeType } from '../../TDNode';
 import TDJSONWriter from '../../json/TDJSONWriter';
 import TDJSONWriterOption from '../../json/TDJSONWriterOption';
+import JSONPointer from '../../json/JSONPointer';
+
+const testData = `
+// Some comments
+{
+  "total": 100000000000000000000,
+  "limit": 10,
+  "valueWithoutKey",
+
+  /* block comments */
+  "data": [
+    {
+      "$id": "1",
+      "name": "Some Name 1",  // More line comments
+      "address": {
+        "streetLine": "1st st",
+        city: "san jose",
+      },
+      "createdAt": "2017-07-14T17:17:33.010Z",
+    },
+    {
+      "name": "Some Name 2",
+      "address": /*comments*/ {
+        "streetLine": "2nd st",
+        city: "san jose",
+      },
+      "createdAt": "2017-07-14T17:17:33.010Z",
+    },
+    \`Multiple line literal
+    Line2\`
+  ],
+  "objRef": {"$ref": "1"},
+  lastValueWithoutKey
+}`;
 
 test('testSkipSpaceAndComments', () => {
   let src = new StringCharSource('  //abcd \n // defghi \n abc');
@@ -20,47 +54,17 @@ test('testSkipSpaceAndComments', () => {
 });
 
 test('testParse', () => {
-  const testData = `
-  // Some comments
-  {
-    "total": 100000000000000000000,
-    "limit": 10,
-    "valueWithoutKey",
-
-    /* block comments */
-    "data": [
-      {
-        "name": "Some Name 1",  // More line comments
-        "address": {
-          "streetLine": "1st st",
-          city: "san jose",
-        },
-        "createdAt": "2017-07-14T17:17:33.010Z",
-      },
-      {
-        "name": "Some Name 2",
-        "address": /*comments*/ {
-          "streetLine": "2nd st",
-          city: "san jose",
-        },
-        "createdAt": "2017-07-14T17:17:33.010Z",
-      },
-      \`Multiple line literal
-      Line2\`
-    ],
-    lastValueWithoutKey
-  }`;
   const node = TDJSONParser.get().parse(new TDJSONParserOption(testData));
   const json = TDJSONWriter.get().writeAsString(node);
 
   console.log(`testParse:json=${json}`);
 
   expect(node.getChildValue('2')).toBe('valueWithoutKey');
-  expect(node.getChildValue('4')).toBe('lastValueWithoutKey');
+  expect(node.getChildValue('5')).toBe('lastValueWithoutKey');
   expect(node.getChildValue('limit')).toBe(10);
   expect(node.getChildValue('total')).toBe(100000000000000000000);
-  expect(node.getValueByPath('data/0/name')).toBe('Some Name 1');
-  expect(node.getValueByPath('data/1/address/streetLine')).toBe('2nd st');
+  expect(node.getValueByPathStr('data/0/name')).toBe('Some Name 1');
+  expect(node.getValueByPathStr('data/1/address/streetLine')).toBe('2nd st');
 
   const node1 = TDJSONParser.get().parse(new TDJSONParserOption(json));
   expect(TDJSONWriter.get().writeAsString(node1)).toBe(json);
@@ -99,13 +103,13 @@ test('testParseProto', () => {
     new TDJSONWriterOption().setIndentFactor(2).setAlwaysQuoteName(false),
   );
   console.log(`testParseProto:json=${json}`);
-  expect(node.getValueByPath('n/n1/0/n11/1/n111')).toBeFalsy();
-  expect(node.getValueByPath('n/n1/1/[d.e.f]')).toBe(4);
-  expect(node.getValueByPath('n/n3/0')).toBe(6);
+  expect(node.getValueByPathStr('n/n1/0/n11/1/n111')).toBeFalsy();
+  expect(node.getValueByPathStr('n/n1/1/[d.e.f]')).toBe(4);
+  expect(node.getValueByPathStr('n/n3/0')).toBe(6);
 
   node = TDJSONParser.get().parse(new TDJSONParserOption("'a':1\nb:2").setDefaultRootType(TDNodeType.MAP));
-  expect(node.getValueByPath('a')).toBe(1);
-  expect(node.getValueByPath('b')).toBe(2);
+  expect(node.getValueByPathStr('a')).toBe(1);
+  expect(node.getValueByPathStr('b')).toBe(2);
 });
 
 test('testParseJson5', () => {
@@ -130,10 +134,10 @@ test('testParseJson5', () => {
     new TDJSONWriterOption().setIndentFactor(2).setAlwaysQuoteName(false),
   );
   console.log(`testParseJson5:json=${json}`);
-  expect(node.getValueByPath('unquoted')).toBe('and you can quote me on that');
-  expect(node.getValueByPath('hexadecimal')).toBe(912559);
-  expect(node.getValueByPath('leadingDecimalPoint')).toBe(0.8675309);
-  expect(node.getValueByPath('positiveSign')).toBe(1);
+  expect(node.getValueByPathStr('unquoted')).toBe('and you can quote me on that');
+  expect(node.getValueByPathStr('hexadecimal')).toBe(912559);
+  expect(node.getValueByPathStr('leadingDecimalPoint')).toBe(0.8675309);
+  expect(node.getValueByPathStr('positiveSign')).toBe(1);
 });
 
 test('testRootArray', () => {
@@ -150,8 +154,8 @@ test('testRootArray', () => {
   );
   console.log(`testParseJson5:json=${json}`);
   expect(node.getChildrenSize()).toBe(4);
-  expect(node.getValueByPath('1')).toBe(2);
-  expect(node.getValueByPath('2/v')).toBe(3);
+  expect(node.getValueByPathStr('1')).toBe(2);
+  expect(node.getValueByPathStr('2/v')).toBe(3);
 });
 
 test('testInvalid', () => {
@@ -159,5 +163,14 @@ test('testInvalid', () => {
   expect(node.value).toBe('');
 
   node = TDJSONParser.get().parse(new TDJSONParserOption(''));
+  expect(node.value).toBeUndefined();
+});
+
+test('testTDPath', () => {
+  const jp = JSONPointer.get();
+  const node = TDJSONParser.get().parse(new TDJSONParserOption(testData));
+  const node1 = jp.query(node, "#1");
+  expect(node1.getChildValue("name")).toBe("Some Name 1");
+  expect(jp.query(node1, "2/limit").value).toBe(10);
   expect(node.value).toBeUndefined();
 });

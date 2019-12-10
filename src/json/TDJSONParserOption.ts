@@ -3,8 +3,11 @@ import TDNode, { TDNodeType } from '../TDNode';
 import StringCharSource from './StringCharSource';
 
 export default class TDJSONParserOption {
+  public KEY_ID = `$id`;
+
   /** The source */
   public source: CharSource;
+  public uri?: string;
 
   /** In case there's no enclosed '[' of '{' on the root level, the default type. */
   public defaultRootType = TDNodeType.SIMPLE;
