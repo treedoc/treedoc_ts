@@ -19,7 +19,7 @@ export default class StringUtil {
    * @param quoteChar The quote char
    * @return The escaped String
    */
-  public static cEscape(str = '', quoteChar = '"'): string | null {
+  public static cEscape(str: string | null = '', quoteChar = '"'): string | null {
     if (!str) return str;
 
     // First scan to check if it needs escape just to avoid create new String object for better performance.

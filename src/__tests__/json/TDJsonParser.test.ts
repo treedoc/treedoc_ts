@@ -5,6 +5,7 @@ import { TDNodeType } from '../../TDNode';
 import TDJSONWriter from '../../json/TDJSONWriter';
 import TDJSONWriterOption from '../../json/TDJSONWriterOption';
 import JSONPointer from '../../json/JSONPointer';
+import { TDNode } from '../..';
 
 const testData = `
 // Some comments
@@ -169,8 +170,8 @@ test('testInvalid', () => {
 test('testTDPath', () => {
   const jp = JSONPointer.get();
   const node = TDJSONParser.get().parse(new TDJSONParserOption(testData));
-  const node1 = jp.query(node, "#1");
+  const node1 = jp.query(node, "#1") as TDNode;
   expect(node1.getChildValue("name")).toBe("Some Name 1");
-  expect(jp.query(node1, "2/limit").value).toBe(10);
+  expect(jp.query(node1, "2/limit")!.value).toBe(10);
   expect(node.value).toBeUndefined();
 });
