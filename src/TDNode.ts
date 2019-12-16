@@ -39,6 +39,11 @@ export default class TDNode {
     return this;
   }
 
+  public setType(type: TDNodeType): TDNode {
+    this.type = type;
+    return this;
+  }
+
   public createChild(name?: string): TDNode {
     const childIndex = this.indexOf(name);
     if (childIndex < 0) {
@@ -181,4 +186,5 @@ export default class TDNode {
         throw new Error('Unknown type');
     }
   }
+
 }
