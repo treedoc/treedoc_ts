@@ -31,7 +31,7 @@ export default class TDNode {
   public constructor(
     public readonly doc: TreeDoc,
     /** The key of the node, null for root or array element */
-    public key : string = '',
+    public key: string = '',
   ) {}
 
   public setValue(val?: ValueType): TDNode {
@@ -45,7 +45,8 @@ export default class TDNode {
   }
 
   public createChild(name?: string): TDNode {
-    if (name === undefined)  // Assume it's array element
+    if (name === undefined)
+      // Assume it's array element
       name = this.getChildrenSize() + '';
 
     const childIndex = this.indexOf(name);
@@ -83,8 +84,7 @@ export default class TDNode {
   }
 
   public getChild(name: string | number): TDNode | null {
-    if (typeof(name) === 'string')
-      name = this.indexOf(name);
+    if (typeof name === 'string') name = this.indexOf(name);
     return this.hasChildren() && name >= 0 ? this.children![name] : null;
   }
 
@@ -100,8 +100,12 @@ export default class TDNode {
     return cn == null ? null : cn.value;
   }
 
-  public hasChildren() { return this.children && this.children.length > 0; }
-  public getChildrenSize() { return !this.children ? 0 : this.children.length; }
+  public hasChildren() {
+    return this.children && this.children.length > 0;
+  }
+  public getChildrenSize() {
+    return !this.children ? 0 : this.children.length;
+  }
 
   public getValueByPath(path: TDPath | string): ValueType {
     const cn = this.getByPath(path);
@@ -110,37 +114,40 @@ export default class TDNode {
 
   /** If noNull is true, it will return the last matched node */
   public getByPath(path: TDPath | string | string[], noNull = false, idx = 0): TDNode | null {
-    if (!(path instanceof TDPath))
-      path = TDPath.parse(path);
+    if (!(path instanceof TDPath)) path = TDPath.parse(path);
 
-    if (idx === path.parts.length)
-      return this;
+    if (idx === path.parts.length) return this;
 
     const next = this.getNextNode(path.parts[idx]);
-    if (next == null)
-      return noNull ? this : null;
+    if (next == null) return noNull ? this : null;
 
     return next.getByPath(path, noNull, idx + 1);
   }
 
   private getNextNode(part: Part): TDNode | null {
     switch (part.type) {
-      case PathPartType.ROOT: return this.doc.root;
-      case PathPartType.ID: return this.doc.idMap[part.key!];
-      case PathPartType.RELATIVE: return this.getAncestor(part.level!);
-      case PathPartType.CHILD: return isDigitOnly(part.key!) ? this.getChild(parseInt(part.key!)) : this.getChild(part.key!);
-      default: return null;  // Impossible
+      case PathPartType.ROOT:
+        return this.doc.root;
+      case PathPartType.ID:
+        return this.doc.idMap[part.key!];
+      case PathPartType.RELATIVE:
+        return this.getAncestor(part.level!);
+      case PathPartType.CHILD:
+        return isDigitOnly(part.key!) ? this.getChild(parseInt(part.key!)) : this.getChild(part.key!);
+      default:
+        return null; // Impossible
     }
   }
 
   private getAncestor(level: number): TDNode | null {
     let result: TDNode | null = this;
-    for (let i = 0; i < level && result != null; i++, result = result.parent || null)
-      ;
+    for (let i = 0; i < level && result != null; i++, result = result.parent || null);
     return result;
   }
 
-  public isRoot() { return !this.parent; }
+  public isRoot() {
+    return !this.parent;
+  }
 
   /** JS specific logic */
   public toObject(): any {
@@ -168,8 +175,14 @@ export default class TDNode {
     }
   }
 
-  public get path(): string[] { return this.parent ? [...this.parent.path, this.key] : []; }
-  public isLeaf() { return this.getChildrenSize() === 0; }
+  public get path(): string[] {
+    return this.parent ? [...this.parent.path, this.key] : [];
+  }
+  public isLeaf() {
+    return this.getChildrenSize() === 0;
+  }
 
-  public toString() { return `${this.key}:${this.value}`; }
+  public toString() {
+    return `${this.key}:${this.value}`;
+  }
 }

@@ -1,5 +1,5 @@
-import TDPath, { Part } from "../TDPath";
-import { TDNode } from "../index";
+import TDPath, { Part } from '../TDPath';
+import { TDNode } from '../index';
 
 /**
  * <pre>
@@ -23,37 +23,36 @@ import { TDNode } from "../index";
  * </pre>
  */
 export default class JSONPointer {
-  public static get(): JSONPointer { return new JSONPointer(); }
+  public static get(): JSONPointer {
+    return new JSONPointer();
+  }
 
   public parse(str: string): TDPath {
     const path = new TDPath();
-    if (!str)
-      return path;
+    if (!str) return path;
 
-    if (str.endsWith("#")) // Ignore the last # which indicate "key" of the map
+    if (str.endsWith('#'))
+      // Ignore the last # which indicate "key" of the map
       str = str.substring(0, str.length - 1);
 
     if (str.indexOf('#') < 0) {
-      if (this.parseParts(str, path, true))
-        return path;
+      if (this.parseParts(str, path, true)) return path;
       path.docPath = str;
       path.addParts(Part.ofRoot());
     } else {
-      const strs = str.split("#");
-      if (strs[0])
-        path.docPath = strs[0];
-      this.parseParts(strs[1], path,false);
+      const strs = str.split('#');
+      if (strs[0]) path.docPath = strs[0];
+      this.parseParts(strs[1], path, false);
     }
 
     return path;
   }
 
   private parseParts(str: string, path: TDPath, relativeWithNum: boolean): boolean {
-    const parts = str.split("/");
+    const parts = str.split('/');
     if (relativeWithNum) {
       const level = Number.parseInt(parts[0]);
-      if (Number.isNaN(level))
-        return false;
+      if (Number.isNaN(level)) return false;
       path.addParts(Part.ofRelative(level));
     } else {
       if (!parts[0]) {
@@ -74,7 +73,7 @@ export default class JSONPointer {
   }
 
   private parsePart(str: string): Part {
-    str = str.replace("~1", "/").replace("~0", "~");
+    str = str.replace('~1', '/').replace('~0', '~');
     return Part.ofChild(str);
   }
 

@@ -11,18 +11,20 @@ test('testToObject', () => {
 `;
   const node = TDJSONParser.get().parse(new TDJSONParserOption(testData));
   const obj = node.toObject();
-  expect(JSON.stringify(obj.b.$)).toBe(JSON.stringify({
-    start: {
-      line: 3,
-      col: 11,
-      pos: 31,
-    },
-    end: {
-      line: 3,
-      col: 18,
-      pos: 38,
-    },
-  }));
+  expect(JSON.stringify(obj.b.$)).toBe(
+    JSON.stringify({
+      start: {
+        line: 3,
+        col: 11,
+        pos: 31,
+      },
+      end: {
+        line: 3,
+        col: 18,
+        pos: 38,
+      },
+    }),
+  );
   expect(JSON.stringify(obj)).toBe(
     JSON.stringify({
       $: {

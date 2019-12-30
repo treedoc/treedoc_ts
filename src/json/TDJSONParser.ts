@@ -10,7 +10,9 @@ export default class TDJSONParser {
     return TDJSONParser.instance;
   }
 
-  public parse(opt: TDJSONParserOption): TDNode { return this.parseFromSource(opt.source, opt, new TreeDoc(opt.uri).root); }
+  public parse(opt: TDJSONParserOption): TDNode {
+    return this.parseFromSource(opt.source, opt, new TreeDoc(opt.uri).root);
+  }
 
   public parseFromSource(src: CharSource, opt: TDJSONParserOption, node: TDNode): TDNode {
     if (!TDJSONParser.skipSpaceAndComments(src)) return node;
@@ -124,16 +126,14 @@ export default class TDJSONParser {
         if (src.isEof()) throw src.createParseRuntimeException("No ':' after key:" + key);
         c = src.peek();
       }
-      if (c === ':')
-        src.read();
+      if (c === ':') src.read();
 
       if (c === ',' || c === '}')
         // If there's no ':', we consider it as indexed value (array)
         node.createChild(i + '').setValue(key);
       else {
         const childNode = this.parseFromSource(src, opt, node.createChild(key));
-        if (opt.KEY_ID === key && childNode.type === TDNodeType.SIMPLE)
-        node.doc.idMap[childNode.value + ''] = node;
+        if (opt.KEY_ID === key && childNode.type === TDNodeType.SIMPLE) node.doc.idMap[childNode.value + ''] = node;
       }
       i++;
     }

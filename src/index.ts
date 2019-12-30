@@ -13,7 +13,7 @@ import CharSource from './json/CharSource';
 import TDObjectCoder from './objcoder/TDObjectCoder';
 
 export {
-  TreeDoc, 
+  TreeDoc,
   TDNode,
   TDNodeType,
   Bookmark,

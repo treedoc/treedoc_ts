@@ -66,14 +66,13 @@ test('testParse', () => {
   expect(node.getChildValue('total')).toBe(100000000000000000000);
   expect(node.getValueByPath('data/0/name')).toBe('Some Name 1');
   expect(node.getValueByPath('data/1/address/streetLine')).toBe('2nd st');
-  const n = node.getByPath("data/1");
-  expect(node.getByPath("data/1")!.key).toBe('1');
-  expect(node.getByPath(["data", "1"])!.key).toBe('1');
+  const n = node.getByPath('data/1');
+  expect(node.getByPath('data/1')!.key).toBe('1');
+  expect(node.getByPath(['data', '1'])!.key).toBe('1');
 
-
-  expect(node.getChild("total")!.isLeaf()).toBeTruthy();
-  expect(node.getChild("data")!.isLeaf()).toBeFalsy();
-  expect(node.getByPath("data/1")!.path).toEqual(['data', '1']);
+  expect(node.getChild('total')!.isLeaf()).toBeTruthy();
+  expect(node.getChild('data')!.isLeaf()).toBeFalsy();
+  expect(node.getByPath('data/1')!.path).toEqual(['data', '1']);
 
   const node1 = TDJSONParser.get().parse(new TDJSONParserOption(json));
   expect(TDJSONWriter.get().writeAsString(node1)).toBe(json);
@@ -178,8 +177,8 @@ test('testInvalid', () => {
 test('testTDPath', () => {
   const jp = JSONPointer.get();
   const node = TDJSONParser.get().parse(new TDJSONParserOption(commonTestData));
-  const node1 = jp.query(node, "#1") as TDNode;
-  expect(node1.getChildValue("name")).toBe("Some Name 1");
-  expect(jp.query(node1, "2/limit")!.value).toBe(10);
+  const node1 = jp.query(node, '#1') as TDNode;
+  expect(node1.getChildValue('name')).toBe('Some Name 1');
+  expect(jp.query(node1, '2/limit')!.value).toBe(10);
   expect(node.value).toBeUndefined();
 });
