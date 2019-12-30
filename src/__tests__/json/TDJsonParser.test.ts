@@ -7,7 +7,7 @@ import TDJSONWriterOption from '../../json/TDJSONWriterOption';
 import JSONPointer from '../../json/JSONPointer';
 import { TDNode } from '../..';
 
-const testData = `
+const commonTestData = `
 // Some comments
 {
   "total": 100000000000000000000,
@@ -55,7 +55,7 @@ test('testSkipSpaceAndComments', () => {
 });
 
 test('testParse', () => {
-  const node = TDJSONParser.get().parse(new TDJSONParserOption(testData));
+  const node = TDJSONParser.get().parse(new TDJSONParserOption(commonTestData));
   const json = TDJSONWriter.get().writeAsString(node);
 
   console.log(`testParse:json=${json}`);
@@ -64,8 +64,16 @@ test('testParse', () => {
   expect(node.getChildValue('5')).toBe('lastValueWithoutKey');
   expect(node.getChildValue('limit')).toBe(10);
   expect(node.getChildValue('total')).toBe(100000000000000000000);
-  expect(node.getValueByPathStr('data/0/name')).toBe('Some Name 1');
-  expect(node.getValueByPathStr('data/1/address/streetLine')).toBe('2nd st');
+  expect(node.getValueByPath('data/0/name')).toBe('Some Name 1');
+  expect(node.getValueByPath('data/1/address/streetLine')).toBe('2nd st');
+  const n = node.getByPath("data/1");
+  expect(node.getByPath("data/1")!.key).toBe('1');
+  expect(node.getByPath(["data", "1"])!.key).toBe('1');
+
+
+  expect(node.getChild("total")!.isLeaf()).toBeTruthy();
+  expect(node.getChild("data")!.isLeaf()).toBeFalsy();
+  expect(node.getByPath("data/1")!.path).toEqual(['data', '1']);
 
   const node1 = TDJSONParser.get().parse(new TDJSONParserOption(json));
   expect(TDJSONWriter.get().writeAsString(node1)).toBe(json);
@@ -104,13 +112,13 @@ test('testParseProto', () => {
     new TDJSONWriterOption().setIndentFactor(2).setAlwaysQuoteName(false),
   );
   console.log(`testParseProto:json=${json}`);
-  expect(node.getValueByPathStr('n/n1/0/n11/1/n111')).toBeFalsy();
-  expect(node.getValueByPathStr('n/n1/1/[d.e.f]')).toBe(4);
-  expect(node.getValueByPathStr('n/n3/0')).toBe(6);
+  expect(node.getValueByPath('n/n1/0/n11/1/n111')).toBeFalsy();
+  expect(node.getValueByPath('n/n1/1/[d.e.f]')).toBe(4);
+  expect(node.getValueByPath('n/n3/0')).toBe(6);
 
   node = TDJSONParser.get().parse(new TDJSONParserOption("'a':1\nb:2").setDefaultRootType(TDNodeType.MAP));
-  expect(node.getValueByPathStr('a')).toBe(1);
-  expect(node.getValueByPathStr('b')).toBe(2);
+  expect(node.getValueByPath('a')).toBe(1);
+  expect(node.getValueByPath('b')).toBe(2);
 });
 
 test('testParseJson5', () => {
@@ -135,10 +143,10 @@ test('testParseJson5', () => {
     new TDJSONWriterOption().setIndentFactor(2).setAlwaysQuoteName(false),
   );
   console.log(`testParseJson5:json=${json}`);
-  expect(node.getValueByPathStr('unquoted')).toBe('and you can quote me on that');
-  expect(node.getValueByPathStr('hexadecimal')).toBe(912559);
-  expect(node.getValueByPathStr('leadingDecimalPoint')).toBe(0.8675309);
-  expect(node.getValueByPathStr('positiveSign')).toBe(1);
+  expect(node.getValueByPath('unquoted')).toBe('and you can quote me on that');
+  expect(node.getValueByPath('hexadecimal')).toBe(912559);
+  expect(node.getValueByPath('leadingDecimalPoint')).toBe(0.8675309);
+  expect(node.getValueByPath('positiveSign')).toBe(1);
 });
 
 test('testRootArray', () => {
@@ -155,8 +163,8 @@ test('testRootArray', () => {
   );
   console.log(`testParseJson5:json=${json}`);
   expect(node.getChildrenSize()).toBe(4);
-  expect(node.getValueByPathStr('1')).toBe(2);
-  expect(node.getValueByPathStr('2/v')).toBe(3);
+  expect(node.getValueByPath('1')).toBe(2);
+  expect(node.getValueByPath('2/v')).toBe(3);
 });
 
 test('testInvalid', () => {
@@ -169,7 +177,7 @@ test('testInvalid', () => {
 
 test('testTDPath', () => {
   const jp = JSONPointer.get();
-  const node = TDJSONParser.get().parse(new TDJSONParserOption(testData));
+  const node = TDJSONParser.get().parse(new TDJSONParserOption(commonTestData));
   const node1 = jp.query(node, "#1") as TDNode;
   expect(node1.getChildValue("name")).toBe("Some Name 1");
   expect(jp.query(node1, "2/limit")!.value).toBe(10);

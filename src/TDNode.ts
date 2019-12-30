@@ -31,7 +31,7 @@ export default class TDNode {
   public constructor(
     public readonly doc: TreeDoc,
     /** The key of the node, null for root or array element */
-    public readonly key : string | null = null
+    public key : string = '',
   ) {}
 
   public setValue(val?: ValueType): TDNode {
@@ -45,6 +45,9 @@ export default class TDNode {
   }
 
   public createChild(name?: string): TDNode {
+    if (name === undefined)  // Assume it's array element
+      name = this.getChildrenSize() + '';
+
     const childIndex = this.indexOf(name);
     if (childIndex < 0) {
       const cnode = new TDNode(this.doc, name);
@@ -69,9 +72,7 @@ export default class TDNode {
       existNode = listNode;
     }
 
-    const cn = new TDNode(this.doc);
-    existNode.addChild(cn);
-    return cn;
+    return existNode.createChild();
   }
 
   public addChild(node: TDNode) {
@@ -81,9 +82,10 @@ export default class TDNode {
     return this;
   }
 
-  public getChild(name: string): TDNode | null {
-    const idx = this.indexOf(name);
-    return idx < 0 ? null : (this.children as TDNode[])[idx];
+  public getChild(name: string | number): TDNode | null {
+    if (typeof(name) === 'string')
+      name = this.indexOf(name);
+    return this.hasChildren() && name >= 0 ? this.children![name] : null;
   }
 
   public indexOf(name?: string): number {
@@ -98,38 +100,19 @@ export default class TDNode {
     return cn == null ? null : cn.value;
   }
 
-  public getChildByIdx(idx: number): TDNode | null {
-    return this.hasChildren() ? this.children![idx] : null;
-  }
-
   public hasChildren() { return this.children && this.children.length > 0; }
   public getChildrenSize() { return !this.children ? 0 : this.children.length; }
 
-  public getChildByPath(path: string): TDNode | null {
-    return this.getChildByPathIdx(path.split('/'), 0);
-  }
-  public getValueByPath1(path: string): ValueType {
-    const cn = this.getChildByPath(path);
-    return cn == null ? null : cn.value;
-  }
-
-  public getChildByPathIdx(path: string[], idx: number): TDNode | null {
-    if (idx === path.length) return this;
-
-    const pi = path[idx];
-    const cn = isDigitOnly(pi) ? this.getChildByIdx(parseInt(pi, 10)) : this.getChild(pi);
-    return cn == null ? null : cn.getChildByPathIdx(path, idx + 1);
-  }
-
-  public getValueByPathStr(path: string): ValueType { return this.getValueByPath(TDPath.parse(path)); }
-  public getValueByPath(path: TDPath): ValueType {
+  public getValueByPath(path: TDPath | string): ValueType {
     const cn = this.getByPath(path);
-    return cn == null ? null : cn.value;
+    return cn && cn.value;
   }
 
-  public getByPathStr(path: string): TDNode | null { return this.getByPath(TDPath.parse(path)); }
   /** If noNull is true, it will return the last matched node */
-  public getByPath(path: TDPath, noNull = false, idx = 0): TDNode | null {
+  public getByPath(path: TDPath | string | string[], noNull = false, idx = 0): TDNode | null {
+    if (!(path instanceof TDPath))
+      path = TDPath.parse(path);
+
     if (idx === path.parts.length)
       return this;
 
@@ -145,7 +128,7 @@ export default class TDNode {
       case PathPartType.ROOT: return this.doc.root;
       case PathPartType.ID: return this.doc.idMap[part.key!];
       case PathPartType.RELATIVE: return this.getAncestor(part.level!);
-      case PathPartType.CHILD: return isDigitOnly(part.key!) ? this.getChildByIdx(parseInt(part.key!)) : this.getChild(part.key!);
+      case PathPartType.CHILD: return isDigitOnly(part.key!) ? this.getChild(parseInt(part.key!)) : this.getChild(part.key!);
       default: return null;  // Impossible
     }
   }
@@ -157,9 +140,7 @@ export default class TDNode {
     return result;
   }
 
-  public isRoot() {
-    return !this.parent;
-  }
+  public isRoot() { return !this.parent; }
 
   /** JS specific logic */
   public toObject(): any {
@@ -187,4 +168,8 @@ export default class TDNode {
     }
   }
 
+  public get path(): string[] { return this.parent ? [...this.parent.path, this.key] : []; }
+  public isLeaf() { return this.getChildrenSize() === 0; }
+
+  public toString() { return `${this.key}:${this.value}`; }
 }
