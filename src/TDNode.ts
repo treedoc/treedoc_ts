@@ -67,6 +67,7 @@ export default class TDNode {
       listNode.type = TDNodeType.ARRAY;
 
       children[childIndex] = listNode;
+      existNode.key = '0';
       listNode.addChild(existNode);
       listNode.start = existNode.start; // Reuse first node's start and length
       listNode.end = existNode.end;

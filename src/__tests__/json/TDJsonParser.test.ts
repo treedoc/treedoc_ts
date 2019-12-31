@@ -114,10 +114,8 @@ test('testParseProto', () => {
   expect(node.getValueByPath('n/n1/0/n11/1/n111')).toBeFalsy();
   expect(node.getValueByPath('n/n1/1/[d.e.f]')).toBe(4);
   expect(node.getValueByPath('n/n3/0')).toBe(6);
-
-  node = TDJSONParser.get().parse(new TDJSONParserOption("'a':1\nb:2").setDefaultRootType(TDNodeType.MAP));
-  expect(node.getValueByPath('a')).toBe(1);
-  expect(node.getValueByPath('b')).toBe(2);
+  expect(node.getByPath('n/n1/0')!.key).toBe('0');
+  expect(node.getByPath('n/n1/1')!.key).toBe('1');
 });
 
 test('testParseJson5', () => {
@@ -146,6 +144,12 @@ test('testParseJson5', () => {
   expect(node.getValueByPath('hexadecimal')).toBe(912559);
   expect(node.getValueByPath('leadingDecimalPoint')).toBe(0.8675309);
   expect(node.getValueByPath('positiveSign')).toBe(1);
+});
+
+test('testRootMap', () => {
+  const node = TDJSONParser.get().parse(new TDJSONParserOption("'a':1\nb:2").setDefaultRootType(TDNodeType.MAP));
+  expect(node.getValueByPath('a')).toBe(1);
+  expect(node.getValueByPath('b')).toBe(2);
 });
 
 test('testRootArray', () => {
