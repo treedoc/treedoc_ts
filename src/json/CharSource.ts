@@ -41,7 +41,7 @@ export default abstract class CharSource {
     return this.readUntil(predicate, null);
   }
 
-  public readUntilTermintorToString(
+  public readUntilTerminatorToString(
     terminator: string,
     target: StringBuilder | null,
     include = true,
@@ -53,12 +53,12 @@ export default abstract class CharSource {
 
   public readUntilTermintor(terminator: string, minLen = 0, maxLen = Number.MAX_VALUE): string {
     const sb = new StringBuilder();
-    this.readUntilTermintorToString(terminator, sb, true, minLen, maxLen);
+    this.readUntilTerminatorToString(terminator, sb, true, minLen, maxLen);
     return sb.toString();
   }
 
   public skipUntilTerminator(terminator: string, include = true): boolean {
-    return this.readUntilTermintorToString(terminator, null, include);
+    return this.readUntilTerminatorToString(terminator, null, include);
   }
   public skipSpaces(): boolean {
     return this.skipUntilTerminator(CharSource.SPACE_CHARS, false);
@@ -134,7 +134,7 @@ export default abstract class CharSource {
     const terminator = this.getTermStrWithQuoteAndEscape(quote);
     const pos = this.getPos();
     while (true) {
-      if (!this.readUntilTermintorToString(terminator, sb))
+      if (!this.readUntilTerminatorToString(terminator, sb))
         throw new EOFRuntimeException("Can't find matching quote at position:" + pos);
       let c = this.read();
       if (c === quote) {
