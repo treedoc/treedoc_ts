@@ -1,4 +1,6 @@
-[![CircleCI](https://circleci.com/gh/treedoc/treedoc_ts.svg?style=svg)](https://circleci.com/gh/treedoc/treedoc_ts)
+<!-- [![CircleCI](https://circleci.com/gh/treedoc/treedoc_ts.svg?style=svg)](https://circleci.com/gh/treedoc/treedoc_ts) -->
+<a href="https://github.com/treedoc/treedoc_ts"><img alt="GitHub Actions status" src="https://github.com/treedoc/treedoc_ts/workflows/Node%20CI/badge.svg"></a> <!--a href="https://codecov.io/gh/JasonEtco/actions-toolkit/"><img src="https://badgen.now.sh/codecov/c/github/JasonEtco/actions-toolkit" alt="Codecov"></a-->
+
 [![codecov](https://codecov.io/gh/treedoc/treedoc_ts/branch/master/graph/badge.svg)](https://codecov.io/gh/treedoc/treedoc_ts)
 
 # JSONEX parser in Type Script
