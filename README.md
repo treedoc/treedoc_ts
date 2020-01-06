@@ -1,27 +1,40 @@
-<!-- [![CircleCI](https://circleci.com/gh/treedoc/treedoc_ts.svg?style=svg)](https://circleci.com/gh/treedoc/treedoc_ts) -->
-<a href="https://github.com/treedoc/treedoc_ts"><img alt="GitHub Actions status" src="https://github.com/treedoc/treedoc_ts/workflows/Node%20CI/badge.svg"></a> <!--a href="https://codecov.io/gh/JasonEtco/actions-toolkit/"><img src="https://badgen.now.sh/codecov/c/github/JasonEtco/actions-toolkit" alt="Codecov"></a-->
+<a href="https://github.com/treedoc/treedoc_ts"><img alt="GitHub Actions status" src="https://github.com/treedoc/treedoc_ts/workflows/Node%20CI/badge.svg"></a> [![codecov](https://codecov.io/gh/treedoc/treedoc_ts/branch/master/graph/badge.svg)](https://codecov.io/gh/treedoc/treedoc_ts)
 
-[![codecov](https://codecov.io/gh/treedoc/treedoc_ts/branch/master/graph/badge.svg)](https://codecov.io/gh/treedoc/treedoc_ts)
+# Treedoc
 
-# JSONEX parser in Type Script
+Treedoc is an abstraction for tree-structured file formats such as JSON, YAML, and XML. It defines a simple object model similar to DOM for XML. But as an abstraction, the model itself is format agnostic. With this abstraction, it decouples the application from particular formats for configuration, persistent and communication serialization, etc. This allows the application to switch to different formats easily.
 
-JSONEX Make JSON greate again for configuration
+This library is an implementation of Treedoc with typescript. It also includes a parser for JSONex as a reference implementation for Treedoc model.
 
-## Overview
+## Background
 
-Jsonex is a json extension format makes JSON more friendly for configuration. This is a typescript port from Java implementation. Please refer to [JSONEX](https://github.com/eBay/jsonex/blob/master/JSONEX.md) spec for more details.
+Data serialization / de-serialization for configuration, persistent and communication are critical parts for almost any applications. The text-based serialization formats become more and more popular due to its simplicity. The formats have been evolved for many generations, from proprietary implementation to XML, YAML, and JSON, etc. Usually, the decision of which format is critical as once it's decided, the application will be coupled with the format. To switch to different format will be a huge refactor effort. However, the particular format shouldn't be the critical decision and the format will keep evolving. So it's important to decouple the application from particular formats. Treedoc is the solution for this decoupling.
+
+## JSONex
+
+JSONex is a JSON extension format that makes JSON more friendly for configuration and persistent. This is a typescript port from Java implementation. Please refer to [JSONex](https://github.com/eBay/jsonex/blob/master/JSONEX.md) spec for more details.
 
 ## Usage
 
 ### Basic Usage
+
 ```js
-import { TDJSONParser, TDJSONParserOption, TDNodeType } from 'jsonex-treedoc';
+import { TDJSONParser, TDJSONParserOption, TDNodeType } from 'treedoc';
 
 const o1 = TDJSONParser.get().parse(new TDJSONParserOption(jsonStr)).toObject();
 ```
+
 ### Advanced Usage
-Please refere to the test class [JsonParser.test.ts](src/__tests__/TDJsonParser.test.ts) for more details.
+
+Please refer to the test class [JsonParser.test.ts](src/__tests__/json/TDJsonParser.test.ts) for more details.
 
 ## Live Demo
 
-https://jsontable.github.io/
+<https://treedoc.github.io/>
+
+## License
+
+Copyright 2019-2020 Jianwu Chen <BR>
+Author/Developer: Jianwu Chen
+
+Use of this source code is governed by an MIT-style license that can be found in the LICENSE file or at <https://opensource.org/licenses/MIT>.
