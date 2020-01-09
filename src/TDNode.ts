@@ -30,9 +30,20 @@ export default class TDNode {
   // Create a root node if parent is undefined
   public constructor(
     public readonly doc: TreeDoc,
-    /** The key of the node, null for root or array element */
-    public key: string = '',
+    public key: string,
   ) {}
+
+  public clone(): TDNode {
+    const result = new TDNode(this.doc, this.key)
+      .setType(this.type)
+      .setValue(this.value);
+    result.parent = this.parent;
+    result.children = this.children;
+    result.start = this.start;
+    result.end = this.end;
+    result.deduped = this.deduped;
+    return result;
+  }
 
   public setValue(val?: ValueType): TDNode {
     this.value = val;
@@ -57,7 +68,7 @@ export default class TDNode {
     }
 
     const children = this.children as TDNode[];
-    let existNode = children[childIndex];
+    let existNode = children[childIndex].clone();
 
     // special handling for textproto due to it's bad design that allows duplicated keys
     if (!existNode.deduped) {
@@ -78,21 +89,32 @@ export default class TDNode {
   }
 
   public addChild(node: TDNode) {
-    if (!this.children) this.children = [];
+    if (!this.children)
+      this.children = [];
     this.children.push(node);
     node.parent = this;
     return this;
   }
 
   public getChild(name: string | number): TDNode | null {
-    if (typeof name === 'string') name = this.indexOf(name);
+    if (typeof name === 'string')
+      name = this.indexOf(name);
     return this.hasChildren() && name >= 0 ? this.children![name] : null;
   }
 
   public indexOf(name?: string): number {
-    if (!this.children || name == null) return -1;
-
-    for (let i = 0; i < this.children.length; i++) if (name === this.children[i].key) return i;
+    // VUETIPS: When VueJS instrument this object, it will generate getter to register the dep-graph.
+    // very call to getter could be very heavy if the number of children is huge e.g. > 10000.
+    // If we put the this.children inside for loop, it will cause O(n^2) problem.
+    // so we have to cache it outside the for loop.
+    // Relevant code: reactiveGetter (vue.runtime.esm.js?2b0e:1031)
+    // TODO: add index when the node number is huge
+    const children = this.children;
+    if (!children || name == null)
+      return -1;
+    for (let i = 0; i < children.length; i++)
+      if (name === children[i].key)
+        return i;
     return -1;
   }
 
@@ -115,17 +137,20 @@ export default class TDNode {
 
   /** If noNull is true, it will return the last matched node */
   public getByPath(path: TDPath | string | string[], noNull = false, idx = 0): TDNode | null {
-    if (!(path instanceof TDPath)) path = TDPath.parse(path);
+    if (!(path instanceof TDPath))
+      path = TDPath.parse(path);
 
-    if (idx === path.parts.length) return this;
+    if (idx === path.parts.length)
+      return this;
 
     const next = this.getNextNode(path.parts[idx]);
-    if (next == null) return noNull ? this : null;
+    if (next == null)
+      return noNull ? this : null;
 
     return next.getByPath(path, noNull, idx + 1);
   }
-
-  private getNextNode(part: Part): TDNode | null {
+ 
+  public getNextNode(part: Part): TDNode | null {
     switch (part.type) {
       case PathPartType.ROOT:
         return this.doc.root;
@@ -140,9 +165,10 @@ export default class TDNode {
     }
   }
 
-  private getAncestor(level: number): TDNode | null {
+  public getAncestor(level: number): TDNode | null {
     let result: TDNode | null = this;
-    for (let i = 0; i < level && result != null; i++, result = result.parent || null);
+    for (let i = 0; i < level && result != null; i++, result = result.parent || null)
+      ;
     return result;
   }
 
@@ -162,13 +188,15 @@ export default class TDNode {
         return this.value;
       case TDNodeType.MAP: {
         const obj: any = { $ };
-        if (this.children) this.children.forEach(c => c.key && (obj[c.key] = c.toObject()));
+        if (this.children)
+          this.children.forEach(c => c.key && (obj[c.key] = c.toObject()));
         return obj;
       }
       case TDNodeType.ARRAY: {
         const obj: any[] = [];
         (obj as any).$ = $;
-        if (this.children) this.children.forEach(c => obj.push(c.toObject()));
+        if (this.children)
+          this.children.forEach(c => obj.push(c.toObject()));
         return obj;
       }
       default:
@@ -185,5 +213,17 @@ export default class TDNode {
 
   public toString() {
     return `${this.key}:${this.value}`;
+  }
+
+  public freeze() {
+    const children = this.children;
+    if (children) {
+      for (const c of children)
+        c.freeze();
+    }
+    Object.freeze(this.start);
+    Object.freeze(this.end);
+    Object.freeze(this.doc);
+    Object.freeze(this);
   }
 }

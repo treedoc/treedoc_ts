@@ -30,7 +30,7 @@ Please refer to the test class [JsonParser.test.ts](src/__tests__/json/TDJsonPar
 
 ## Live Demo
 
-<https://treedoc.github.io/>
+<http://treedoc.org>
 
 ## License
 

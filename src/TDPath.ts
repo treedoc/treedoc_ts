@@ -47,16 +47,22 @@ export default class TDPath {
   ) {}
 
   public static parse(str: string | string[]): TDPath {
-    if (typeof str === 'string') str = str.split('/');
+    if (typeof str === 'string')
+      str = str.split('/');
 
-    if (str.length === 0 || (str.length === 1 && str[0].length === 0)) return new TDPath().addParts(Part.ofRelative(0));
+    if (str.length === 0)
+      return new TDPath().addParts(Part.ofRelative(0));
 
     const path = new TDPath();
     for (const s of str) {
-      if ('.' === s) path.addParts(Part.ofRelative(0));
-      else if ('..' === s) path.addParts(Part.ofRelative(1));
-      else if (s.length === 0) path.addParts(Part.ofRoot());
-      else path.addParts(Part.ofChild(s));
+      if ('.' === s)
+        path.addParts(Part.ofRelative(0));
+      else if ('..' === s)
+        path.addParts(Part.ofRelative(1));
+      else if (s.length === 0)
+        path.addParts(Part.ofRoot());
+      else
+        path.addParts(Part.ofChild(s));
     }
     return path;
   }

@@ -105,7 +105,7 @@ test('testParseProto', () => {
     noVal:
   }`;
 
-  let node = TDJSONParser.get().parse(new TDJSONParserOption(testData).setDefaultRootType(TDNodeType.MAP));
+  const node = TDJSONParser.get().parse(new TDJSONParserOption(testData).setDefaultRootType(TDNodeType.MAP));
   const json = TDJSONWriter.get().writeAsString(
     node,
     new TDJSONWriterOption().setIndentFactor(2).setAlwaysQuoteName(false),
@@ -135,10 +135,7 @@ test('testParseJson5', () => {
   }`;
 
   const node = TDJSONParser.get().parse(new TDJSONParserOption(testData));
-  const json = TDJSONWriter.get().writeAsString(
-    node,
-    new TDJSONWriterOption().setIndentFactor(2).setAlwaysQuoteName(false),
-  );
+  const json = TDJSONWriter.get().writeAsString(node, new TDJSONWriterOption().setIndentFactor(2).setAlwaysQuoteName(false));
   console.log(`testParseJson5:json=${json}`);
   expect(node.getValueByPath('unquoted')).toBe('and you can quote me on that');
   expect(node.getValueByPath('hexadecimal')).toBe(912559);

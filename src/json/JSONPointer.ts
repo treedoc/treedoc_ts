@@ -77,7 +77,7 @@ export default class JSONPointer {
     return Part.ofChild(str);
   }
 
-  public query(node: TDNode, path: string): TDNode | null {
+  public query(node: Readonly<TDNode>, path: string): TDNode | null {
     return node.getByPath(this.parse(path));
   }
 }

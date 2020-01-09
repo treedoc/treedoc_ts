@@ -3,6 +3,7 @@ import TDNode, { TDNodeType } from '../TDNode';
 import StringBuilder from './StringBuilder';
 import Appendable from './Appendable';
 import StringUtil from './StringUtil';
+import { TreeDoc } from '..';
 
 export default class TDJSONWriter {
   public static readonly instance = new TDJSONWriter();
@@ -10,13 +11,13 @@ export default class TDJSONWriter {
     return TDJSONWriter.instance;
   }
 
-  public writeAsString(node: TDNode, opt = new TDJSONWriterOption()): string {
+  public writeAsString(node: Readonly<TDNode>, opt = new TDJSONWriterOption()): string {
     const out = new StringBuilder();
     this.write(out, node, opt);
     return out.toString();
   }
 
-  public write(out: Appendable, node: TDNode, opt: TDJSONWriterOption, indentStr = ''): void {
+  public write(out: Appendable, node: Readonly<TDNode>, opt: TDJSONWriterOption, indentStr = ''): void {
     if (!node) {
       out.append('null');
       return;
@@ -38,13 +39,7 @@ export default class TDJSONWriter {
     }
   }
 
-  private writeMap(
-    out: Appendable,
-    node: TDNode,
-    opt: TDJSONWriterOption,
-    indentStr: string,
-    childIndentStr: string,
-  ): void {
+  private writeMap(out: Appendable, node: Readonly<TDNode>, opt: TDJSONWriterOption, indentStr: string, childIndentStr: string): void {
     out.append('{');
     if (node.children != null) {
       for (let i = 0; i < node.getChildrenSize(); i++) {
@@ -73,13 +68,7 @@ export default class TDJSONWriter {
     out.append('}');
   }
 
-  private writeArray(
-    out: Appendable,
-    node: TDNode,
-    opt: TDJSONWriterOption,
-    indentStr: string,
-    childIndentStr: string,
-  ): void {
+  private writeArray(out: Appendable, node: Readonly<TDNode>, opt: TDJSONWriterOption, indentStr: string, childIndentStr: string): void {
     out.append('[');
     if (node.children != null) {
       for (let i = 0; i < node.getChildrenSize(); i++) {
@@ -103,7 +92,7 @@ export default class TDJSONWriter {
     out.append(']');
   }
 
-  private writeSimple(out: Appendable, node: TDNode, opt: TDJSONWriterOption): void {
+  private writeSimple(out: Appendable, node: Readonly<TDNode>, opt: TDJSONWriterOption): void {
     if (typeof node.value === 'string') {
       this.writeQuotedString(out, node.value as string, opt.quoteChar);
       return;

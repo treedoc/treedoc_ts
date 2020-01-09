@@ -51,7 +51,7 @@ export default abstract class CharSource {
     return this.readUntil(s => terminator.indexOf(s.peek(0)) >= 0 === include, target, minLen, maxLen);
   }
 
-  public readUntilTermintor(terminator: string, minLen = 0, maxLen = Number.MAX_VALUE): string {
+  public readUntilTerminator(terminator: string, minLen = 0, maxLen = Number.MAX_VALUE): string {
     const sb = new StringBuilder();
     this.readUntilTerminatorToString(terminator, sb, true, minLen, maxLen);
     return sb.toString();
@@ -171,7 +171,8 @@ export default abstract class CharSource {
         case '\r':
           break; // Assume it's a line continuation
         default:
-          if (this.isOctDigit(c)) sb.append(String.fromCharCode(this.readOctNumber(Number(c))));
+          if (this.isOctDigit(c))
+            sb.append(String.fromCharCode(this.readOctNumber(Number(c))));
           else sb.append(c);
       }
     }
@@ -181,9 +182,11 @@ export default abstract class CharSource {
   private readOctNumber(num: number) {
     for (let i = 0; i < 2; i++) {
       const d = this.peek();
-      if (!this.isOctDigit(d)) break;
+      if (!this.isOctDigit(d))
+        break;
       const newNum = num * 8 + Number(d);
-      if (newNum > 255) break;
+      if (newNum > 255)
+        break;
       num = newNum;
       this.read();
     }
