@@ -28,15 +28,10 @@ export default class TDNode {
   public deduped = false;
 
   // Create a root node if parent is undefined
-  public constructor(
-    public readonly doc: TreeDoc,
-    public key: string,
-  ) {}
+  public constructor(public readonly doc: TreeDoc, public key: string) {}
 
   public clone(): TDNode {
-    const result = new TDNode(this.doc, this.key)
-      .setType(this.type)
-      .setValue(this.value);
+    const result = new TDNode(this.doc, this.key).setType(this.type).setValue(this.value);
     result.parent = this.parent;
     result.children = this.children;
     result.start = this.start;
@@ -89,16 +84,14 @@ export default class TDNode {
   }
 
   public addChild(node: TDNode) {
-    if (!this.children)
-      this.children = [];
+    if (!this.children) this.children = [];
     this.children.push(node);
     node.parent = this;
     return this;
   }
 
   public getChild(name: string | number): TDNode | null {
-    if (typeof name === 'string')
-      name = this.indexOf(name);
+    if (typeof name === 'string') name = this.indexOf(name);
     return this.hasChildren() && name >= 0 ? this.children![name] : null;
   }
 
@@ -110,11 +103,8 @@ export default class TDNode {
     // Relevant code: reactiveGetter (vue.runtime.esm.js?2b0e:1031)
     // TODO: add index when the node number is huge
     const children = this.children;
-    if (!children || name == null)
-      return -1;
-    for (let i = 0; i < children.length; i++)
-      if (name === children[i].key)
-        return i;
+    if (!children || name == null) return -1;
+    for (let i = 0; i < children.length; i++) if (name === children[i].key) return i;
     return -1;
   }
 
@@ -137,19 +127,16 @@ export default class TDNode {
 
   /** If noNull is true, it will return the last matched node */
   public getByPath(path: TDPath | string | string[], noNull = false, idx = 0): TDNode | null {
-    if (!(path instanceof TDPath))
-      path = TDPath.parse(path);
+    if (!(path instanceof TDPath)) path = TDPath.parse(path);
 
-    if (idx === path.parts.length)
-      return this;
+    if (idx === path.parts.length) return this;
 
     const next = this.getNextNode(path.parts[idx]);
-    if (next == null)
-      return noNull ? this : null;
+    if (next == null) return noNull ? this : null;
 
     return next.getByPath(path, noNull, idx + 1);
   }
- 
+
   public getNextNode(part: Part): TDNode | null {
     switch (part.type) {
       case PathPartType.ROOT:
@@ -167,8 +154,7 @@ export default class TDNode {
 
   public getAncestor(level: number): TDNode | null {
     let result: TDNode | null = this;
-    for (let i = 0; i < level && result != null; i++, result = result.parent || null)
-      ;
+    for (let i = 0; i < level && result != null; i++, result = result.parent || null);
     return result;
   }
 
@@ -188,15 +174,13 @@ export default class TDNode {
         return this.value;
       case TDNodeType.MAP: {
         const obj: any = { $ };
-        if (this.children)
-          this.children.forEach(c => c.key && (obj[c.key] = c.toObject()));
+        if (this.children) this.children.forEach(c => c.key && (obj[c.key] = c.toObject()));
         return obj;
       }
       case TDNodeType.ARRAY: {
         const obj: any[] = [];
         (obj as any).$ = $;
-        if (this.children)
-          this.children.forEach(c => obj.push(c.toObject()));
+        if (this.children) this.children.forEach(c => obj.push(c.toObject()));
         return obj;
       }
       default:
@@ -218,8 +202,7 @@ export default class TDNode {
   public freeze() {
     const children = this.children;
     if (children) {
-      for (const c of children)
-        c.freeze();
+      for (const c of children) c.freeze();
     }
     Object.freeze(this.start);
     Object.freeze(this.end);

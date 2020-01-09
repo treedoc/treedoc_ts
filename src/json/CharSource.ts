@@ -171,8 +171,7 @@ export default abstract class CharSource {
         case '\r':
           break; // Assume it's a line continuation
         default:
-          if (this.isOctDigit(c))
-            sb.append(String.fromCharCode(this.readOctNumber(Number(c))));
+          if (this.isOctDigit(c)) sb.append(String.fromCharCode(this.readOctNumber(Number(c))));
           else sb.append(c);
       }
     }
@@ -182,11 +181,9 @@ export default abstract class CharSource {
   private readOctNumber(num: number) {
     for (let i = 0; i < 2; i++) {
       const d = this.peek();
-      if (!this.isOctDigit(d))
-        break;
+      if (!this.isOctDigit(d)) break;
       const newNum = num * 8 + Number(d);
-      if (newNum > 255)
-        break;
+      if (newNum > 255) break;
       num = newNum;
       this.read();
     }

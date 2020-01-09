@@ -8,8 +8,7 @@ export default class CustomCoder implements ICoder {
   }
   private readonly DATE = new Date();
   public encode(obj: any, opt: ObjectCodeOption, target: import('..').TDNode, ctx: ObjectCoderContext): boolean {
-    if (!obj.toJSON)
-      return false;
+    if (!obj.toJSON) return false;
     target.setType(TDNodeType.SIMPLE).setValue(obj.toJSON());
     return true;
   }

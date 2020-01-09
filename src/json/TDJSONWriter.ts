@@ -39,7 +39,13 @@ export default class TDJSONWriter {
     }
   }
 
-  private writeMap(out: Appendable, node: Readonly<TDNode>, opt: TDJSONWriterOption, indentStr: string, childIndentStr: string): void {
+  private writeMap(
+    out: Appendable,
+    node: Readonly<TDNode>,
+    opt: TDJSONWriterOption,
+    indentStr: string,
+    childIndentStr: string,
+  ): void {
     out.append('{');
     if (node.children != null) {
       for (let i = 0; i < node.getChildrenSize(); i++) {
@@ -68,7 +74,13 @@ export default class TDJSONWriter {
     out.append('}');
   }
 
-  private writeArray(out: Appendable, node: Readonly<TDNode>, opt: TDJSONWriterOption, indentStr: string, childIndentStr: string): void {
+  private writeArray(
+    out: Appendable,
+    node: Readonly<TDNode>,
+    opt: TDJSONWriterOption,
+    indentStr: string,
+    childIndentStr: string,
+  ): void {
     out.append('[');
     if (node.children != null) {
       for (let i = 0; i < node.getChildrenSize(); i++) {

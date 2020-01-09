@@ -39,24 +39,18 @@ export default class TDObjectCoder {
     target = new TreeDoc().root,
     ctx = new ObjectCoderContext(),
   ): TDNode {
-    if (this.isNullOrUndefined(obj))
-      return target;
+    if (this.isNullOrUndefined(obj)) return target;
 
-    if (this.isPrimative(obj))
-      return target.setValue(obj);
+    if (this.isPrimative(obj)) return target.setValue(obj);
 
-    for (const coder of opt.coders)
-      if (coder.encode(obj, opt, target, ctx))
-        return target;
+    for (const coder of opt.coders) if (coder.encode(obj, opt, target, ctx)) return target;
 
     const idx = ctx.path.indexOf(obj);
-    if (idx >= 0)
-      return this.setRef(target, '' + (ctx.path.length - idx));
+    if (idx >= 0) return this.setRef(target, '' + (ctx.path.length - idx));
 
     const existNode = ctx.objNodeMap.get(obj);
     if (existNode) {
-      if (!existNode.getChild(this.KEY_ID))
-        existNode.createChild(this.KEY_ID).setValue(ctx.nextId++);
+      if (!existNode.getChild(this.KEY_ID)) existNode.createChild(this.KEY_ID).setValue(ctx.nextId++);
       return this.setRef(target, '#' + existNode.getChildValue(this.KEY_ID));
     }
 
@@ -66,13 +60,11 @@ export default class TDObjectCoder {
     if (this.isArrayLikeObject(obj)) {
       target.type = TDNodeType.ARRAY;
       // tslint:disable-next-line: prefer-for-of
-      for (let i = 0; i < obj.length; i++)
-        this.encode(obj[i], opt, target.createChild(), ctx);
+      for (let i = 0; i < obj.length; i++) this.encode(obj[i], opt, target.createChild(), ctx);
     } else {
       // Object or Map
       target.type = TDNodeType.MAP;
-      for (const k of Object.keys(obj))
-        this.encode(obj[k], opt, target.createChild(k), ctx);
+      for (const k of Object.keys(obj)) this.encode(obj[k], opt, target.createChild(k), ctx);
     }
     ctx.path.pop();
     return target;
@@ -93,8 +85,7 @@ export default class TDObjectCoder {
 
   private isPrimative(obj: any): boolean {
     const type = typeof obj;
-    if (type !== 'object' && type !== 'function')
-      return true;
+    if (type !== 'object' && type !== 'function') return true;
     const cstr = obj.constructor.name;
     return cstr === 'Number' || cstr === 'String' || cstr === 'Boolean';
   }
