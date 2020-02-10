@@ -1,6 +1,7 @@
 {
   "extends": ["tslint:recommended", "tslint-config-prettier"],
   "rules": {
+    "no-conditional-assignment": false,
     "curly": false,
     "member-ordering": false,
     "ordered-imports": false,
