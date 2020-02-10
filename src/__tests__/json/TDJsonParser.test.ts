@@ -42,15 +42,15 @@ const commonTestData = `
 
 test('testSkipSpaceAndComments', () => {
   let src = new StringCharSource('  //abcd \n // defghi \n abc');
-  expect(TDJSONParser.skipSpaceAndComments(src)).toBeTruthy();
+  expect(TDJSONParser.skipSpaceAndComments(src)).toBe('a');
   expect(src.readString(3)).toBe('abc');
 
   src = new StringCharSource('  #abcd \n # defghi \n abc');
-  expect(TDJSONParser.skipSpaceAndComments(src)).toBeTruthy();
+  expect(TDJSONParser.skipSpaceAndComments(src)).toBe('a');
   expect(src.readString(3)).toBe('abc');
 
   src = new StringCharSource('/* abcd*/ \n /* defghi*/ \n abc');
-  expect(TDJSONParser.skipSpaceAndComments(src)).toBeTruthy();
+  expect(TDJSONParser.skipSpaceAndComments(src)).toBe('a');
   expect(src.readString(3)).toBe('abc');
 });
 
@@ -154,10 +154,15 @@ test('testRootMap', () => {
 
 test('testRootArray', () => {
   const testData = `
+  ,
   1
   2
-  { v: 3 }
-  4
+  {
+    v: 3
+  },
+  ,
+  4,
+  ,
   `;
   const node = TDJSONParser.get().parse(new TDJSONParserOption(testData).setDefaultRootType(TDNodeType.ARRAY));
   const json = TDJSONWriter.get().writeAsString(
@@ -165,17 +170,20 @@ test('testRootArray', () => {
     new TDJSONWriterOption().setIndentFactor(2).setAlwaysQuoteName(false),
   );
   console.log(`testParseJson5:json=${json}`);
-  expect(node.getChildrenSize()).toBe(4);
-  expect(node.getValueByPath('1')).toBe(2);
-  expect(node.getValueByPath('2/v')).toBe(3);
+  expect(node.getChildrenSize()).toBe(7);
+  expect(node.getValueByPath('2')).toBe(2);
+  expect(node.getValueByPath('3/v')).toBe(3);
 });
 
 test('testInvalid', () => {
   let node = TDJSONParser.get().parse(new TDJSONParserOption('}'));
-  expect(node.value).toBe('');
+  expect(node.value).toBe('}');
 
   node = TDJSONParser.get().parse(new TDJSONParserOption(''));
   expect(node.value).toBeUndefined();
+
+  node = TDJSONParser.get().parse(new TDJSONParserOption('[}]'));
+  expect(node.getChild(0)!.value).toBe('}');
 });
 
 test('testTDPath', () => {
