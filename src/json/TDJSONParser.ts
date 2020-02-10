@@ -50,7 +50,7 @@ export default class TDJSONParser {
 
       let term = ",\n\r";
       if (node.parent != null)  // parent.type can either by ARRAY or MAP.
-        term = node.parent.type == TDNodeType.ARRAY ? ",\n\r]" : ",\n\r}";
+        term = node.parent.type === TDNodeType.ARRAY ? ",\n\r]" : ",\n\r}";
 
       const str = src.readUntilTerminator(term, 0, Number.MAX_VALUE).trim();
       if ('null' === str)
@@ -71,7 +71,7 @@ export default class TDJSONParser {
 
   private readContinuousString(src: CharSource, sb: StringBuilder): void {
     let c;
-    while((c = TDJSONParser.skipSpaceAndComments(src)) != EOF) {
+    while((c = TDJSONParser.skipSpaceAndComments(src)) !== EOF) {
       if ('"`\''.indexOf(c) < 0) break;
       src.read();
       src.readQuotedToString(c, sb);
@@ -114,7 +114,7 @@ export default class TDJSONParser {
 
     for (let i = 0; ; ) {
       let c = TDJSONParser.skipSpaceAndComments(src);
-      if (c == EOF) {
+      if (c === EOF) {
         if (withStartBracket)
           throw src.createParseRuntimeException("EOF encountered while expecting matching '}'");
         break;
