@@ -7,7 +7,6 @@ import TreeDoc from '../TreeDoc';
 const EOF = '\uFFFF';
 
 export default class TDJSONParser {
-  
   public static readonly instance = new TDJSONParser();
   public static get() {
     return TDJSONParser.instance;
@@ -19,17 +18,14 @@ export default class TDJSONParser {
 
   public parseFromSource(src: CharSource, opt: TDJSONParserOption, node: TDNode): TDNode {
     const c = TDJSONParser.skipSpaceAndComments(src);
-    if (c === EOF)
-      return node;
+    if (c === EOF) return node;
 
     try {
       node.start = src.getBookmark();
 
-      if (c === '{') 
-        return this.parseMap(src, opt, node, true);
+      if (c === '{') return this.parseMap(src, opt, node, true);
 
-      if (c === '[') 
-        return this.parseArray(src, opt, node, true);
+      if (c === '[') return this.parseArray(src, opt, node, true);
 
       if (node.isRoot()) {
         switch (opt.defaultRootType) {
@@ -48,19 +44,16 @@ export default class TDJSONParser {
         return node.setValue(sb.toString());
       }
 
-      let term = ",\n\r";
-      if (node.parent != null)  // parent.type can either by ARRAY or MAP.
-        term = node.parent.type === TDNodeType.ARRAY ? ",\n\r]" : ",\n\r}";
+      let term = ',\n\r';
+      if (node.parent != null)
+        // parent.type can either by ARRAY or MAP.
+        term = node.parent.type === TDNodeType.ARRAY ? ',\n\r]' : ',\n\r}';
 
       const str = src.readUntilTerminator(term, 0, Number.MAX_VALUE).trim();
-      if ('null' === str)
-        return node.setValue(null);
-      if ('true' === str) 
-        return node.setValue(true);
-      if ('false' === str)
-        return node.setValue(false);
-      if (str.startsWith('0x') || str.startsWith('0X'))
-        return node.setValue(this.parseNumber(str.substring(2), true));
+      if ('null' === str) return node.setValue(null);
+      if ('true' === str) return node.setValue(true);
+      if ('false' === str) return node.setValue(false);
+      if (str.startsWith('0x') || str.startsWith('0X')) return node.setValue(this.parseNumber(str.substring(2), true));
       if (c === '-' || c === '+' || c === '.' || (c >= '0' && c <= '9'))
         return node.setValue(this.parseNumber(str, false));
       return node.setValue(str);
@@ -71,7 +64,7 @@ export default class TDJSONParser {
 
   private readContinuousString(src: CharSource, sb: StringBuilder): void {
     let c;
-    while((c = TDJSONParser.skipSpaceAndComments(src)) !== EOF) {
+    while ((c = TDJSONParser.skipSpaceAndComments(src)) !== EOF) {
       if ('"`\''.indexOf(c) < 0) break;
       src.read();
       src.readQuotedToString(c, sb);
@@ -89,8 +82,7 @@ export default class TDJSONParser {
         continue;
       }
 
-      if (c !== '/' || src.isEof(1))
-        return c;
+      if (c !== '/' || src.isEof(1)) return c;
       const c1 = src.peek(1);
       switch (c1) {
         case '/': // line comments
@@ -109,14 +101,12 @@ export default class TDJSONParser {
 
   public parseMap(src: CharSource, opt: TDJSONParserOption, node: TDNode, withStartBracket: boolean): TDNode {
     node.type = TDNodeType.MAP;
-    if (withStartBracket) 
-      src.read();
+    if (withStartBracket) src.read();
 
     for (let i = 0; ; ) {
       let c = TDJSONParser.skipSpaceAndComments(src);
       if (c === EOF) {
-        if (withStartBracket)
-          throw src.createParseRuntimeException("EOF encountered while expecting matching '}'");
+        if (withStartBracket) throw src.createParseRuntimeException("EOF encountered while expecting matching '}'");
         break;
       }
 
@@ -136,8 +126,7 @@ export default class TDJSONParser {
         src.read();
         key = src.readQuotedString(c);
         c = TDJSONParser.skipSpaceAndComments(src);
-        if (c === EOF)
-          break;
+        if (c === EOF) break;
         if (c !== ':' && c !== '{' && c !== '[' && c !== ',' && c !== '}')
           throw src.createParseRuntimeException("No ':' after key:" + key);
       } else {
@@ -145,16 +134,14 @@ export default class TDJSONParser {
         if (src.isEof()) throw src.createParseRuntimeException("No ':' after key:" + key);
         c = src.peek();
       }
-      if (c === ':')
-        src.read();
+      if (c === ':') src.read();
 
       if (c === ',' || c === '}')
         // If there's no ':', we consider it as indexed value (array)
         node.createChild(i + '').setValue(key);
       else {
         const childNode = this.parseFromSource(src, opt, node.createChild(key));
-        if (opt.KEY_ID === key && childNode.type === TDNodeType.SIMPLE)
-          node.doc.idMap[childNode.value + ''] = node;
+        if (opt.KEY_ID === key && childNode.type === TDNodeType.SIMPLE) node.doc.idMap[childNode.value + ''] = node;
       }
       i++;
     }
@@ -167,8 +154,7 @@ export default class TDJSONParser {
     while (true) {
       let c = TDJSONParser.skipSpaceAndComments(src);
       if (c === EOF) {
-        if (withStartBracket)
-          throw src.createParseRuntimeException("EOF encountered while expecting matching ']'");
+        if (withStartBracket) throw src.createParseRuntimeException("EOF encountered while expecting matching ']'");
         break;
       }
 
