@@ -9,9 +9,9 @@ export enum TDNodeType {
 }
 
 export type ValueType = string | number | boolean | null | undefined;
-function isDigitOnly(str: string) {
-  return str.match(/^[0-9]+$/) != null;
-}
+// function isDigitOnly(str: string) {
+//   return str.match(/^[0-9]+$/) != null;
+// }
 
 export default class TDNode {
   public parent?: TDNode;
@@ -146,7 +146,7 @@ export default class TDNode {
       case PathPartType.RELATIVE:
         return this.getAncestor(part.level!);
       case PathPartType.CHILD:
-        return isDigitOnly(part.key!) ? this.getChild(parseInt(part.key!)) : this.getChild(part.key!);
+        return this.getChild(part.key!);
       default:
         return null; // Impossible
     }
