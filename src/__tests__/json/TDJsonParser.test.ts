@@ -64,7 +64,7 @@ test('testParse', () => {
   expect(node.getChildValue('3')).toBe('valueWithoutKey');
   expect(node.getChildValue('6')).toBe('lastValueWithoutKey');
   expect(node.getChildValue('limit')).toBe(10);
-  expect(node.getChildValue('total')).toBe("100000000000000000000");
+  expect(node.getChildValue('total')).toBe('100000000000000000000');
   expect(node.getChildValue('maxSafeInt')).toBe(9007199254740991);
   expect(node.getValueByPath('data/0/name')).toBe('Some Name 1');
   expect(node.getValueByPath('data/1/address/streetLine')).toBe('2nd st');

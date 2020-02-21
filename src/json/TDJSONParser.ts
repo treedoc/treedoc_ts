@@ -53,8 +53,7 @@ export default class TDJSONParser {
       if ('null' === str) return node.setValue(null);
       if ('true' === str) return node.setValue(true);
       if ('false' === str) return node.setValue(false);
-      if (str.startsWith('0x') || str.startsWith('0X'))
-        return node.setValue(this.parseNumber(str.substring(2), true));
+      if (str.startsWith('0x') || str.startsWith('0X')) return node.setValue(this.parseNumber(str.substring(2), true));
       if (c === '-' || c === '+' || c === '.' || (c >= '0' && c <= '9'))
         return node.setValue(this.parseNumber(str, false));
       return node.setValue(str);
@@ -175,7 +174,7 @@ export default class TDJSONParser {
 
   private parseNumber(str: string, isHex: boolean): number | string {
     const isDouble = !isHex && str.indexOf('.') >= 0;
-    const num =  isDouble ? parseFloat(str) : parseInt(str, isHex ? 16 : 10);
-    return Number.isNaN(num) || !isDouble && num > Number.MAX_SAFE_INTEGER ? str : num;
+    const num = isDouble ? parseFloat(str) : parseInt(str, isHex ? 16 : 10);
+    return Number.isNaN(num) || (!isDouble && num > Number.MAX_SAFE_INTEGER) ? str : num;
   }
 }
