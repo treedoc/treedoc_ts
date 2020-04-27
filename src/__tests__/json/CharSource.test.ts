@@ -13,7 +13,7 @@ test('testCharArraySource', () => {
   expect(cs.getBookmark().toString()).toBe('Bookmark(line=0, col=4, pos=4)');
   expect(cs.read()).toBe('\n');
   expect(cs.getBookmark().toString()).toBe('Bookmark(line=1, col=0, pos=5)');
-  expect(() => cs.read()).toThrow(EOFRuntimeException);
+  expect(() => cs.read()).toThrow(new EOFRuntimeException());
 });
 
 test('testParseText', () => {

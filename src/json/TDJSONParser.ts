@@ -12,8 +12,10 @@ export default class TDJSONParser {
     return TDJSONParser.instance;
   }
 
-  public parse(opt: TDJSONParserOption): TDNode {
-    return this.parseFromSource(opt.source, opt, new TreeDoc('root', opt.uri).root);
+  public parse(opt: TDJSONParserOption | CharSource | string): TDNode {
+    return (opt instanceof CharSource || typeof(opt) ===  'string') ?
+        this.parse(new TDJSONParserOption(opt)) :
+        this.parseFromSource(opt.source, opt, new TreeDoc('root', opt.uri).root);
   }
 
   public parseFromSource(src: CharSource, opt: TDJSONParserOption, node: TDNode): TDNode {

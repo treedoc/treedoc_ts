@@ -56,7 +56,7 @@ test('testSkipSpaceAndComments', () => {
 });
 
 test('testParse', () => {
-  const node = TDJSONParser.get().parse(new TDJSONParserOption(commonTestData));
+  const node = TDJSONParser.get().parse(commonTestData);
   const json = TDJSONWriter.get().writeAsString(node);
 
   console.log(`testParse:json=${json}`);
@@ -76,7 +76,7 @@ test('testParse', () => {
   expect(node.getChild('data')!.isLeaf()).toBeFalsy();
   expect(node.getByPath('data/1')!.path).toEqual(['data', '1']);
 
-  const node1 = TDJSONParser.get().parse(new TDJSONParserOption(json));
+  const node1 = TDJSONParser.get().parse(json);
   expect(TDJSONWriter.get().writeAsString(node1)).toBe(json);
 });
 
@@ -136,7 +136,7 @@ test('testParseJson5', () => {
     "backwardsCompatible": "with JSON",
   }`;
 
-  const node = TDJSONParser.get().parse(new TDJSONParserOption(testData));
+  const node = TDJSONParser.get().parse(testData);
   const json = TDJSONWriter.get().writeAsString(
     node,
     new TDJSONWriterOption().setIndentFactor(2).setAlwaysQuoteName(false),
@@ -178,19 +178,19 @@ test('testRootArray', () => {
 });
 
 test('testInvalid', () => {
-  let node = TDJSONParser.get().parse(new TDJSONParserOption('}'));
+  let node = TDJSONParser.get().parse('}');
   expect(node.value).toBe('}');
 
-  node = TDJSONParser.get().parse(new TDJSONParserOption(''));
+  node = TDJSONParser.get().parse('');
   expect(node.value).toBeUndefined();
 
-  node = TDJSONParser.get().parse(new TDJSONParserOption('[}]'));
+  node = TDJSONParser.get().parse('[}]');
   expect(node.getChild(0)!.value).toBe('}');
 });
 
 test('testTDPath', () => {
   const jp = JSONPointer.get();
-  const node = TDJSONParser.get().parse(new TDJSONParserOption(commonTestData));
+  const node = TDJSONParser.get().parse(commonTestData);
   const node1 = jp.query(node, '#1') as TDNode;
   expect(node1.getChildValue('name')).toBe('Some Name 1');
   expect(jp.query(node1, '2/limit')!.value).toBe(10);
