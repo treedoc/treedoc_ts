@@ -62,17 +62,16 @@ export default class TDNode {
       return cnode;
     }
 
-    const children = this.children as TDNode[];
-    let existNode = children[childIndex].clone();
-
     // special handling for textproto due to it's bad design that allows duplicated keys
+    let existNode = this.children![childIndex].clone();
+
     if (!existNode.deduped) {
       const listNode = new TDNode(this.doc, name);
       listNode.parent = this;
       listNode.deduped = true;
       listNode.type = TDNodeType.ARRAY;
 
-      children[childIndex] = listNode;
+      this.children![childIndex] = listNode;
       existNode.key = '0';
       listNode.addChild(existNode);
       listNode.start = existNode.start; // Reuse first node's start and length
