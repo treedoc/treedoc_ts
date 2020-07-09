@@ -16,7 +16,7 @@ export default class TDNode {
   public parent?: TDNode;
   public type = TDNodeType.SIMPLE;
   /** The value of the node, only available for leave node */
-  private _value: ValueType = null;
+  private mValue: ValueType = null;
   /** Children of node. Use List instead of Map to avoid performance overhead of HashMap for small number of elements */
   public children?: TDNode[];
   /** Start position in the source */
@@ -27,7 +27,7 @@ export default class TDNode {
   public deduped = false;
 
   // transient properties
-  private hash?: Number;
+  private hash?: number;
   private str?: string;
   private obj?: any;
 
@@ -51,12 +51,12 @@ export default class TDNode {
   }
 
   public setValue(val?: ValueType): TDNode {
-    this._value = val;
+    this.mValue = val;
     this.touch();
     return this;
   }
 
-  public get value() { return this._value; }
+  public get value() { return this.mValue; }
 
   public setType(type: TDNodeType): TDNode {
     this.type = type;
@@ -249,7 +249,7 @@ export default class TDNode {
 
   public toStringInternal(limit = 100000) {
     let sb = '';
-    if (this.parent != null && this.parent.type == TDNodeType.MAP)
+    if (this.parent != null && this.parent.type === TDNodeType.MAP)
       sb += this.key + ":";
 
     if (this.value != null)
@@ -258,7 +258,7 @@ export default class TDNode {
     if (this.children == null)
       return sb;
 
-    sb += this.type == TDNodeType.ARRAY ? '[' : '{';
+    sb += this.type === TDNodeType.ARRAY ? '[' : '{';
     for (const n of this.children) {
       sb += n.toStringInternal(limit) + ',';
       if (sb.length > limit) {
@@ -266,7 +266,7 @@ export default class TDNode {
         break;
       }
     }
-    sb += this.type == TDNodeType.ARRAY ? ']' : '}';
+    sb += this.type === TDNodeType.ARRAY ? ']' : '}';
     return sb;
   }  
 
