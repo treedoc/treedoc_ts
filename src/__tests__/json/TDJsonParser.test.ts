@@ -82,8 +82,7 @@ const testDataJSON5 = `
     "backwardsCompatible": "with JSON",
   }`;
 
-
-describe("TDJsonParser", () => { 
+describe('TDJsonParser', () => {
   test('testSkipSpaceAndComments', () => {
     let src = new StringCharSource('  //abcd \n // defghi \n abc');
     expect(TDJSONParser.skipSpaceAndComments(src)).toBe('a');
@@ -168,7 +167,9 @@ describe("TDJsonParser", () => {
     4,
     ,
     `;
-    const node = TDJSONParser.get().parse(new TDJSONParserOption(testDataRootArray).setDefaultRootType(TDNodeType.ARRAY));
+    const node = TDJSONParser.get().parse(
+      new TDJSONParserOption(testDataRootArray).setDefaultRootType(TDNodeType.ARRAY),
+    );
     const json = TDJSONWriter.get().writeAsString(
       node,
       new TDJSONWriterOption().setIndentFactor(2).setAlwaysQuoteName(false),
@@ -202,27 +203,28 @@ describe("TDJsonParser", () => {
   test('TDNode.toString', () => {
     const node = TDJSONParser.get().parse(new TDJSONParserOption(testData).setDefaultRootType(TDNodeType.MAP));
     const str = node.toString();
-    console.log("testToString:str=" + str);
+    console.log('testToString:str=' + str);
     const str1 = node.toString();
     expect(str1).toBe(str);
-    const city = node.getByPath("/data/0/address/city")! as TDNode;
-    expect(city).not.toBeNull()
+    const city = node.getByPath('/data/0/address/city')! as TDNode;
+    expect(city).not.toBeNull();
     city.setValue(city.value);
     const str2 = node.toString();
     // expect(str2).not.toBe(str);  // Javascript doesn't have real identity equality operator to verify it.
     expect(str2).toEqual(str);
 
-    city.setValue("other city");
+    city.setValue('other city');
     const str3 = node.toString();
-    console.log("testToString:str=" + str3);
+    console.log('testToString:str=' + str3);
 
     // toString should return different value when node value changed
     expect(str3).not.toEqual(str);
 
-    const expected = "{total:100000000000000000000,limit:10,2:valueWithoutKey,data:[{$id:1,name:Some Name 1,address:" +
-        "{streetLine:1st st,city:other city,},createdAt:2017-07-14T17:17:33.010Z,},{$id:2,name:Some Name 2,address:{" +
-        "streetLine:2nd st,city:san jose,},createdAt:2017-07-14T17:17:33.010Z,},Multiple line literal\n" +
-        "    Line2,],objRef:{$ref:1,},5:lastValueWithoutKey,}";
+    const expected =
+      '{total:100000000000000000000,limit:10,2:valueWithoutKey,data:[{$id:1,name:Some Name 1,address:' +
+      '{streetLine:1st st,city:other city,},createdAt:2017-07-14T17:17:33.010Z,},{$id:2,name:Some Name 2,address:{' +
+      'streetLine:2nd st,city:san jose,},createdAt:2017-07-14T17:17:33.010Z,},Multiple line literal\n' +
+      '    Line2,],objRef:{$ref:1,},5:lastValueWithoutKey,}';
     expect(str3).not.toEqual(expected);
   });
 });

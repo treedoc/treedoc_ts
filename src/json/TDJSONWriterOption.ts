@@ -26,5 +26,7 @@ export default class TDJSONWriterOption {
     return this;
   }
 
-  public hasIndent() { return this.indentStr.length > 0; }
+  public hasIndent() {
+    return this.indentStr.length > 0;
+  }
 }

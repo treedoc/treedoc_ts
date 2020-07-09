@@ -16,7 +16,7 @@ export default class TDJSONWriter {
   }
 
   public static write(out: Appendable, node: Readonly<TDNode>, opt: TDJSONWriterOption, indentStr = ''): void {
-    return TDJSONWriter.get().write(out, node, opt, indentStr = '');
+    return TDJSONWriter.get().write(out, node, opt, (indentStr = ''));
   }
 
   public writeAsString(node: Readonly<TDNode>, opt = new TDJSONWriterOption()): string {
@@ -32,8 +32,7 @@ export default class TDJSONWriter {
     }
 
     let childIndentStr = '';
-    if (opt.hasIndent()) 
-      childIndentStr = indentStr + opt.indentStr;
+    if (opt.hasIndent()) childIndentStr = indentStr + opt.indentStr;
 
     switch (node.type) {
       case TDNodeType.MAP:

@@ -56,7 +56,9 @@ export default class TDNode {
     return this;
   }
 
-  public get value() { return this.mValue; }
+  public get value() {
+    return this.mValue;
+  }
 
   public setType(type: TDNodeType): TDNode {
     this.type = type;
@@ -96,8 +98,7 @@ export default class TDNode {
   }
 
   public addChild(node: TDNode) {
-    if (!this.children)
-      this.children = [];
+    if (!this.children) this.children = [];
     this.children.push(node);
     node.parent = this;
     this.touch();
@@ -105,8 +106,7 @@ export default class TDNode {
   }
 
   public getChild(name: string | number): TDNode | null {
-    if (typeof name === 'string')
-      name = this.indexOf(name);
+    if (typeof name === 'string') name = this.indexOf(name);
     return this.hasChildren() && name >= 0 ? this.children![name] : null;
   }
 
@@ -118,11 +118,8 @@ export default class TDNode {
     // Relevant code: reactiveGetter (vue.runtime.esm.js?2b0e:1031)
     // TODO: add index when the node number is huge
     const children = this.children;
-    if (!children || name == null)
-      return -1;
-    for (let i = 0; i < children.length; i++)
-      if (name === children[i].key)
-        return i;
+    if (!children || name == null) return -1;
+    for (let i = 0; i < children.length; i++) if (name === children[i].key) return i;
     return -1;
   }
 
@@ -145,15 +142,12 @@ export default class TDNode {
 
   /** If noNull is true, it will return the last matched node */
   public getByPath(path: TDPath | string | string[], noNull = false, idx = 0): TDNode | null {
-    if (!(path instanceof TDPath))
-      path = TDPath.parse(path);
+    if (!(path instanceof TDPath)) path = TDPath.parse(path);
 
-    if (idx === path.parts.length)
-      return this;
+    if (idx === path.parts.length) return this;
 
     const next = this.getNextNode(path.parts[idx]);
-    if (next == null)
-      return noNull ? this : null;
+    if (next == null) return noNull ? this : null;
 
     return next.getByPath(path, noNull, idx + 1);
   }
@@ -175,8 +169,7 @@ export default class TDNode {
 
   public getAncestor(level: number): TDNode | null {
     let result: TDNode | null = this;
-    for (let i = 0; i < level && result != null; i++, result = result.parent || null)
-      ;
+    for (let i = 0; i < level && result != null; i++, result = result.parent || null);
     return result;
   }
 
@@ -186,8 +179,7 @@ export default class TDNode {
 
   /** JS specific logic */
   public toObject(includePosition = true): any {
-    if (this.obj !== undefined)
-      return this.obj;
+    if (this.obj !== undefined) return this.obj;
 
     const $ = {
       start: this.start,
@@ -201,23 +193,20 @@ export default class TDNode {
         this.obj = includePosition ? { $ } : {};
 
         const refVal = this.getChildValue(KEY_REF);
-        if (typeof(refVal) === 'string') {
+        if (typeof refVal === 'string') {
           const target = this.getByPath(refVal);
           if (target == null)
             throw new Error(`Reference is not found: ref:${refVal}; current Node:${this.pathAsString}`);
           this.obj = target.toObject(includePosition);
         } else {
-          if (this.children)
-            this.children.forEach(c => c.key && (this.obj[c.key] = c.toObject(includePosition)));
+          if (this.children) this.children.forEach(c => c.key && (this.obj[c.key] = c.toObject(includePosition)));
         }
         return this.obj;
       }
       case TDNodeType.ARRAY: {
         this.obj = [];
-        if (includePosition)
-          (this.obj as any).$ = $;
-        if (this.children)
-          this.children.forEach(c => this.obj.push(c.toObject(includePosition)));
+        if (includePosition) (this.obj as any).$ = $;
+        if (this.children) this.children.forEach(c => this.obj.push(c.toObject(includePosition)));
         return this.obj;
       }
       default:
@@ -225,7 +214,9 @@ export default class TDNode {
     }
   }
 
-  public get pathAsString() { return "/" + this.path.join("/"); }
+  public get pathAsString() {
+    return '/' + this.path.join('/');
+  }
   public get path(): string[] {
     return this.parent ? [...this.parent.path, this.key] : [];
   }
@@ -236,27 +227,22 @@ export default class TDNode {
   private touch(): TDNode {
     this.hash = undefined;
     this.str = undefined;
-    if (this.parent != null)
-      this.parent.touch();
+    if (this.parent != null) this.parent.touch();
     return this;
   }
 
   public toString() {
-    if (this.str === undefined)
-      this.str = this.toStringInternal();
+    if (this.str === undefined) this.str = this.toStringInternal();
     return this.str;
   }
 
   public toStringInternal(limit = 100000) {
     let sb = '';
-    if (this.parent != null && this.parent.type === TDNodeType.MAP)
-      sb += this.key + ":";
+    if (this.parent != null && this.parent.type === TDNodeType.MAP) sb += this.key + ':';
 
-    if (this.value != null)
-      sb += this.value;
+    if (this.value != null) sb += this.value;
 
-    if (this.children == null)
-      return sb;
+    if (this.children == null) return sb;
 
     sb += this.type === TDNodeType.ARRAY ? '[' : '{';
     for (const n of this.children) {
@@ -268,13 +254,12 @@ export default class TDNode {
     }
     sb += this.type === TDNodeType.ARRAY ? ']' : '}';
     return sb;
-  }  
+  }
 
   public freeze() {
     const children = this.children;
     if (children) {
-      for (const c of children)
-        c.freeze();
+      for (const c of children) c.freeze();
     }
     Object.freeze(this.start);
     Object.freeze(this.end);
