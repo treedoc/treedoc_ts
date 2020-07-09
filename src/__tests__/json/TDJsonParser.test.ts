@@ -124,8 +124,7 @@ describe('TDJsonParser', () => {
 
   test('testParseProto', () => {
     const node = TDJSONParser.get().parse(new TDJSONParserOption(testDataProto).setDefaultRootType(TDNodeType.MAP));
-    const json = TDJSONWriter.get().writeAsString(
-      node,
+    const json = TDJSONWriter.get().writeAsString(node,
       new TDJSONWriterOption().setIndentFactor(2).setAlwaysQuoteName(false),
     );
     console.log(`testParseProto:json=${json}`);
@@ -138,8 +137,7 @@ describe('TDJsonParser', () => {
 
   test('testParseJson5', () => {
     const node = TDJSONParser.get().parse(testDataJSON5);
-    const json = TDJSONWriter.get().writeAsString(
-      node,
+    const json = TDJSONWriter.get().writeAsString(node,
       new TDJSONWriterOption().setIndentFactor(2).setAlwaysQuoteName(false),
     );
     console.log(`testParseJson5:json=${json}`);
@@ -170,8 +168,7 @@ describe('TDJsonParser', () => {
     const node = TDJSONParser.get().parse(
       new TDJSONParserOption(testDataRootArray).setDefaultRootType(TDNodeType.ARRAY),
     );
-    const json = TDJSONWriter.get().writeAsString(
-      node,
+    const json = TDJSONWriter.get().writeAsString(node,
       new TDJSONWriterOption().setIndentFactor(2).setAlwaysQuoteName(false),
     );
     console.log(`testParseJson5:json=${json}`);

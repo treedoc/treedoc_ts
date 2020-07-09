@@ -199,14 +199,17 @@ export default class TDNode {
             throw new Error(`Reference is not found: ref:${refVal}; current Node:${this.pathAsString}`);
           this.obj = target.toObject(includePosition);
         } else {
-          if (this.children) this.children.forEach(c => c.key && (this.obj[c.key] = c.toObject(includePosition)));
+          if (this.children) 
+            this.children.forEach(c => c.key && (this.obj[c.key] = c.toObject(includePosition)));
         }
         return this.obj;
       }
       case TDNodeType.ARRAY: {
         this.obj = [];
-        if (includePosition) (this.obj as any).$ = $;
-        if (this.children) this.children.forEach(c => this.obj.push(c.toObject(includePosition)));
+        if (includePosition)
+          (this.obj as any).$ = $;
+        if (this.children)
+          this.children.forEach(c => this.obj.push(c.toObject(includePosition)));
         return this.obj;
       }
       default:
@@ -227,18 +230,21 @@ export default class TDNode {
   private touch(): TDNode {
     this.hash = undefined;
     this.str = undefined;
-    if (this.parent != null) this.parent.touch();
+    if (this.parent != null)
+      this.parent.touch();
     return this;
   }
 
   public toString() {
-    if (this.str === undefined) this.str = this.toStringInternal();
+    if (this.str === undefined)
+      this.str = this.toStringInternal();
     return this.str;
   }
 
   public toStringInternal(limit = 100000) {
     let sb = '';
-    if (this.parent != null && this.parent.type === TDNodeType.MAP) sb += this.key + ':';
+    if (this.parent != null && this.parent.type === TDNodeType.MAP)
+      sb += this.key + ':';
 
     if (this.value != null) sb += this.value;
 

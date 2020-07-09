@@ -29,19 +29,22 @@ export default class JSONPointer {
 
   public parse(str: string): TDPath {
     const path = new TDPath();
-    if (!str) return path;
+    if (!str)
+      return path;
 
     if (str.endsWith('#'))
       // Ignore the last # which indicate "key" of the map
       str = str.substring(0, str.length - 1);
 
     if (str.indexOf('#') < 0) {
-      if (this.parseParts(str, path, true)) return path;
+      if (this.parseParts(str, path, true))
+        return path;
       path.docPath = str;
       path.addParts(Part.ofRoot());
     } else {
       const strs = str.split('#');
-      if (strs[0]) path.docPath = strs[0];
+      if (strs[0])
+        path.docPath = strs[0];
       this.parseParts(strs[1], path, false);
     }
 
@@ -52,18 +55,18 @@ export default class JSONPointer {
     const parts = str.split('/');
     if (relativeWithNum) {
       const level = Number.parseInt(parts[0]);
-      if (Number.isNaN(level)) return false;
+      if (Number.isNaN(level))
+        return false;
       path.addParts(Part.ofRelative(level));
     } else {
-      if (!parts[0]) {
+      if (!parts[0])
         path.addParts(Part.ofRoot());
-      } else if ('.' === parts[0]) {
+      else if ('.' === parts[0]) 
         path.addParts(Part.ofRelative(0));
-      } else if ('..' === parts[0]) {
+      else if ('..' === parts[0])
         path.addParts(Part.ofRelative(1));
-      } else {
+      else
         path.addParts(Part.ofId(parts[0]));
-      }
     }
 
     for (let i = 1; i < parts.length; i++) {

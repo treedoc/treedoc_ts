@@ -86,7 +86,8 @@ export default abstract class CharSource {
     maxLen = CharSource.MAX_STRING_LEN,
   ): boolean {
     const matches = this.readUntil(s => s.startsWidth(str), target, minLen, maxLen);
-    if (matches && skipStr) this.skip(str.length);
+    if (matches && skipStr)
+      this.skip(str.length);
     return matches;
   }
 
@@ -98,16 +99,19 @@ export default abstract class CharSource {
   public peekString(len: number): string {
     const sb = new StringBuilder();
     for (let i = 0; i < len; i++) {
-      if (this.isEof(i)) break;
+      if (this.isEof(i))
+        break;
       sb.append(this.peek(i));
     }
     return sb.toString();
   }
 
   public startsWidth(str: string): boolean {
-    if (this.isEof(str.length)) return false;
+    if (this.isEof(str.length))
+      return false;
     for (let i = 0; i < str.length; i++) {
-      if (this.peek(i) !== str.charAt(i)) return false;
+      if (this.peek(i) !== str.charAt(i))
+        return false;
     }
     return true;
   }
@@ -137,9 +141,9 @@ export default abstract class CharSource {
       if (!this.readUntilTerminatorToString(terminator, sb))
         throw new EOFRuntimeException("Can't find matching quote at position:" + pos);
       let c = this.read();
-      if (c === quote) {
+      if (c === quote)
         break;
-      }
+
       // c should be '/', tt's a escape sequence
       c = this.read();
       switch (c) {
@@ -171,7 +175,8 @@ export default abstract class CharSource {
         case '\r':
           break; // Assume it's a line continuation
         default:
-          if (this.isOctDigit(c)) sb.append(String.fromCharCode(this.readOctNumber(Number(c))));
+          if (this.isOctDigit(c))
+            sb.append(String.fromCharCode(this.readOctNumber(Number(c))));
           else sb.append(c);
       }
     }
@@ -181,9 +186,11 @@ export default abstract class CharSource {
   private readOctNumber(num: number) {
     for (let i = 0; i < 2; i++) {
       const d = this.peek();
-      if (!this.isOctDigit(d)) break;
+      if (!this.isOctDigit(d))
+        break;
       const newNum = num * 8 + Number(d);
-      if (newNum > 255) break;
+      if (newNum > 255)
+        break;
       num = newNum;
       this.read();
     }

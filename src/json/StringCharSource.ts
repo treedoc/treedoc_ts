@@ -9,12 +9,14 @@ export default class StringCharSource extends CharSource {
   }
 
   public read(): string {
-    if (this.isEof(0)) throw new EOFRuntimeException();
+    if (this.isEof(0))
+      throw new EOFRuntimeException();
     return this.bookmark.append(this.str.charAt(this.bookmark.pos));
   }
 
   public peek(i = 0) {
-    if (this.isEof(i)) throw new EOFRuntimeException();
+    if (this.isEof(i))
+      throw new EOFRuntimeException();
     return this.str.charAt(this.bookmark.pos + i);
   }
 
@@ -33,10 +35,12 @@ export default class StringCharSource extends CharSource {
     let matched = false;
     for (; len < maxLen && !this.isEof(); len++) {
       matched = len >= minLen && predicate(this);
-      if (matched) break;
+      if (matched)
+        break;
       this.read();
     }
-    if (target != null) target.append(this.str.substr(startPos, len));
+    if (target != null)
+      target.append(this.str.substr(startPos, len));
     return matched;
   }
 }

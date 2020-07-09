@@ -6,7 +6,8 @@ const MIN_PRINTABLE_CHAR = ' ';
 
 export default class StringUtil {
   public static isJavaIdentifier(str?: string | null): boolean {
-    if (str == null || str.length < 1) return false;
+    if (str == null || str.length < 1)
+      return false;
     return !!str.match('^[a-zA-Z_$][0-9a-zA-Z_$]*$');
   }
 
@@ -20,13 +21,16 @@ export default class StringUtil {
    * @return The escaped String
    */
   public static cEscape(str: string | null = '', quoteChar = '"'): string | null {
-    if (!str) return str;
+    if (!str) 
+      return str;
 
     // First scan to check if it needs escape just to avoid create new String object for better performance.
     for (let i = 0; ; i++) {
-      if (i === str.length) return str;
+      if (i === str.length)
+        return str;
       const c = str.charAt(i);
-      if (c < MIN_PRINTABLE_CHAR || C_ESC_CHAR.indexOf(c) >= 0) break;
+      if (c < MIN_PRINTABLE_CHAR || C_ESC_CHAR.indexOf(c) >= 0) 
+        break;
     }
 
     // Second scan, Do escape
@@ -42,12 +46,7 @@ export default class StringUtil {
       } else if (c < MIN_PRINTABLE_CHAR) {
         // check if it's a un-printable char
         result.append('\\u');
-        result.append(
-          c
-            .charCodeAt(0)
-            .toString(16)
-            .padStart(4, '0'),
-        );
+        result.append(c.charCodeAt(0).toString(16).padStart(4, '0'));
       } else result.append(c);
     }
     return result.toString();

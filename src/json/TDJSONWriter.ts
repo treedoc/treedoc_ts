@@ -32,7 +32,8 @@ export default class TDJSONWriter {
     }
 
     let childIndentStr = '';
-    if (opt.hasIndent()) childIndentStr = indentStr + opt.indentStr;
+    if (opt.hasIndent())
+      childIndentStr = indentStr + opt.indentStr;
 
     switch (node.type) {
       case TDNodeType.MAP:

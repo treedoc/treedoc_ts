@@ -4,7 +4,8 @@ export default class StringBuilder implements Appendable {
   private readonly strs = new Array<string>();
   private dirty = false;
   public constructor(private s = '') {
-    if (s) this.strs.push(s);
+    if (s) 
+      this.strs.push(s);
   }
 
   public append(s: string) {
