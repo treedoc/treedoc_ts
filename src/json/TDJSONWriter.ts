@@ -11,6 +11,14 @@ export default class TDJSONWriter {
     return TDJSONWriter.instance;
   }
 
+  public static writeAsString(node: Readonly<TDNode>, opt = new TDJSONWriterOption()): string {
+    return TDJSONWriter.get().writeAsString(node, opt);
+  }
+
+  public static write(out: Appendable, node: Readonly<TDNode>, opt: TDJSONWriterOption, indentStr = ''): void {
+    return TDJSONWriter.get().write(out, node, opt, indentStr = '');
+  }
+
   public writeAsString(node: Readonly<TDNode>, opt = new TDJSONWriterOption()): string {
     const out = new StringBuilder();
     this.write(out, node, opt);
@@ -23,11 +31,11 @@ export default class TDJSONWriter {
       return;
     }
 
-    const isCompact = opt.indentFactor === 0;
     let childIndentStr = '';
-    if (!isCompact) childIndentStr = indentStr + opt.indentStr;
+    if (opt.hasIndent()) 
+      childIndentStr = indentStr + opt.indentStr;
 
-    switch (+node.type) {
+    switch (node.type) {
       case TDNodeType.MAP:
         this.writeMap(out, node, opt, indentStr, childIndentStr);
         return;
@@ -50,7 +58,7 @@ export default class TDJSONWriter {
     if (node.children != null) {
       for (let i = 0; i < node.getChildrenSize(); i++) {
         const cn = node.children[i];
-        if (opt.indentFactor > 0) {
+        if (opt.hasIndent()) {
           out.append('\n');
           out.append(childIndentStr);
         }
@@ -65,7 +73,7 @@ export default class TDJSONWriter {
           out.append(',');
       }
 
-      if (opt.indentFactor > 0 && node.hasChildren()) {
+      if (opt.hasIndent() && node.hasChildren()) {
         out.append('\n');
         out.append(indentStr);
       }
@@ -85,7 +93,7 @@ export default class TDJSONWriter {
     if (node.children != null) {
       for (let i = 0; i < node.getChildrenSize(); i++) {
         const cn = node.children[i];
-        if (opt.indentFactor > 0) {
+        if (opt.hasIndent()) {
           out.append('\n');
           out.append(childIndentStr);
         }
@@ -95,7 +103,7 @@ export default class TDJSONWriter {
           out.append(',');
       }
 
-      if (opt.indentFactor > 0 && node.children.length > 0) {
+      if (opt.hasIndent() && node.children.length > 0) {
         out.append('\n');
         out.append(indentStr);
       }

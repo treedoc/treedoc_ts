@@ -12,6 +12,14 @@ export default class TDJSONParser {
     return TDJSONParser.instance;
   }
 
+  public static parse(opt: TDJSONParserOption | CharSource | string): TDNode {
+    return TDJSONParser.get().parse(opt);
+  }
+
+  public static parseFromSource(src: CharSource, opt: TDJSONParserOption, node: TDNode): TDNode {
+    return TDJSONParser.get().parseFromSource(src, opt, node);
+  }
+
   public parse(opt: TDJSONParserOption | CharSource | string): TDNode {
     return opt instanceof CharSource || typeof opt === 'string'
       ? this.parse(new TDJSONParserOption(opt))

@@ -2,6 +2,7 @@ import { TDNode } from '..';
 import { TDNodeType } from '../TDNode';
 import TreeDoc from '../TreeDoc';
 import CustomCoder from './CustomCoder';
+import StringUtil from '../json/StringUtil';
 
 export class ObjectCoderContext {
   public nextId = 1;
@@ -17,10 +18,10 @@ export class ObjectCoderContext {
 
 export interface ICoder {
   /** return true means encoded */
-  encode(obj: any, opt: ObjectCodeOption, target: TDNode, ctx: ObjectCoderContext): boolean;
+  encode(obj: any, opt: TDObjectCoderOption, target: TDNode, ctx: ObjectCoderContext): boolean;
 }
 
-export class ObjectCodeOption {
+export class TDObjectCoderOption {
   public coders: ICoder[] = [CustomCoder.get()];
 }
 
@@ -33,25 +34,42 @@ export default class TDObjectCoder {
     return TDObjectCoder.it;
   }
 
+  public static encode(obj: any,
+    opt = new TDObjectCoderOption(),
+    target = new TreeDoc().root,
+    ctx = new ObjectCoderContext(),
+  ) {
+    return TDObjectCoder.get().encode(obj, opt, target, ctx);
+  }
+
   public encode(
     obj: any,
-    opt = new ObjectCodeOption(),
+    opt = new TDObjectCoderOption(),
     target = new TreeDoc().root,
     ctx = new ObjectCoderContext(),
   ): TDNode {
-    if (this.isNullOrUndefined(obj)) return target;
+    if (this.isNullOrUndefined(obj))
+      return target;
 
-    if (this.isPrimative(obj)) return target.setValue(obj);
+    if (this.isPrimative(obj))
+      return target.setValue(obj);
 
-    for (const coder of opt.coders) if (coder.encode(obj, opt, target, ctx)) return target;
+    for (const coder of opt.coders)
+      if (coder.encode(obj, opt, target, ctx))
+        return target;
 
     const idx = ctx.path.indexOf(obj);
-    if (idx >= 0) return this.setRef(target, '' + (ctx.path.length - idx));
+    if (idx >= 0)
+      return this.setRef(target,  StringUtil.repeat('../', ctx.path.length - idx));
 
     const existNode = ctx.objNodeMap.get(obj);
     if (existNode) {
-      if (!existNode.getChild(this.KEY_ID)) existNode.createChild(this.KEY_ID).setValue(ctx.nextId++);
-      return this.setRef(target, '#' + existNode.getChildValue(this.KEY_ID));
+      if (existNode.type === TDNodeType.MAP) {
+        if (!existNode.getChild(this.KEY_ID))
+          existNode.createChild(this.KEY_ID).setValue(ctx.nextId++);
+        return this.setRef(target, '#' + existNode.getChildValue(this.KEY_ID));
+      } else
+        return this.setRef(target, existNode.pathAsString);
     }
 
     ctx.path.push(obj);
@@ -60,11 +78,13 @@ export default class TDObjectCoder {
     if (this.isArrayLikeObject(obj)) {
       target.type = TDNodeType.ARRAY;
       // tslint:disable-next-line: prefer-for-of
-      for (let i = 0; i < obj.length; i++) this.encode(obj[i], opt, target.createChild(), ctx);
+      for (let i = 0; i < obj.length; i++)
+        this.encode(obj[i], opt, target.createChild(), ctx);
     } else {
       // Object or Map
       target.type = TDNodeType.MAP;
-      for (const k of Object.keys(obj)) this.encode(obj[k], opt, target.createChild(k), ctx);
+      for (const k of Object.keys(obj))
+        this.encode(obj[k], opt, target.createChild(k), ctx);
     }
     ctx.path.pop();
     return target;
@@ -80,12 +100,13 @@ export default class TDObjectCoder {
 
   // Utilties methods
   private isNullOrUndefined(obj: any): boolean {
-    return obj === null || obj === undefined;
+    return obj === null || obj === undefined || typeof obj === 'symbol' || typeof obj === 'function';
   }
 
   private isPrimative(obj: any): boolean {
     const type = typeof obj;
-    if (type !== 'object' && type !== 'function') return true;
+    if (type !== 'object' && type !== 'function')
+      return true;
     const cstr = obj.constructor.name;
     return cstr === 'Number' || cstr === 'String' || cstr === 'Boolean';
   }

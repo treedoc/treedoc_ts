@@ -11,6 +11,11 @@ export default class TDJSONWriterOption {
     return this;
   }
 
+  public setIndentStr(str: string) {
+    this.indentStr = str;
+    return this;
+  }
+
   public setAlwaysQuoteName(alwaysQuoteName: boolean) {
     this.alwaysQuoteName = alwaysQuoteName;
     return this;
@@ -20,4 +25,6 @@ export default class TDJSONWriterOption {
     this.quoteChar = quoteChar;
     return this;
   }
+
+  public hasIndent() { return this.indentStr.length > 0; }
 }

@@ -11,6 +11,7 @@ import StringCharSource from './json/StringCharSource';
 import CharSource from './json/CharSource';
 
 import TDObjectCoder from './objcoder/TDObjectCoder';
+import { TDObjectCoderOption } from './objcoder/TDObjectCoder';
 
 export {
   TreeDoc,
@@ -27,4 +28,5 @@ export {
   Part,
   JSONPointer,
   TDObjectCoder,
+  TDObjectCoderOption,
 };

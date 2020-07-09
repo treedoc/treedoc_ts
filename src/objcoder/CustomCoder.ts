@@ -1,5 +1,6 @@
-import TDObjectCoder, { ICoder, ObjectCoderContext, ObjectCodeOption } from './TDObjectCoder';
+import TDObjectCoder, { ICoder, ObjectCoderContext, TDObjectCoderOption } from './TDObjectCoder';
 import { TDNodeType } from '../TDNode';
+import TDNode from '../TDNode';
 
 export default class CustomCoder implements ICoder {
   public static it = new CustomCoder();
@@ -7,8 +8,9 @@ export default class CustomCoder implements ICoder {
     return CustomCoder.it;
   }
   private readonly DATE = new Date();
-  public encode(obj: any, opt: ObjectCodeOption, target: import('..').TDNode, ctx: ObjectCoderContext): boolean {
-    if (!obj.toJSON) return false;
+  public encode(obj: any, opt: TDObjectCoderOption, target: TDNode, ctx: ObjectCoderContext): boolean {
+    if (!obj.toJSON)
+      return false;
     target.setType(TDNodeType.SIMPLE).setValue(obj.toJSON());
     return true;
   }

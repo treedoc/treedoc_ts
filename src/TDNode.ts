@@ -9,15 +9,14 @@ export enum TDNodeType {
 }
 
 export type ValueType = string | number | boolean | null | undefined;
-// function isDigitOnly(str: string) {
-//   return str.match(/^[0-9]+$/) != null;
-// }
+
+const KEY_REF = '$ref';
 
 export default class TDNode {
   public parent?: TDNode;
   public type = TDNodeType.SIMPLE;
   /** The value of the node, only available for leave node */
-  public value?: ValueType;
+  private _value: ValueType = null;
   /** Children of node. Use List instead of Map to avoid performance overhead of HashMap for small number of elements */
   public children?: TDNode[];
   /** Start position in the source */
@@ -26,6 +25,11 @@ export default class TDNode {
   public end?: Bookmark;
   /** indicate this node is a deduped Array node for textproto which allows duplicated keys */
   public deduped = false;
+
+  // transient properties
+  private hash?: Number;
+  private str?: string;
+  private obj?: any;
 
   // Create a root node if parent is undefined
   public constructor(public readonly doc: TreeDoc, public key: string) {}
@@ -40,10 +44,19 @@ export default class TDNode {
     return result;
   }
 
-  public setValue(val?: ValueType): TDNode {
-    this.value = val;
+  public setKey(key: string): TDNode {
+    this.key = key;
+    this.touch();
     return this;
   }
+
+  public setValue(val?: ValueType): TDNode {
+    this._value = val;
+    this.touch();
+    return this;
+  }
+
+  public get value() { return this._value; }
 
   public setType(type: TDNodeType): TDNode {
     this.type = type;
@@ -83,14 +96,17 @@ export default class TDNode {
   }
 
   public addChild(node: TDNode) {
-    if (!this.children) this.children = [];
+    if (!this.children)
+      this.children = [];
     this.children.push(node);
     node.parent = this;
+    this.touch();
     return this;
   }
 
   public getChild(name: string | number): TDNode | null {
-    if (typeof name === 'string') name = this.indexOf(name);
+    if (typeof name === 'string')
+      name = this.indexOf(name);
     return this.hasChildren() && name >= 0 ? this.children![name] : null;
   }
 
@@ -102,8 +118,11 @@ export default class TDNode {
     // Relevant code: reactiveGetter (vue.runtime.esm.js?2b0e:1031)
     // TODO: add index when the node number is huge
     const children = this.children;
-    if (!children || name == null) return -1;
-    for (let i = 0; i < children.length; i++) if (name === children[i].key) return i;
+    if (!children || name == null)
+      return -1;
+    for (let i = 0; i < children.length; i++)
+      if (name === children[i].key)
+        return i;
     return -1;
   }
 
@@ -126,12 +145,15 @@ export default class TDNode {
 
   /** If noNull is true, it will return the last matched node */
   public getByPath(path: TDPath | string | string[], noNull = false, idx = 0): TDNode | null {
-    if (!(path instanceof TDPath)) path = TDPath.parse(path);
+    if (!(path instanceof TDPath))
+      path = TDPath.parse(path);
 
-    if (idx === path.parts.length) return this;
+    if (idx === path.parts.length)
+      return this;
 
     const next = this.getNextNode(path.parts[idx]);
-    if (next == null) return noNull ? this : null;
+    if (next == null)
+      return noNull ? this : null;
 
     return next.getByPath(path, noNull, idx + 1);
   }
@@ -153,7 +175,8 @@ export default class TDNode {
 
   public getAncestor(level: number): TDNode | null {
     let result: TDNode | null = this;
-    for (let i = 0; i < level && result != null; i++, result = result.parent || null);
+    for (let i = 0; i < level && result != null; i++, result = result.parent || null)
+      ;
     return result;
   }
 
@@ -162,7 +185,10 @@ export default class TDNode {
   }
 
   /** JS specific logic */
-  public toObject(): any {
+  public toObject(includePosition = true): any {
+    if (this.obj !== undefined)
+      return this.obj;
+
     const $ = {
       start: this.start,
       end: this.end,
@@ -172,21 +198,34 @@ export default class TDNode {
       case TDNodeType.SIMPLE:
         return this.value;
       case TDNodeType.MAP: {
-        const obj: any = { $ };
-        if (this.children) this.children.forEach(c => c.key && (obj[c.key] = c.toObject()));
-        return obj;
+        this.obj = includePosition ? { $ } : {};
+
+        const refVal = this.getChildValue(KEY_REF);
+        if (typeof(refVal) === 'string') {
+          const target = this.getByPath(refVal);
+          if (target == null)
+            throw new Error(`Reference is not found: ref:${refVal}; current Node:${this.pathAsString}`);
+          this.obj = target.toObject(includePosition);
+        } else {
+          if (this.children)
+            this.children.forEach(c => c.key && (this.obj[c.key] = c.toObject(includePosition)));
+        }
+        return this.obj;
       }
       case TDNodeType.ARRAY: {
-        const obj: any[] = [];
-        (obj as any).$ = $;
-        if (this.children) this.children.forEach(c => obj.push(c.toObject()));
-        return obj;
+        this.obj = [];
+        if (includePosition)
+          (this.obj as any).$ = $;
+        if (this.children)
+          this.children.forEach(c => this.obj.push(c.toObject(includePosition)));
+        return this.obj;
       }
       default:
         throw new Error('Unknown type');
     }
   }
 
+  public get pathAsString() { return "/" + this.path.join("/"); }
   public get path(): string[] {
     return this.parent ? [...this.parent.path, this.key] : [];
   }
@@ -194,14 +233,48 @@ export default class TDNode {
     return this.getChildrenSize() === 0;
   }
 
-  public toString() {
-    return `${this.key}:${this.value}`;
+  private touch(): TDNode {
+    this.hash = undefined;
+    this.str = undefined;
+    if (this.parent != null)
+      this.parent.touch();
+    return this;
   }
+
+  public toString() {
+    if (this.str === undefined)
+      this.str = this.toStringInternal();
+    return this.str;
+  }
+
+  public toStringInternal(limit = 100000) {
+    let sb = '';
+    if (this.parent != null && this.parent.type == TDNodeType.MAP)
+      sb += this.key + ":";
+
+    if (this.value != null)
+      sb += this.value;
+
+    if (this.children == null)
+      return sb;
+
+    sb += this.type == TDNodeType.ARRAY ? '[' : '{';
+    for (const n of this.children) {
+      sb += n.toStringInternal(limit) + ',';
+      if (sb.length > limit) {
+        sb += '...';
+        break;
+      }
+    }
+    sb += this.type == TDNodeType.ARRAY ? ']' : '}';
+    return sb;
+  }  
 
   public freeze() {
     const children = this.children;
     if (children) {
-      for (const c of children) c.freeze();
+      for (const c of children)
+        c.freeze();
     }
     Object.freeze(this.start);
     Object.freeze(this.end);

@@ -52,4 +52,8 @@ export default class StringUtil {
     }
     return result.toString();
   }
+
+  public static repeat(str: string, times: number) {
+    return ''.padEnd(str.length * times, str);
+  }
 }
