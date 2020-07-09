@@ -211,6 +211,7 @@ describe('TDJsonParser', () => {
     expect(str2).toEqual(str);
 
     city.setValue('other city');
+    node.freeze();
     const str3 = node.toString();
     console.log('testToString:str=' + str3);
 

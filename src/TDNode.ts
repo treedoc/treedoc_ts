@@ -12,6 +12,12 @@ export type ValueType = string | number | boolean | null | undefined;
 
 const KEY_REF = '$ref';
 
+class TransientData {
+  hash?: number;
+  str?: string;
+  obj?: any;
+}
+
 export default class TDNode {
   public parent?: TDNode;
   public type = TDNodeType.SIMPLE;
@@ -27,9 +33,7 @@ export default class TDNode {
   public deduped = false;
 
   // transient properties
-  private hash?: number;
-  private str?: string;
-  private obj?: any;
+  private tData = new TransientData();
 
   // Create a root node if parent is undefined
   public constructor(public readonly doc: TreeDoc, public key: string) {}
@@ -179,7 +183,7 @@ export default class TDNode {
 
   /** JS specific logic */
   public toObject(includePosition = true): any {
-    if (this.obj !== undefined) return this.obj;
+    if (this.tData.obj !== undefined) return this.tData.obj;
 
     const $ = {
       start: this.start,
@@ -190,27 +194,27 @@ export default class TDNode {
       case TDNodeType.SIMPLE:
         return this.value;
       case TDNodeType.MAP: {
-        this.obj = includePosition ? { $ } : {};
+        this.tData.obj = includePosition ? { $ } : {};
 
         const refVal = this.getChildValue(KEY_REF);
         if (typeof refVal === 'string') {
           const target = this.getByPath(refVal);
           if (target == null)
             throw new Error(`Reference is not found: ref:${refVal}; current Node:${this.pathAsString}`);
-          this.obj = target.toObject(includePosition);
+          this.tData.obj = target.toObject(includePosition);
         } else {
           if (this.children) 
-            this.children.forEach(c => c.key && (this.obj[c.key] = c.toObject(includePosition)));
+            this.children.forEach(c => c.key && (this.tData.obj[c.key] = c.toObject(includePosition)));
         }
-        return this.obj;
+        return this.tData.obj;
       }
       case TDNodeType.ARRAY: {
-        this.obj = [];
+        this.tData.obj = [];
         if (includePosition)
-          (this.obj as any).$ = $;
+          (this.tData.obj as any).$ = $;
         if (this.children)
-          this.children.forEach(c => this.obj.push(c.toObject(includePosition)));
-        return this.obj;
+          this.children.forEach(c => this.tData.obj.push(c.toObject(includePosition)));
+        return this.tData.obj;
       }
       default:
         throw new Error('Unknown type');
@@ -228,17 +232,17 @@ export default class TDNode {
   }
 
   private touch(): TDNode {
-    this.hash = undefined;
-    this.str = undefined;
+    this.tData.hash = undefined;
+    this.tData.str = undefined;
     if (this.parent != null)
       this.parent.touch();
     return this;
   }
 
   public toString() {
-    if (this.str === undefined)
-      this.str = this.toStringInternal();
-    return this.str;
+    if (this.tData.str === undefined)
+      this.tData.str = this.toStringInternal();
+    return this.tData.str;
   }
 
   public toStringInternal(limit = 100000) {
