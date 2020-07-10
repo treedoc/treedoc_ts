@@ -4,9 +4,11 @@ import TDJSONWriterOption from '../json/TDJSONWriterOption';
 
 import TD, { TDEncodeOption } from '../TD';
 
-const commonObj: any = {
-  title: 'common',
-};
+class TestObject {
+  constructor(public title: string) {}
+}
+
+const commonObj = new TestObject('common');
 
 const obj: any = {
   num: 10,
@@ -22,6 +24,7 @@ const obj: any = {
 };
 
 const commonObjStr = `{
+  $type:'TestObject',
   title:'common'
 }`;
 
@@ -62,6 +65,7 @@ describe('TD', () => {
       .setAlwaysQuoteName(false)
       .setQuoteChar("'")
       .setIndentFactor(2);
+    opt.objectCoderOption.showType = true;
     expect(TD.stringify(commonObj, opt)).toBe(commonObjStr);
   });
 

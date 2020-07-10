@@ -15,7 +15,8 @@ export class TDDecodeOption {}
 export default class TD {
   public static stringify(obj: any, opts: string | TDEncodeOption = '  '): string {
     const opt = typeof opts === 'string' ? new TDEncodeOption() : opts;
-    if (typeof opts === 'string') opt.jsonWriterOption.setIndentStr(opts);
+    if (typeof opts === 'string') 
+      opt.jsonWriterOption.setIndentStr(opts);
 
     return TDJSONWriter.get().writeAsString(
       TDObjectCoder.get().encode(obj, opt.objectCoderOption),
