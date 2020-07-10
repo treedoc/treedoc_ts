@@ -88,8 +88,10 @@ export default class TDObjectCoder {
       target.type = TDNodeType.MAP;
       if (opt.showType && obj.constructor && obj.constructor.name !== 'Object')
         target.createChild(this.KEY_TYPE).setValue(obj.constructor.name)
-      for (const k of Object.keys(obj))
-        this.encode(obj[k], opt, target.createChild(k), ctx);
+      for (const k of Object.keys(obj)) {
+        if (!this.isNullOrUndefined(obj[k]))
+          this.encode(obj[k], opt, target.createChild(k), ctx);
+      }
     }
     ctx.path.pop();
     return target;

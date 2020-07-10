@@ -28,8 +28,8 @@ export default class TD {
     if (typeof opts === 'string') 
       opt.jsonOption.setIndentStr(opts);
 
-    return TDJSONWriter.get().writeAsString(
-      TDObjectCoder.get().encode(obj, opt.coderOption),
+    return TDJSONWriter.writeAsString(
+      TDObjectCoder.encode(obj, opt.coderOption),
       opt.jsonOption,
     );
   }

@@ -6,6 +6,9 @@ import TD, { TDEncodeOption } from '../TD';
 
 class TestObject {
   constructor(public title: string) {}
+  nullObj: null;
+  functionObj() {    
+  }
 }
 
 const commonObj = new TestObject('common');
