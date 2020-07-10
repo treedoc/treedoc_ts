@@ -8,6 +8,7 @@
     "no-console": false,
     "object-literal-sort-keys": false,
     "max-classes-per-file": false,
-    "radix": false
+    "radix": false,
+    "member-access": false
   }
 }
