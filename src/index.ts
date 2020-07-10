@@ -12,6 +12,7 @@ import CharSource from './json/CharSource';
 
 import TDObjectCoder from './objcoder/TDObjectCoder';
 import { TDObjectCoderOption } from './objcoder/TDObjectCoder';
+import TD, { TDDecodeOption, TDEncodeOption } from './TD';
 
 export {
   TreeDoc,
@@ -29,4 +30,7 @@ export {
   JSONPointer,
   TDObjectCoder,
   TDObjectCoderOption,
+  TD,
+  TDDecodeOption,
+  TDEncodeOption,
 };
