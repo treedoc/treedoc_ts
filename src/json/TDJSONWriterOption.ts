@@ -1,13 +1,19 @@
 export default class TDJSONWriterOption {
-  public indentFactor = 0;
+  private mIndentFactor = 0;
   public alwaysQuoteName = true;
   public quoteChar = '"';
   /** @internal */
   public indentStr = ''; // Used internally
 
+  public set indentFactor(indentFactor: number) {
+    this.mIndentFactor = indentFactor;
+    this.indentStr = ' '.repeat(this.mIndentFactor);
+  }
+
+  public get indentFactor() { return this.mIndentFactor}
+
   public setIndentFactor(indentFactor: number) {
     this.indentFactor = indentFactor;
-    this.indentStr = ' '.repeat(this.indentFactor);
     return this;
   }
 

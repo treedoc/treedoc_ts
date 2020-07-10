@@ -61,11 +61,11 @@ obj.arrayRef = obj.obj.specialArray;
 describe('TD', () => {
   test('stringify with Options', () => {
     const opt = new TDEncodeOption();
-    opt.jsonWriterOption
+    opt.jsonOption
       .setAlwaysQuoteName(false)
       .setQuoteChar("'")
       .setIndentFactor(2);
-    opt.objectCoderOption.showType = true;
+    opt.coderOption.showType = true;
     expect(TD.stringify(commonObj, opt)).toBe(commonObjStr);
   });
 
