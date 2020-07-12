@@ -7,7 +7,8 @@ import TD, { TDEncodeOption } from '../TD';
 class TestObject {
   constructor(public title: string) {}
   nullObj: null;
-  functionObj() {    
+  functionObj(num: number[]) {
+    console.log(num);
   }
 }
 
@@ -21,7 +22,7 @@ const obj: any = {
     date: new Date('2019-12-16T17:34:45.024Z'),
     nestObj: commonObj,
     cyclic: null,
-    specialArray: [10, undefined, function() {}, Symbol('')],
+    specialArray: [10, undefined, function(a: number) {}, Symbol('')],
   },
   obj1: commonObj,
 };
@@ -30,6 +31,11 @@ const commonObjStr = `{
   $type:'TestObject',
   title:'common'
 }`;
+
+const commonObjConstructor = `{
+  $type:'TestObject',
+  functionObj:'function (num) {\\n        console.log(num);\\n    }'
+}`
 
 const objStr = `{
   "num":10,
@@ -70,6 +76,18 @@ describe('TD', () => {
       .setIndentFactor(2);
     opt.coderOption.showType = true;
     expect(TD.stringify(commonObj, opt)).toBe(commonObjStr);
+  });
+
+  test('stringify with showFunction', () => {
+    const opt = new TDEncodeOption();
+    opt.jsonOption
+        .setAlwaysQuoteName(false)
+        .setQuoteChar("'")
+        .setIndentFactor(2);
+    opt.coderOption
+        .setShowType(true)
+        .setShowFunction(true);
+    expect(TD.stringify(commonObj.constructor.prototype, opt)).toBe(commonObjConstructor);
   });
 
   test('stringify cyclic without options', () => {

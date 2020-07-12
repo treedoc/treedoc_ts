@@ -24,6 +24,17 @@ export interface ICoder {
 export class TDObjectCoderOption {
   public coders: ICoder[] = [CustomCoder.get()];
   public showType = false;
+  public showFunction = false;
+
+  public setShowType(showType: boolean) {
+    this.showType = showType;
+    return this;
+  }
+
+  public setShowFunction(showFunction: boolean) {
+    this.showFunction = showFunction;
+    return this;
+  }
 }
 
 /** Javascript specific class that map JS object to/from TDNode */
@@ -54,8 +65,11 @@ export default class TDObjectCoder {
     if (this.isNullOrUndefined(obj))
       return target;
 
-    if (this.isPrimative(obj))
+    if (this.isPrimitive(obj))
       return target.setValue(obj);
+
+    if (typeof obj === 'function')
+      return target.setValue(opt.showFunction ? obj.toString() : null);
 
     for (const coder of opt.coders) 
       if (coder.encode(obj, opt, target, ctx))
@@ -89,8 +103,11 @@ export default class TDObjectCoder {
       if (opt.showType && obj.constructor && obj.constructor.name !== 'Object')
         target.createChild(this.KEY_TYPE).setValue(obj.constructor.name)
       for (const k of Object.keys(obj)) {
-        if (!this.isNullOrUndefined(obj[k]))
-          this.encode(obj[k], opt, target.createChild(k), ctx);
+        if (this.isNullOrUndefined(obj[k]))
+          continue;
+        if (!opt.showFunction && typeof obj === 'function')
+          continue;
+        this.encode(obj[k], opt, target.createChild(k), ctx);
       }
     }
     ctx.path.pop();
@@ -105,21 +122,21 @@ export default class TDObjectCoder {
     return node;
   }
 
-  // Utilties methods
+  // Utilities methods
   private isNullOrUndefined(obj: any): boolean {
-    return obj === null || obj === undefined || typeof obj === 'symbol' || typeof obj === 'function';
+    return obj === null || obj === undefined || typeof obj === 'symbol';
   }
 
-  private isPrimative(obj: any): boolean {
+  private isPrimitive(obj: any): boolean {
     const type = typeof obj;
-    if (type !== 'object' && type !== 'function') 
+    if (obj === null || obj=== undefined || type !== 'object' && type !== 'function') 
       return true;
     const cstr = obj.constructor && obj.constructor.name;
     return cstr === 'Number' || cstr === 'String' || cstr === 'Boolean';
   }
 
   private isArrayLikeObject(obj: any): boolean {
-    return !this.isPrimative(obj) && this.isLength(obj.length);
+    return !this.isPrimitive(obj) && this.isLength(obj.length);
   }
 
   private isLength(value: any) {
