@@ -17,9 +17,9 @@ export default class CSVNWriter {
 
   public write(out: Appendable, node: TDNode, opt: CSVOption): typeof out {
     if (node.children) {
-      for (let row of node.children) {
+      for (const row of node.children) {
         if (row.children) {
-          for (let field of row.children) {
+          for (const field of row.children) {
             this.writeField(out, field, opt);
             out.append(opt.fieldSep);
           }

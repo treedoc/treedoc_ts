@@ -32,7 +32,7 @@ export default class CSVParser {
   readRecord(src: CharSource, opt: CSVOption, root: TDNode) {
     const row = new TDNode(root.doc);
     row.setStart(src.getBookmark());
-    while(!src.isEof() && src.peek() != opt.recordSep) {
+    while(!src.isEof() && src.peek() !== opt.recordSep) {
       if (!src.skipChars(SPACE_CHARS))
         break;
       const start = src.getBookmark();
@@ -49,13 +49,13 @@ export default class CSVParser {
   readField(source: CharSource, opt: CSVOption): string {
     const sb = new StringBuilder();
     let previousQuoted = false;
-    while(!source.isEof() && source.peek() != opt.fieldSep && source.peek() != opt.recordSep) {
-      if (source.peek() == opt.quoteChar) {
+    while(!source.isEof() && source.peek() !== opt.fieldSep && source.peek() !== opt.recordSep) {
+      if (source.peek() === opt.quoteChar) {
         if (previousQuoted)
           sb.append(opt.quoteChar);
         source.skip();  // for "", we will keep one quote
         source.readUntilTerminatorToString(opt.quoteChar, sb);
-        if (source.peek() == opt.quoteChar)
+        if (source.peek() === opt.quoteChar)
           source.skip();
         previousQuoted = true;
       } else {
@@ -63,7 +63,7 @@ export default class CSVParser {
         previousQuoted = false;
       }
     }
-    if (!source.isEof() && source.peek() == opt.fieldSep)
+    if (!source.isEof() && source.peek() === opt.fieldSep)
       source.skip();  // Skip fieldSep
 
     return sb.toString();
