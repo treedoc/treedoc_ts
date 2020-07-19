@@ -2,7 +2,7 @@ import { TDNode } from '..';
 import { TDNodeType } from '../TDNode';
 import TreeDoc from '../TreeDoc';
 import CustomCoder from './CustomCoder';
-import StringUtil from '../json/StringUtil';
+import StringUtil from '../core/StringUtil';
 
 export class ObjectCoderContext {
   public nextId = 1;

@@ -52,7 +52,11 @@ export default class StringUtil {
     return result.toString();
   }
 
-  public static repeat(str: string, times: number) {
+  public static repeat(str: string, times: number): string {
     return ''.padEnd(str.length * times, str);
+  }
+
+  public static contains(str: string, pattern: string): boolean {
+    return str.indexOf(pattern) >= 0;
   }
 }

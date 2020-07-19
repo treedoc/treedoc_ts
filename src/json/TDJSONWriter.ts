@@ -1,8 +1,8 @@
 import TDJSONWriterOption from './TDJSONWriterOption';
 import TDNode, { TDNodeType } from '../TDNode';
-import StringBuilder from './StringBuilder';
-import Appendable from './Appendable';
-import StringUtil from './StringUtil';
+import StringBuilder from '../core/StringBuilder';
+import Appendable from '../core/Appendable';
+import StringUtil from '../core/StringUtil';
 import { TreeDoc } from '..';
 
 export default class TDJSONWriter {

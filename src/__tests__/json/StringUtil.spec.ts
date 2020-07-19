@@ -1,4 +1,4 @@
-import StringUtil from '../../json/StringUtil';
+import StringUtil from '../../core/StringUtil';
 
 test('testIsJavaIdentifier', () => {
   expect(StringUtil.isJavaIdentifier('Abcd')).toBeTruthy();

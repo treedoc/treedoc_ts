@@ -1,4 +1,4 @@
-import StringCharSource from '../../json/StringCharSource';
+import StringCharSource from '../../core/StringCharSource';
 import TDJSONParser from '../../json/TDJSONParser';
 import TDJSONParserOption from '../../json/TDJSONParserOption';
 import { TDNodeType } from '../../TDNode';

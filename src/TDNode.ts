@@ -36,7 +36,7 @@ export default class TDNode {
   private tData = new TransientData();
 
   // Create a root node if parent is undefined
-  public constructor(public readonly doc: TreeDoc, public key: string) {}
+  public constructor(public readonly doc: TreeDoc, public key?: string) {}
 
   public clone(): TDNode {
     const result = new TDNode(this.doc, this.key).setType(this.type).setValue(this.value);
@@ -48,32 +48,14 @@ export default class TDNode {
     return result;
   }
 
-  public setKey(key: string): TDNode {
-    this.key = key;
-    this.touch();
-    return this;
-  }
-
-  public setValue(val?: ValueType): TDNode {
-    this.mValue = val;
-    this.touch();
-    return this;
-  }
-
-  public get value() {
-    return this.mValue;
-  }
-
-  public setType(type: TDNodeType): TDNode {
-    this.type = type;
-    return this;
-  }
+  public setKey(key: string): TDNode { this.key = key; return this.touch(); }
+  public setValue(val?: ValueType): TDNode { this.mValue = val; return this.touch(); }
+  public get value() { return this.mValue; }
+  public setType(type: TDNodeType): TDNode { this.type = type; return this; }
+  public setStart(start: Bookmark) { this.start = start; return this;}
+  public setEnd(end: Bookmark) { this.end = end; return this;}
 
   public createChild(name?: string): TDNode {
-    if (name === undefined)
-      // Assume it's array element
-      name = this.getChildrenSize() + '';
-
     const childIndex = this.indexOf(name);
     if (childIndex < 0) {
       const cnode = new TDNode(this.doc, name);
@@ -104,8 +86,10 @@ export default class TDNode {
   public addChild(node: TDNode) {
     if (!this.children) 
       this.children = [];
-    this.children.push(node);
     node.parent = this;
+    if (node.key == null)  // Assume it's array element
+      node.key = "" + this.getChildrenSize();
+    this.children.push(node);
     this.touch();
     return this;
   }
@@ -235,7 +219,7 @@ export default class TDNode {
     return '/' + this.path.join('/');
   }
   public get path(): string[] {
-    return this.parent ? [...this.parent.path, this.key] : [];
+    return this.parent ? [...this.parent.path, this.key!] : [];
   }
   public isLeaf() {
     return this.getChildrenSize() === 0;

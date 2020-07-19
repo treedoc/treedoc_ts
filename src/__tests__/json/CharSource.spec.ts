@@ -1,6 +1,6 @@
-import StringCharSource from '../../json/StringCharSource';
-import EOFRuntimeException from '../../json/EOFRuntimeException';
-import StringBuilder from '../../json/StringBuilder';
+import StringCharSource from '../../core/StringCharSource';
+import EOFRuntimeException from '../../core/EOFRuntimeException';
+import StringBuilder from '../../core/StringBuilder';
 
 test('testCharArraySource', () => {
   const cs = new StringCharSource('0123\n');
@@ -18,8 +18,8 @@ test('testCharArraySource', () => {
 
 test('testParseText', () => {
   const cs = new StringCharSource('  Text before /* some comments */ Text after');
-  cs.skipSpaces();
-  expect(cs.getPos()).toBe(2);
+  cs.skipSpacesAndReturns();
+  expect(cs.getBookmark().pos).toBe(2);
 
   let target = new StringBuilder();
 

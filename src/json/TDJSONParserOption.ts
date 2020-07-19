@@ -1,6 +1,6 @@
-import CharSource from './CharSource';
+import CharSource from '../core/CharSource';
 import TDNode, { TDNodeType } from '../TDNode';
-import StringCharSource from './StringCharSource';
+import StringCharSource from '../core/StringCharSource';
 
 export default class TDJSONParserOption {
   public KEY_ID = `$id`;

@@ -7,8 +7,8 @@ import TreeDoc from './TreeDoc';
 import Bookmark from './Bookmark';
 import TDPath, { PathPartType, Part } from './TDPath';
 import JSONPointer from './json/JSONPointer';
-import StringCharSource from './json/StringCharSource';
-import CharSource from './json/CharSource';
+import StringCharSource from './core/StringCharSource';
+import CharSource from './core/CharSource';
 
 import TDObjectCoder from './objcoder/TDObjectCoder';
 import { TDObjectCoderOption } from './objcoder/TDObjectCoder';

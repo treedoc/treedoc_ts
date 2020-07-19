@@ -1,7 +1,7 @@
 import TDNode, { TDNodeType } from '../TDNode';
 import TDJSONParserOption from './TDJSONParserOption';
-import CharSource from './CharSource';
-import StringBuilder from './StringBuilder';
+import CharSource from '../core/CharSource';
+import StringBuilder from '../core/StringBuilder';
 import TreeDoc from '../TreeDoc';
 
 const EOF = '\uFFFF';
@@ -93,7 +93,7 @@ export default class TDJSONParser {
    * @return char next char to read (peeked), if '\uFFFF' indicate it's EOF
    */
   public static skipSpaceAndComments(src: CharSource): string {
-    while (src.skipSpaces()) {
+    while (src.skipSpacesAndReturns()) {
       const c = src.peek();
       if (c === '#') {
         if (src.skipUntilTerminator('\n'))

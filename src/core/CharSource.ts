@@ -6,7 +6,7 @@ import ParseRuntimeException from './ParseRuntimeException';
 
 export default abstract class CharSource {
   private static readonly MAX_STRING_LEN = 20000;
-  private static readonly SPACE_CHARS = ' \n\r\t';
+  private static readonly SPACE_RETURN_CHARS = ' \n\r\t';
 
   protected readonly bookmark = new Bookmark();
 
@@ -20,9 +20,6 @@ export default abstract class CharSource {
 
   public getBookmark() {
     return this.bookmark.clone();
-  }
-  public getPos() {
-    return this.bookmark.pos;
   }
 
   /**
@@ -41,41 +38,46 @@ export default abstract class CharSource {
     return this.readUntil(predicate, null);
   }
 
+    /** @return true Terminal conditions matches  */
   public readUntilTerminatorToString(
-    terminator: string,
+    chars: string,
     target: StringBuilder | null,
     include = true,
     minLen = 0,
     maxLen = Number.MAX_VALUE,
   ) {
-    return this.readUntil(s => terminator.indexOf(s.peek(0)) >= 0 === include, target, minLen, maxLen);
+    return this.readUntil(s => chars.indexOf(s.peek(0)) >= 0 === include, target, minLen, maxLen);
   }
 
-  public readUntilTerminator(terminator: string, minLen = 0, maxLen = Number.MAX_VALUE): string {
+  /** @return true Terminal conditions matches  */
+  public readUntilTerminator(chars: string, minLen = 0, maxLen = Number.MAX_VALUE): string {
     const sb = new StringBuilder();
-    this.readUntilTerminatorToString(terminator, sb, true, minLen, maxLen);
+    this.readUntilTerminatorToString(chars, sb, true, minLen, maxLen);
     return sb.toString();
   }
 
-  public skipUntilTerminator(terminator: string, include = true): boolean {
-    return this.readUntilTerminatorToString(terminator, null, include);
+  /** @return true Terminal conditions matches  */
+  public skipUntilTerminator(chars: string, include = true): boolean {
+    return this.readUntilTerminatorToString(chars, null, include);
   }
-  public skipSpaces(): boolean {
-    return this.skipUntilTerminator(CharSource.SPACE_CHARS, false);
+  public skipSpacesAndReturns(): boolean {
+    return this.skipUntilTerminator(CharSource.SPACE_RETURN_CHARS, false);
   }
+  
+  public skipChars(chars: string): boolean { return this.skipUntilTerminator(chars, false); }
 
-  public readTostring(target: StringBuilder | null, len: number): boolean {
+  public readToString(target: StringBuilder | null, len: number): boolean {
     return this.readUntil(s => false, target, len, len);
   }
 
   public readString(len: number): string {
     const sb = new StringBuilder();
-    this.readTostring(sb, len);
+    this.readToString(sb, len);
     return sb.toString();
   }
 
-  public skip(len: number): boolean {
-    return this.readTostring(null, len);
+  public skip(len = 1): boolean {
+    return this.readToString(null, len);
   }
 
   public readUntilMatch(
@@ -136,7 +138,7 @@ export default abstract class CharSource {
 
   public readQuotedToString(quote: string, sb: StringBuilder): StringBuilder {
     const terminator = this.getTermStrWithQuoteAndEscape(quote);
-    const pos = this.getPos();
+    const pos = this.bookmark.pos;
     while (true) {
       if (!this.readUntilTerminatorToString(terminator, sb))
         throw new EOFRuntimeException("Can't find matching quote at position:" + pos);
