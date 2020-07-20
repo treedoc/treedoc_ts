@@ -2,6 +2,10 @@ import TDJSONParser from './json/TDJSONParser';
 import TDJSONParserOption from './json/TDJSONParserOption';
 import TDJSONWriter from './json/TDJSONWriter';
 import TDJSONWriterOption from './json/TDJSONWriterOption';
+import CSVWriter from './csv/CSVWriter';
+import CSVParser from './csv/CSVParser';
+import CSVOption from './csv/CSVOption';
+
 import TDNode, { TDNodeType } from './TDNode';
 import TreeDoc from './TreeDoc';
 import Bookmark from './Bookmark';
@@ -33,4 +37,7 @@ export {
   TD,
   TDDecodeOption,
   TDEncodeOption,
+  CSVOption,
+  CSVWriter,
+  CSVParser,
 };
