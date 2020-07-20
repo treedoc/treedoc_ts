@@ -36,7 +36,7 @@ export default class CSVParser {
       if (!src.skipChars(SPACE_CHARS))
         break;
       const start = src.getBookmark();
-      const fieldNode = row.createChild().setValue(this.readField(src, opt));
+      const fieldNode = row.createChild().setType(TDNodeType.ARRAY).setValue(this.readField(src, opt));
       fieldNode.setStart(start).setEnd(src.getBookmark());
     }
     row.setEnd(src.getBookmark());

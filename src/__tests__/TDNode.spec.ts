@@ -9,7 +9,7 @@ test('testToObject', () => {
       "c": "str"
     }
 `;
-  const node = TDJSONParser.get().parse(new TDJSONParserOption(testData));
+  const node = TDJSONParser.get().parse(testData);
   const obj = node.toObject();
   expect(JSON.stringify(obj.b.$)).toBe(
     JSON.stringify({

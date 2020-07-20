@@ -1,6 +1,7 @@
 import TDNode, { TDNodeType } from '../TDNode';
 import TDJSONParserOption from './TDJSONParserOption';
 import CharSource from '../core/CharSource';
+import StringCharSource from '../core/StringCharSource';
 import StringBuilder from '../core/StringBuilder';
 import TreeDoc from '../TreeDoc';
 
@@ -12,21 +13,16 @@ export default class TDJSONParser {
     return TDJSONParser.instance;
   }
 
-  public static parse(opt: TDJSONParserOption | CharSource | string): TDNode {
-    return TDJSONParser.get().parse(opt);
+  public static parse(src: CharSource | string, opt = new TDJSONParserOption()): TDNode {
+    return TDJSONParser.get().parse(src, opt);
   }
 
-  public static parseFromSource(src: CharSource, opt: TDJSONParserOption, node: TDNode): TDNode {
-    return TDJSONParser.get().parseFromSource(src, opt, node);
-  }
+  
+  public parse(src: CharSource | string, opt = new TDJSONParserOption(), node = new TreeDoc('root', opt.uri).root): TDNode {
+    if (typeof src === 'string') {
+      src = new StringCharSource(src);
+    }
 
-  public parse(opt: TDJSONParserOption | CharSource | string): TDNode {
-    return opt instanceof CharSource || typeof opt === 'string'
-      ? this.parse(new TDJSONParserOption(opt))
-      : this.parseFromSource(opt.source, opt, new TreeDoc('root', opt.uri).root);
-  }
-
-  public parseFromSource(src: CharSource, opt: TDJSONParserOption, node: TDNode): TDNode {
     const c = TDJSONParser.skipSpaceAndComments(src);
     if (c === EOF) 
       return node;
@@ -165,7 +161,7 @@ export default class TDJSONParser {
         // If there's no ':', we consider it as indexed value (array)
         node.createChild(i + '').setValue(key);
       else {
-        const childNode = this.parseFromSource(src, opt, node.createChild(key));
+        const childNode = this.parse(src, opt, node.createChild(key));
         if (opt.KEY_ID === key && childNode.type === TDNodeType.SIMPLE)
           node.doc.idMap[childNode.value + ''] = node;
       }
@@ -191,7 +187,7 @@ export default class TDJSONParser {
         break;
       }
 
-      this.parseFromSource(src, opt, node.createChild());
+      this.parse(src, opt, node.createChild());
       c = TDJSONParser.skipSpaceAndComments(src);
       if (c === ',') {
         src.read();

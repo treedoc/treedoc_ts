@@ -123,7 +123,7 @@ describe('TDJsonParser', () => {
   });
 
   test('testParseProto', () => {
-    const node = TDJSONParser.get().parse(new TDJSONParserOption(testDataProto).setDefaultRootType(TDNodeType.MAP));
+    const node = TDJSONParser.get().parse(testDataProto, new TDJSONParserOption().setDefaultRootType(TDNodeType.MAP));
     const json = TDJSONWriter.get().writeAsString(node,
       new TDJSONWriterOption().setIndentFactor(2).setAlwaysQuoteName(false),
     );
@@ -148,7 +148,7 @@ describe('TDJsonParser', () => {
   });
 
   test('testRootMap', () => {
-    const node = TDJSONParser.get().parse(new TDJSONParserOption("'a':1\nb:2").setDefaultRootType(TDNodeType.MAP));
+    const node = TDJSONParser.get().parse("'a':1\nb:2", new TDJSONParserOption().setDefaultRootType(TDNodeType.MAP));
     expect(node.getValueByPath('a')).toBe(1);
     expect(node.getValueByPath('b')).toBe(2);
   });
@@ -165,12 +165,8 @@ describe('TDJsonParser', () => {
     4,
     ,
     `;
-    const node = TDJSONParser.get().parse(
-      new TDJSONParserOption(testDataRootArray).setDefaultRootType(TDNodeType.ARRAY),
-    );
-    const json = TDJSONWriter.get().writeAsString(node,
-      new TDJSONWriterOption().setIndentFactor(2).setAlwaysQuoteName(false),
-    );
+    const node = TDJSONParser.get().parse(testDataRootArray, new TDJSONParserOption().setDefaultRootType(TDNodeType.ARRAY));
+    const json = TDJSONWriter.get().writeAsString(node, new TDJSONWriterOption().setIndentFactor(2).setAlwaysQuoteName(false));
     console.log(`testParseJson5:json=${json}`);
     expect(node.getChildrenSize()).toBe(7);
     expect(node.getValueByPath('2')).toBe(2);
@@ -198,7 +194,7 @@ describe('TDJsonParser', () => {
   });
 
   test('TDNode.toString', () => {
-    const node = TDJSONParser.get().parse(new TDJSONParserOption(testData).setDefaultRootType(TDNodeType.MAP));
+    const node = TDJSONParser.get().parse(testData, new TDJSONParserOption().setDefaultRootType(TDNodeType.MAP));
     const str = node.toString();
     console.log('testToString:str=' + str);
     const str1 = node.toString();
