@@ -1,6 +1,7 @@
 import CSVParser from './CSVParser';
 import CSVOption from './CSVOption';
 import CSVWriter from './CSVWriter';
+import { StringCharSource } from '..';
 
 const testCsv = `
 field1,field2,field3
@@ -20,12 +21,16 @@ describe('CSVParser and CSVWriter', () => {
   
   test('testParseAndWriter', () => {
     const node = CSVParser.get().parse(testCsv);
-    expect(node.toString()).toBe('[{field1,field2,field3,},{v11,v12,v13,},{v21,v2l1\nV2l2,v23,},{v31"v31,v32""v32,v33,},]');
+    expect(node.toString()).toBe('[[field1,field2,field3,],[v11,v12,v13,],[v21,v2l1\nV2l2,v23,],[v31"v31,v32""v32,v33,],]');
 
     const opt = new CSVOption().setFieldSep('|');
     const str = CSVWriter.get().writeAsString(node, opt);
     console.info("str:" + str);
     const node1 = CSVParser.get().parse(str, opt);
     expect(node1).toEqual(node1);
+  });
+
+  test('testReadField', () => {
+    expect(CSVParser.get().readField(new StringCharSource("'ab''cd'"), new CSVOption().setQuoteChar('\''))).toBe("ab'cd");
   });
 });

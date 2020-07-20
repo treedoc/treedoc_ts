@@ -30,13 +30,13 @@ export default class CSVParser {
   }
 
   readRecord(src: CharSource, opt: CSVOption, root: TDNode) {
-    const row = new TDNode(root.doc);
+    const row = new TDNode(root.doc).setType(TDNodeType.ARRAY);
     row.setStart(src.getBookmark());
     while(!src.isEof() && src.peek() !== opt.recordSep) {
       if (!src.skipChars(SPACE_CHARS))
         break;
       const start = src.getBookmark();
-      const fieldNode = row.createChild().setType(TDNodeType.ARRAY).setValue(this.readField(src, opt));
+      const fieldNode = row.createChild().setValue(this.readField(src, opt));
       fieldNode.setStart(start).setEnd(src.getBookmark());
     }
     row.setEnd(src.getBookmark());
