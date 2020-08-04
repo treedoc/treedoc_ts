@@ -1,4 +1,3 @@
-import TDObjectCoder from '../objcoder/TDObjectCoder';
 import TDJSONWriter from '../json/TDJSONWriter';
 import TDJSONWriterOption from '../json/TDJSONWriterOption';
 

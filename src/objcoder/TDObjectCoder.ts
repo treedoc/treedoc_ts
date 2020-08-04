@@ -82,8 +82,12 @@ export default class TDObjectCoder {
     const existNode = ctx.objNodeMap.get(obj);
     if (existNode) {
       if (existNode.type === TDNodeType.MAP) {
-        if (!existNode.getChild(this.KEY_ID))
-          existNode.createChild(this.KEY_ID).setValue(ctx.nextId++);
+        if (!existNode.getChild(this.KEY_ID)) {
+          const id = ctx.nextId++;
+          existNode.createChild(this.KEY_ID).setValue(id);
+          target.doc.idMap[id] = existNode;
+        }
+
         return this.setRef(target, '#' + existNode.getChildValue(this.KEY_ID));
       } else
         return this.setRef(target, existNode.pathAsString);
