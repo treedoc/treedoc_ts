@@ -197,7 +197,7 @@ export default class TDJSONParser {
   }
 
   private parseNumber(str: string, isHex: boolean): number | string {
-    if (str.indexOf('.') != str.lastIndexOf('.'))  // More than 2 `.`, javascript parseInt won't complain
+    if (str.indexOf('.') !== str.lastIndexOf('.'))  // More than 2 `.`, javascript parseInt won't complain
       return str;
 
     const isDouble = !isHex && str.indexOf('.') >= 0;
