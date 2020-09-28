@@ -6,7 +6,8 @@ import ParseRuntimeException from './ParseRuntimeException';
 
 export default abstract class CharSource {
   private static readonly MAX_STRING_LEN = 20000;
-  private static readonly SPACE_RETURN_CHARS = ' \n\r\t';
+  // HTML &nbsp; will be converted to \u00a0, that's why it need to be supported here
+  private static readonly SPACE_RETURN_CHARS = ' \n\r\t\u00a0';
 
   protected readonly bookmark = new Bookmark();
 

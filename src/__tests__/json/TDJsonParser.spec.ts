@@ -9,7 +9,7 @@ import { TDNode } from '../..';
 
 const testData = `
 // Some comments
-{
+{\u00a0
   "total": 100000000000000000000,
   "maxSafeInt": 9007199254740991,
   "limit": 10,
