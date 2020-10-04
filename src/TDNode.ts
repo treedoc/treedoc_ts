@@ -1,6 +1,7 @@
 import Bookmark from './Bookmark';
 import TreeDoc from './TreeDoc';
 import TDPath, { Part, PathPartType } from './TDPath';
+import StringUtil from './core/StringUtil';
 
 export enum TDNodeType {
   MAP,
@@ -239,20 +240,22 @@ export default class TDNode {
     return this.tData.str;
   }
 
-  public toStringInternal(limit = 100000) {
+  public toStringInternal(includeRootKey = true, includeReservedKeys = true, limit = 100000) {
     let sb = '';
-    if (this.parent != null && this.parent.type === TDNodeType.MAP)
+    if (this.parent != null && this.parent.type === TDNodeType.MAP && includeRootKey)
       sb += this.key + ':';
 
     if (this.value != null)
-      sb += this.value;
+      sb += typeof this.value === 'string' ? ('\'' + StringUtil.cEscape(this.value, '\'') + '\'') : this.value;
 
     if (this.children == null)
       return sb;
 
     sb += this.type === TDNodeType.ARRAY ? '[' : '{';
     for (const n of this.children) {
-      sb += n.toStringInternal(limit) + ',';
+      if (!includeReservedKeys && n.key && n.key.startsWith("$"))
+        continue;
+      sb += n.toStringInternal(true, includeReservedKeys, limit) + ',';
       if (sb.length > limit) {
         sb += '...';
         break;

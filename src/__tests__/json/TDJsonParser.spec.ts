@@ -215,11 +215,12 @@ describe('TDJsonParser', () => {
     // toString should return different value when node value changed
     expect(str3).not.toEqual(str);
 
-    const expected =
-      '{total:100000000000000000000,maxSafeInt:9007199254740991,limit:10,3:valueWithoutKey,data:[{$id:1,name:Some Name 1,address:' +
-      '{streetLine:1st st,city:other city,},createdAt:2017-07-14T17:17:33.010Z,ip:10.1.22.22,},{name:Some Name 2,address:{' +
-      'streetLine:2nd st,city:san jose,},createdAt:2017-07-14T17:17:33.010Z,},Multiple line literal\n' +
-      '    Line2,],objRef:{$ref:1,},6:lastValueWithoutKey,}';
+    let expected =
+      "{total:'100000000000000000000',maxSafeInt:9007199254740991,limit:10,3:'valueWithoutKey',data:[{$id:'1',name:'Some Name 1',address:{streetLine:'1st st',city:'other city',},createdAt:'2017-07-14T17:17:33.010Z',ip:'10.1.22.22',},{name:'Some Name 2',address:{streetLine:'2nd st',city:'san jose',},createdAt:'2017-07-14T17:17:33.010Z',},'Multiple line literal\\n    Line2',],objRef:{$ref:'1',},6:'lastValueWithoutKey',}";
     expect(str3).toEqual(expected);
+
+    const strWithoutRootKey = node.getChild("data")!.toStringInternal(false, false, 100).toString();
+    expected = "[{name:'Some Name 1',address:{streetLine:'1st st',city:'other city',},createdAt:'2017-07-14T17:17:33.010Z',...},...]";
+    expect(strWithoutRootKey).toEqual(expected);
   });
 });
