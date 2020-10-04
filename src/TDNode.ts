@@ -245,7 +245,7 @@ export default class TDNode {
       sb += this.key + ': ';
 
 
-    if (this.value != null && this.value != undefined) {
+    if (this.value !== null && this.value !== undefined) {
       if (typeof this.value !== 'string') {
         sb += this.value;
       } else {
@@ -271,7 +271,7 @@ export default class TDNode {
       }
   
       sb = n.toStringInternal(sb, true, includeReservedKeys, limit);      
-      if (n != this.children.slice(-1)[0])
+      if (n !== this.children.slice(-1)[0])
         sb += ", ";
 
     }
