@@ -21,7 +21,7 @@ describe('CSVParser and CSVWriter', () => {
   
   test('testParseAndWriter', () => {
     const node = CSVParser.get().parse(testCsv);
-    expect(node.toString()).toBe("[['field1','field2','field3',],['v11','v12','v13',],['v21','v2l1\\nV2l2','v23',],['v31\"v31','v32\"\"v32','v33',],]");
+    expect(node.toString()).toBe("[['field1', 'field2', 'field3'], ['v11', 'v12', 'v13'], ['v21', 'v2l1\\nV2l2', 'v23'], ['v31\"v31', 'v32\"\"v32', 'v33']]");
 
     const opt = new CSVOption().setFieldSep('|');
     const str = CSVWriter.get().writeAsString(node, opt);

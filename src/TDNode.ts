@@ -236,17 +236,26 @@ export default class TDNode {
 
   public toString() {
     if (this.tData.str === undefined)
-      this.tData.str = this.toStringInternal();
+      this.tData.str = this.toStringInternal('');
     return this.tData.str;
   }
 
-  public toStringInternal(includeRootKey = true, includeReservedKeys = true, limit = 100000) {
-    let sb = '';
+  public toStringInternal(sb: string, includeRootKey = true, includeReservedKeys = true, limit = 100000) {
     if (this.parent != null && this.parent.type === TDNodeType.MAP && includeRootKey)
-      sb += this.key + ':';
+      sb += this.key + ': ';
 
-    if (this.value != null)
-      sb += typeof this.value === 'string' ? ('\'' + StringUtil.cEscape(this.value, '\'') + '\'') : this.value;
+
+    if (this.value != null && this.value != undefined) {
+      if (typeof this.value !== 'string') {
+        sb += this.value;
+      } else {
+        let str = StringUtil.cEscape(this.value, '\'')!;
+        const remainLen = limit - sb.length;
+        if (str.length > remainLen)
+          str = str.substring(0, remainLen) + "...";
+        sb += '\'' + str + '\'';
+      }
+    }
 
     if (this.children == null)
       return sb;
@@ -255,11 +264,16 @@ export default class TDNode {
     for (const n of this.children) {
       if (!includeReservedKeys && n.key && n.key.startsWith("$"))
         continue;
-      sb += n.toStringInternal(true, includeReservedKeys, limit) + ',';
+
       if (sb.length > limit) {
         sb += '...';
         break;
       }
+  
+      sb = n.toStringInternal(sb, true, includeReservedKeys, limit);      
+      if (n != this.children.slice(-1)[0])
+        sb += ", ";
+
     }
     sb += this.type === TDNodeType.ARRAY ? ']' : '}';
     return sb;
