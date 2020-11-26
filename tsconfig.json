@@ -5,8 +5,9 @@
     "declaration": true,
     "outDir": "./lib",
     "strict": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "types": ["jest"]
   },
   "include": ["src", "jest.config.js"],
-  "exclude": ["node_modules", "**/__tests__/*"]
+  "exclude": ["node_modules"]
 }
