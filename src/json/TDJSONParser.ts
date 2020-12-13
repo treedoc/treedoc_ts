@@ -13,12 +13,7 @@ export default class TDJSONParser {
     return TDJSONParser.instance;
   }
 
-  public static parse(src: CharSource | string, opt = new TDJSONParserOption()): TDNode {
-    return TDJSONParser.get().parse(src, opt);
-  }
-
-  
-  public parse(src: CharSource | string, opt = new TDJSONParserOption(), node = new TreeDoc('root', opt.uri).root): TDNode {
+  public parse(src: CharSource | string, opt = new TDJSONParserOption(), node = new TreeDoc('root', opt.uri).root, isRoot = true): TDNode {
     if (typeof src === 'string') {
       src = new StringCharSource(src);
     }
@@ -161,7 +156,7 @@ export default class TDJSONParser {
         // If there's no ':', we consider it as indexed value (array)
         node.createChild(i + '').setValue(key);
       else {
-        const childNode = this.parse(src, opt, node.createChild(key));
+        const childNode = this.parse(src, opt, node.createChild(key), false);
         if (opt.KEY_ID === key && childNode.type === TDNodeType.SIMPLE)
           node.doc.idMap[childNode.value + ''] = node;
       }
@@ -187,7 +182,7 @@ export default class TDJSONParser {
         break;
       }
 
-      this.parse(src, opt, node.createChild());
+      this.parse(src, opt, node.createChild(), false);
       c = TDJSONParser.skipSpaceAndComments(src);
       if (c === ',') {
         src.read();

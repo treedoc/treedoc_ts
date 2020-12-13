@@ -11,21 +11,22 @@ export default class TDJSONWriter {
     return TDJSONWriter.instance;
   }
 
-  public static writeAsString(node: Readonly<TDNode>, opt = new TDJSONWriterOption()): string {
+  public static writeAsString(node: TDNode, opt = new TDJSONWriterOption()): string {
     return TDJSONWriter.get().writeAsString(node, opt);
   }
 
-  public static write(out: Appendable, node: Readonly<TDNode>, opt: TDJSONWriterOption, indentStr = ''): void {
+  public static write(out: Appendable, node: TDNode, opt: TDJSONWriterOption, indentStr = ''): void {
     return TDJSONWriter.get().write(out, node, opt, (indentStr = ''));
   }
 
-  public writeAsString(node: Readonly<TDNode>, opt = new TDJSONWriterOption()): string {
+  public writeAsString(node: TDNode, opt = new TDJSONWriterOption()): string {
     const out = new StringBuilder();
     this.write(out, node, opt);
     return out.toString();
   }
 
-  public write(out: Appendable, node: Readonly<TDNode>, opt: TDJSONWriterOption, indentStr = ''): void {
+  public write(out: Appendable, node: TDNode, opt: TDJSONWriterOption, indentStr = ''): void {
+    node = node && opt.nodeMapper(node);
     if (!node) {
       out.append('null');
       return;
@@ -112,13 +113,14 @@ export default class TDJSONWriter {
     out.append(']');
   }
 
-  private writeSimple(out: Appendable, node: Readonly<TDNode>, opt: TDJSONWriterOption): void {
-    if (typeof node.value === 'string') {
-      this.writeQuotedString(out, node.value as string, opt.quoteChar);
+  private writeSimple(out: Appendable, node: TDNode, opt: TDJSONWriterOption): void {
+    const value = opt.valueMapper == null ? node.value : opt.valueMapper(node);
+    if (typeof value === 'string') {
+      this.writeQuotedString(out, value as string, opt.quoteChar);
       return;
     }
 
-    out.append(node.value + '');
+    out.append(value + '');
   }
 
   private writeQuotedString(out: Appendable, str: string, quoteChar: string): void {

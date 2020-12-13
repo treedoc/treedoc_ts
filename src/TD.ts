@@ -35,6 +35,6 @@ export default class TD {
   }
 
   public static parse(str: string): any {
-    return TDJSONParser.parse(str).toObject(false);
+    return TDJSONParser.get().parse(str).toObject(false);
   }
 }

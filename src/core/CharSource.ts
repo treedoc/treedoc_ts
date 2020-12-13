@@ -61,10 +61,11 @@ export default abstract class CharSource {
   public skipUntilTerminator(chars: string, include = true): boolean {
     return this.readUntilTerminatorToString(chars, null, include);
   }
+  /** @return true Indicates more character in the stream  */
   public skipSpacesAndReturns(): boolean {
     return this.skipUntilTerminator(CharSource.SPACE_RETURN_CHARS, false);
   }
-  
+  /** @return true Indicates more character in the stream  */
   public skipChars(chars: string): boolean { return this.skipUntilTerminator(chars, false); }
 
   public readToString(target: StringBuilder | null, len: number): boolean {

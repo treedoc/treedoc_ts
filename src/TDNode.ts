@@ -37,7 +37,7 @@ export default class TDNode {
   private tData = new TransientData();
 
   // Create a root node if parent is undefined
-  public constructor(public readonly doc: TreeDoc, public key?: string) {}
+  public constructor(public doc: TreeDoc, public key?: string) {}
 
   public clone(): TDNode {
     const result = new TDNode(this.doc, this.key).setType(this.type).setValue(this.value);
@@ -88,11 +88,11 @@ export default class TDNode {
     if (!this.children) 
       this.children = [];
     node.parent = this;
+    node.doc = this.doc;
     if (node.key == null)  // Assume it's array element
       node.key = "" + this.getChildrenSize();
     this.children.push(node);
-    this.touch();
-    return this;
+    return this.touch();
   }
 
   public getChild(name: string | number): TDNode | null {
