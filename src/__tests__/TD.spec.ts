@@ -21,7 +21,7 @@ const obj: any = {
     date: new Date('2019-12-16T17:34:45.024Z'),
     nestObj: commonObj,
     cyclic: null,
-    specialArray: [10, undefined, function(a: number) {}, Symbol('')],
+    specialArray: [10, undefined, (a: number) => {;}, Symbol('')],
   },
   obj1: commonObj,
 };

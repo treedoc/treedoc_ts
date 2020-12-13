@@ -154,7 +154,7 @@ describe('TDJsonParser', () => {
 
   test('testStream', () => {
     const reader = new StringCharSource(testData.stream);
-    const nodes: Array<TDNode> = [];
+    const nodes: TDNode[] = [];
     while(reader.skipSpacesAndReturns())
       nodes.push(TDJSONParser.get().parse(reader));
     const node = TreeDoc_ofNodes(nodes).root;

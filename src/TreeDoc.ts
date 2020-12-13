@@ -19,7 +19,7 @@ export default class TreeDoc {
    * copying them. So the original Treedoc and parent associated with nodes will be obsoleted.
    * For idMap merge, if there's duplicated keys, later one will override previous one.
    */
-  public static ofNodes(nodes: Array<TDNode>) {
+  public static ofNodes(nodes: TDNode[]) {
     const result = new TreeDoc();
     result.root.type = TDNodeType.ARRAY;
     for (const node of nodes) {
@@ -49,7 +49,7 @@ export function TreeDoc_ofArray() {
   return TreeDoc.ofArray();
 }
 
-export function TreeDoc_ofNodes(nodes: Array<TDNode>) {
+export function TreeDoc_ofNodes(nodes: TDNode[]) {
   return TreeDoc.ofNodes(nodes);
 }
 
