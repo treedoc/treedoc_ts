@@ -23,7 +23,8 @@ export default class TreeDoc {
     const result = new TreeDoc();
     result.root.type = TDNodeType.ARRAY;
     for (const node of nodes) {
-      result.idMap = {...node.doc.idMap};
+      node.setKey(undefined);
+      result.idMap = {...result.idMap, ...node.doc.idMap};
       result.root.addChild(node);
     }
     return result;
@@ -35,8 +36,9 @@ export default class TreeDoc {
    * doc will be in invalid state.
    */
   public static ofNode(node: TDNode) {
+    const key = node.doc.root.key;
     const result = new TreeDoc(node.doc.root.key, node.doc.uri);
-    result.root = node;
+    result.root = node.setKey(key);
     result.idMap = {...node.doc.idMap};
     node.doc = result;
     node.parent = undefined;

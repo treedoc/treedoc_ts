@@ -159,6 +159,7 @@ describe('TDJsonParser', () => {
       nodes.push(TDJSONParser.get().parse(reader));
     const node = TreeDoc_ofNodes(nodes).root;
     console.log("testStream=" + node.toString());
+    expect(node.getChild(1)?.key).toEqual("1");
     expect(node.toString()).toEqual("[{a: 1}, {b: 2}, 'a:1', 'b:2']");
   });
 
@@ -167,12 +168,14 @@ describe('TDJsonParser', () => {
     const doc = TreeDoc_ofArray();
     while(reader.skipSpacesAndReturns())
       TDJSONParser.get().parse(reader, new TDJSONParserOption(), doc.root.createChild());
-    const node = doc.root;
+    let node = doc.root;
     console.log("testStream=" + node.toString());
     expect(node.toString()).toEqual("[{a: 1}, {b: 2}, 'a:1', 'b:2']", );
 
     const docFirstElement = TreeDoc_ofNode(node.children![0]);
-    console.log("testStream=" + docFirstElement.root.toString());
-    expect(docFirstElement.root.toString()).toEqual("{a: 1}");
+    node = docFirstElement.root;
+    console.log("testStream=" + node.toString());
+    expect(node.key).toEqual("root");
+    expect(node.toString()).toEqual("{a: 1}");
   });
 });

@@ -49,7 +49,7 @@ export default class TDNode {
     return result;
   }
 
-  public setKey(key: string): TDNode { this.key = key; return this.touch(); }
+  public setKey(key?: string): TDNode { this.key = key; return this.touch(); }
   public setValue(val?: ValueType): TDNode { this.mValue = val; return this.touch(); }
   public get value() { return this.mValue; }
   public setType(type: TDNodeType): TDNode { this.type = type; return this; }
