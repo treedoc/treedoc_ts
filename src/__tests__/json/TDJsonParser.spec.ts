@@ -6,7 +6,7 @@ import TDJSONWriter from '../../json/TDJSONWriter';
 import TDJSONWriterOption from '../../json/TDJSONWriterOption';
 import JSONPointer from '../../json/JSONPointer';
 import { TDNode } from '../..';
-import { TreeDoc_ofArray, TreeDoc_ofNode, TreeDoc_ofNodes } from '../../TreeDoc';
+import { TreeDoc_ofArray, TreeDoc_ofNode, TreeDoc_merge } from '../../TreeDoc';
 import TestData from './TestData';
 
 const testData = new TestData()
@@ -157,9 +157,10 @@ describe('TDJsonParser', () => {
     const nodes: TDNode[] = [];
     while(reader.skipSpacesAndReturns())
       nodes.push(TDJSONParser.get().parse(reader));
-    const node = TreeDoc_ofNodes(nodes).root;
+    const node = TreeDoc_merge(nodes).root;
     console.log("testStream=" + node.toString());
     expect(node.getChild(1)?.key).toEqual("1");
+    expect(node.getChild(1)?.getChild(0)?.doc).toBe(node.doc);
     expect(node.toString()).toEqual("[{a: 1}, {b: 2}, 'a:1', 'b:2']");
   });
 

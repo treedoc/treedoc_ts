@@ -171,6 +171,13 @@ export default class TDNode {
     return result;
   }
 
+  public foreach(action: (n: TDNode) => void) {
+    action(this);
+    if (this.children != null)
+      this.children.forEach(n => n.foreach(action));
+    return this;
+  }
+
   public isRoot() {
     return !this.parent;
   }

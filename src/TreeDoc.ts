@@ -3,9 +3,10 @@ import TDNode from './TDNode';
 
 export default class TreeDoc {
   public idMap: { [key: string]: TDNode } = {};
-  public root: TDNode;
+  public root: TDNode = new TDNode(this, "root");
+  
   public constructor(rootKey = 'root', public readonly uri: string | null = null) {
-    this.root = new TDNode(this, rootKey);
+    this.root.key = rootKey;
   }
 
   public static ofArray() {
@@ -14,12 +15,20 @@ export default class TreeDoc {
     return result;
   }
 
+  /** Retrain only the sub-tree under the input node. */
+  public retain(node: TDNode) {
+    node.setKey(this.root.key);
+    this.root = node;
+    node.parent = undefined;
+    return this;
+  }
+
   /**
    * Create a TreeDoc with array root node contains the input nodes. This method will mutate the input nodes without
    * copying them. So the original Treedoc and parent associated with nodes will be obsoleted.
    * For idMap merge, if there's duplicated keys, later one will override previous one.
    */
-  public static ofNodes(nodes: TDNode[]) {
+  public static merge(nodes: TDNode[]) {
     const result = new TreeDoc();
     result.root.type = TDNodeType.ARRAY;
     for (const node of nodes) {
@@ -27,6 +36,7 @@ export default class TreeDoc {
       result.idMap = {...result.idMap, ...node.doc.idMap};
       result.root.addChild(node);
     }
+    result.root.foreach(n => n.doc = result);
     return result;
   }
 
@@ -51,8 +61,8 @@ export function TreeDoc_ofArray() {
   return TreeDoc.ofArray();
 }
 
-export function TreeDoc_ofNodes(nodes: TDNode[]) {
-  return TreeDoc.ofNodes(nodes);
+export function TreeDoc_merge(nodes: TDNode[]) {
+  return TreeDoc.merge(nodes);
 }
 
 export function TreeDoc_ofNode(node: TDNode) {
