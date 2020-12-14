@@ -66,7 +66,7 @@ export default class JSONPointer {
       else if ('..' === parts[0])
         path.addParts(Part.ofRelative(1));
       else
-        path.addParts(Part.ofId(parts[0]));
+        path.addParts(Part.ofChildOrId(parts[0], parts[0]));
     }
 
     for (let i = 1; i < parts.length; i++) {

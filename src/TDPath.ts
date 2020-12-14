@@ -4,23 +4,29 @@ export enum PathPartType {
   ROOT,
   CHILD,
   RELATIVE,
-  ID,
+  CHILD_OR_ID,   // child or id, it will first try to find child by the key, then fallback to id.
 }
 
 export class Part {
-  public key?: string; // Only for Type.CHILD or TYPE.ID
+  public key?: string; // Only for Type.CHILD or CHILD_OR_ID
+  public id?: string;   // Only for CHILD_OR_ID
   public level?: number; // Only for RELATIVE
+
   constructor(public readonly type: PathPartType) {}
   public setKey(key: string) {
     this.key = key;
+    return this;
+  }
+  public setId(id: string) {
+    this.id = id;
     return this;
   }
   public setLevel(level: number) {
     this.level = level;
     return this;
   }
-  public static ofId(id: string): Part {
-    return new Part(PathPartType.ID).setKey(id);
+  public static ofChildOrId(key: string, id: string): Part {
+    return new Part(PathPartType.CHILD_OR_ID).setKey(key).setId(id);
   }
   public static ofChild(key: string): Part {
     return new Part(PathPartType.CHILD).setKey(key);
@@ -47,7 +53,7 @@ export default class TDPath {
   ) {}
 
   public static parse(str: string | string[]): TDPath {
-    if (typeof str === 'string') 
+    if (typeof str === 'string')
       str = str.split('/');
 
     if (str.length === 0)
@@ -62,7 +68,7 @@ export default class TDPath {
       else if (s === '' || s === '#')
         path.addParts(Part.ofRoot());
       else if (s.startsWith('#') && s.length > 0)
-        path.addParts(Part.ofId(s.substring(1)));
+        path.addParts(Part.ofChildOrId(s, s.substring(1)));
       else 
         path.addParts(Part.ofChild(s));
     }

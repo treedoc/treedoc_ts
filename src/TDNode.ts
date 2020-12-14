@@ -153,8 +153,8 @@ export default class TDNode {
     switch (part.type) {
       case PathPartType.ROOT:
         return this.doc.root;
-      case PathPartType.ID:
-        return this.doc.idMap[part.key!];
+      case PathPartType.CHILD_OR_ID:
+        return this.getChild(part.key!) || this.doc.idMap[part.id!];
       case PathPartType.RELATIVE:
         return this.getAncestor(part.level!);
       case PathPartType.CHILD:
