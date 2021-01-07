@@ -155,7 +155,7 @@ describe('TDJsonParser', () => {
   test('testStream', () => {
     const reader = new StringCharSource(testData.stream);
     const nodes: TDNode[] = [];
-    while(reader.skipSpacesAndReturns())
+    while(reader.skipSpacesAndReturnsAndCommas())
       nodes.push(TDJSONParser.get().parse(reader));
     const node = TreeDoc_merge(nodes).root;
     console.log("testStream=" + node.toString());
@@ -167,7 +167,7 @@ describe('TDJsonParser', () => {
   test('testStreamAsSingleDoc', () => {    
     const reader = new StringCharSource(testData.stream);
     const doc = TreeDoc_ofArray();
-    while(reader.skipSpacesAndReturns())
+    while(reader.skipSpacesAndReturnsAndCommas())
       TDJSONParser.get().parse(reader, new TDJSONParserOption(), doc.root.createChild());
     let node = doc.root;
     console.log("testStream=" + node.toString());

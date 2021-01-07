@@ -183,7 +183,7 @@ export default class TDNode {
   }
 
   /** JS specific logic */
-  public toObject(includePosition = true): any {
+  public toObject(includePosition = false): any {
     if (this.tData.obj !== undefined)
       return this.tData.obj;
 
@@ -246,6 +246,9 @@ export default class TDNode {
       this.tData.str = this.toStringInternal('');
     return this.tData.str;
   }
+
+  /** method specific for JSON.stringify() */
+  public toJSON() { return toString(); }
 
   public toStringInternal(sb: string, includeRootKey = true, includeReservedKeys = true, limit = 100000) {
     if (this.parent != null && this.parent.type === TDNodeType.MAP && includeRootKey)

@@ -8,14 +8,15 @@ export default abstract class CharSource {
   private static readonly MAX_STRING_LEN = 20000;
   // HTML &nbsp; will be converted to \u00a0, that's why it need to be supported here
   private static readonly SPACE_RETURN_CHARS = ' \n\r\t\u00a0';
+  private static readonly SPACE_RETURN_COMMA_CHARS = CharSource.SPACE_RETURN_CHARS + ",";
 
   protected readonly bookmark = new Bookmark();
 
   public abstract read(): string;
-  public /*abstract*/ peek(i: number = 0) {
+  public /*abstract*/ peek(i = 0) {
     return '';
   }
-  public /*abstract*/ isEof(i: number = 0) {
+  public /*abstract*/ isEof(i = 0) {
     return false;
   }
 
@@ -62,9 +63,8 @@ export default abstract class CharSource {
     return this.readUntilTerminatorToString(chars, null, include);
   }
   /** @return true Indicates more character in the stream  */
-  public skipSpacesAndReturns(): boolean {
-    return this.skipUntilTerminator(CharSource.SPACE_RETURN_CHARS, false);
-  }
+  public skipSpacesAndReturns(): boolean { return this.skipUntilTerminator(CharSource.SPACE_RETURN_CHARS, false); }
+  public skipSpacesAndReturnsAndCommas(): boolean { return this.skipUntilTerminator(CharSource.SPACE_RETURN_COMMA_CHARS, false); }
   /** @return true Indicates more character in the stream  */
   public skipChars(chars: string): boolean { return this.skipUntilTerminator(chars, false); }
 
