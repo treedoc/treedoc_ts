@@ -15,7 +15,7 @@ export default class TDJSONWriter {
     return TDJSONWriter.get().writeAsString(node, opt);
   }
 
-  public static write(out: Appendable, node: TDNode, opt: TDJSONWriterOption, indentStr = ''): void {
+  public static write(out: Appendable, node: TDNode, opt: TDJSONWriterOption, indentStr = ''): Appendable {
     return TDJSONWriter.get().write(out, node, opt, (indentStr = ''));
   }
 
@@ -25,12 +25,9 @@ export default class TDJSONWriter {
     return out.toString();
   }
 
-  public write(out: Appendable, node: TDNode, opt: TDJSONWriterOption, indentStr = ''): void {
-    node = node && opt.nodeMapper(node);
-    if (!node) {
-      out.append('null');
-      return;
-    }
+  public write(out: Appendable, node: TDNode, opt: TDJSONWriterOption, indentStr = ''): Appendable {
+    if (!node)
+      return out.append('null');
 
     let childIndentStr = '';
     if (opt.hasIndent())
@@ -38,27 +35,22 @@ export default class TDJSONWriter {
 
     switch (node.type) {
       case TDNodeType.MAP:
-        this.writeMap(out, node, opt, indentStr, childIndentStr);
-        return;
+        return this.writeMap(out, node, opt, indentStr, childIndentStr);
       case TDNodeType.ARRAY:
-        this.writeArray(out, node, opt, indentStr, childIndentStr);
-        return;
+        return this.writeArray(out, node, opt, indentStr, childIndentStr);
       default:
-        this.writeSimple(out, node, opt);
+        return this.writeSimple(out, node, opt);
     }
   }
 
-  private writeMap(
-    out: Appendable,
-    node: Readonly<TDNode>,
-    opt: TDJSONWriterOption,
-    indentStr: string,
-    childIndentStr: string,
-  ): void {
+  private writeMap(out: Appendable, node: Readonly<TDNode>, opt: TDJSONWriterOption, indentStr: string, childIndentStr: string): Appendable {
     out.append('{');
     if (node.children != null) {
       for (let i = 0; i < node.getChildrenSize(); i++) {
-        const cn = node.children[i];
+        const cn = opt.applyFilters(node.children[i]);
+        if (cn == null)
+          continue;
+
         if (opt.hasIndent()) {
           out.append('\n');
           out.append(childIndentStr);
@@ -80,16 +72,10 @@ export default class TDJSONWriter {
       }
     }
 
-    out.append('}');
+   return  out.append('}');
   }
 
-  private writeArray(
-    out: Appendable,
-    node: Readonly<TDNode>,
-    opt: TDJSONWriterOption,
-    indentStr: string,
-    childIndentStr: string,
-  ): void {
+  private writeArray(out: Appendable, node: Readonly<TDNode>, opt: TDJSONWriterOption, indentStr: string, childIndentStr: string): Appendable {
     out.append('[');
     if (node.children != null) {
       for (let i = 0; i < node.getChildrenSize(); i++) {
@@ -110,22 +96,20 @@ export default class TDJSONWriter {
       }
     }
 
-    out.append(']');
+    return out.append(']');
   }
 
-  private writeSimple(out: Appendable, node: TDNode, opt: TDJSONWriterOption): void {
-    const value = opt.valueMapper == null ? node.value : opt.valueMapper(node);
-    if (typeof value === 'string') {
-      this.writeQuotedString(out, value as string, opt.quoteChar);
-      return;
-    }
+  private writeSimple(out: Appendable, node: TDNode, opt: TDJSONWriterOption): Appendable {
+    const value = node.value;
+    if (typeof value === 'string')
+      return this.writeQuotedString(out, value as string, opt.quoteChar);
 
-    out.append(value + '');
+    return out.append(value + '');
   }
 
-  private writeQuotedString(out: Appendable, str: string, quoteChar: string): void {
+  private writeQuotedString(out: Appendable, str: string, quoteChar: string): Appendable {
     out.append(quoteChar);
     out.append(StringUtil.cEscape(str, quoteChar) as string);
-    out.append(quoteChar);
+    return out.append(quoteChar);
   }
 }

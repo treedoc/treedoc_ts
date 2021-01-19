@@ -3,20 +3,22 @@ import TDJSONWriter from '../../json/TDJSONWriter';
 import TDJSONWriterOption from '../../json/TDJSONWriterOption';
 import { TDNode } from '../..';
 import TestData from './TestData';
+import NodeFilter from '../../json/NodeFilter';
 
-const MASKED = "[masked]";
 const testData = new TestData();
 
 describe('TDJsonWriter', () => {
   test('testWriterWithValueMapper', () => {
     let node = TDJSONParser.get().parse(testData.testData);
     const opt = new TDJSONWriterOption().setIndentFactor(2)
-        .setValueMapper(n => n.key === "ip"  ? MASKED : n.value)
-        .setNodeMapper(n => n.key === "address" ? new TDNode(n.doc, n.key).setValue(MASKED) : n);
+        .addNodeFilter(NodeFilter.mask(".*/address", ".*/ip"))
+        .addNodeFilter(NodeFilter.exclude(".*/\\$id"));
     const str = TDJSONWriter.get().writeAsString(node, opt);
-    console.log("testWriterWithValueMapper: str=\n" + str);
+    console.log(str);
+    expect(str).toMatchSnapshot();
     node = TDJSONParser.get().parse(str);
-    expect(node.getValueByPath("/data/0/ip")).toEqual(MASKED);
-    expect(node.getValueByPath("/data/0/address")).toEqual(MASKED);
+    expect(node.getValueByPath("/data/0/$id")).toBeNull();
+    expect(node.getValueByPath("/data/0/ip")).toEqual("<Masked:len=10>");
+    expect(node.getValueByPath("/data/0/address")).toEqual("{Masked:size=2}");
   });
 });

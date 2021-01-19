@@ -23,7 +23,7 @@ export class TDDecodeOption {}
  * A group of convenient methods similar to JSON
  */
 export default class TD {
-  public static stringify(obj: any, opts: string | TDEncodeOption = '  '): string {
+  public static stringify(obj: any, opts: string | TDEncodeOption = ''): string {
     const opt = typeof opts === 'string' ? new TDEncodeOption() : opts;
     if (typeof opts === 'string') 
       opt.jsonOption.setIndentStr(opts);

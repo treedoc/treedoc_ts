@@ -25,9 +25,9 @@ describe('CSVParser and CSVWriter', () => {
 
     const opt = new CSVOption().setFieldSep('|');
     const str = CSVWriter.get().writeAsString(node, opt);
-    console.info("str:" + str);
+    expect(str).toMatchSnapshot();
     const node1 = CSVParser.get().parse(str, opt);
-    expect(node1).toEqual(node1);
+    expect(node1.toString()).toEqual(node.toString());
   });
 
   test('testReadField', () => {

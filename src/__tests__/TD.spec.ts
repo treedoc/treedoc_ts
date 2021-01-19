@@ -91,12 +91,12 @@ describe('TD', () => {
 
   test('stringify cyclic without options', () => {
     console.log(TD.stringify(obj));
-    expect(TD.stringify(obj)).toBe(objStr);
+    expect(TD.stringify(obj, "  ")).toBe(objStr);
   });
 
   test('parse', () => {
     const o = TD.parse(objStr);
-    const str = TD.stringify(o);
+    const str = TD.stringify(o, "  ");
     expect(str).toEqual(objStr);
     console.log(str);
     expect(o.obj1).toBe(o.obj.nestObj);

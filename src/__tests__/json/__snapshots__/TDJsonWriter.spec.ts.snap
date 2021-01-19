@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TDJsonWriter testWriterWithValueMapper 1`] = `
+"{
+  \\"total\\":\\"100000000000000000000\\",
+  \\"maxSafeInt\\":9007199254740991,
+  \\"limit\\":10,
+  \\"3\\":\\"valueWithoutKey\\",
+  \\"data\\":[
+    {
+      \\"name\\":\\"Some Name 1\\",
+      \\"address\\":\\"{Masked:size=2}\\",
+      \\"createdAt\\":\\"2017-07-14T17:17:33.010Z\\",
+      \\"ip\\":\\"<Masked:len=10>\\"
+    },
+    {
+      \\"name\\":\\"Some Name 2\\",
+      \\"address\\":\\"{Masked:size=2}\\",
+      \\"createdAt\\":\\"2017-07-14T17:17:33.010Z\\"
+    },
+    \\"Multiple line literal\\\\n    Line2\\"
+  ],
+  \\"objRef\\":{
+    \\"$ref\\":\\"1\\"
+  },
+  \\"6\\":\\"lastValueWithoutKey\\"
+}"
+`;

@@ -35,7 +35,7 @@ export default class CSVNWriter {
     let str = "" + field.value;
     if (contains(str, quote) || contains(str, opt.fieldSep) || contains(str, opt.recordSep)) {
       if (contains(str, quote))
-        str = str.replace(quote, quote + quote);
+        str = str.replace(new RegExp(quote, 'g'), quote + quote);
       return out.append(quote).append(str).append(quote);
     }
     return out.append(str);
