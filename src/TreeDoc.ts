@@ -43,6 +43,7 @@ export default class TreeDoc {
         LangUtil.doIfNotNull(n.getChild(TDNode.ID_KEY), nRef => nRef!.value += "_" + docId);
       });
       result.root.addChild(node);
+      docId ++;
     }
     return result;
   }

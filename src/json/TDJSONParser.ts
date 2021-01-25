@@ -159,13 +159,13 @@ export default class TDJSONParser {
         const childNode = this.parse(src, opt, node.createChild(key), false);
         if (opt.KEY_ID === key && childNode.type === TDNodeType.SIMPLE) {
           let id = childNode.value + '';
-          if (opt.docId != undefined) {
+          if (opt.docId !== undefined) {
             id += "_" + opt.docId;
             childNode.value = id;
           }
           node.doc.idMap[id] = node;
         } else if (TDNode.REF_KEY === key && childNode.type === TDNodeType.SIMPLE) {
-          if (opt.docId != undefined)
+          if (opt.docId !== undefined)
             childNode.value += "_" + opt.docId;
         }   
       }

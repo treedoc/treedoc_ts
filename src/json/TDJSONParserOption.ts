@@ -16,9 +16,9 @@ export default class TDJSONParserOption {
   }
 
  /**
-   * if this is set, all the id in $id and $ref will be suffixed with "_" + docId, this is to avoid collision when merge
-   * multiple docs as stream
-   */
+  * if this is set, all the id in $id and $ref will be suffixed with "_" + docId, this is to avoid collision when merge
+  * multiple docs as stream
+  */
   docId?: string | number;
 
   public setDocId(id: string | number) {
