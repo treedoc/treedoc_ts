@@ -161,22 +161,23 @@ describe('TDJsonParser', () => {
     console.log("testStream=" + node.toString());
     expect(node.getChild(1)?.key).toEqual("1");
     expect(node.getChild(1)?.getChild(0)?.doc).toBe(node.doc);
-    expect(node.toString()).toEqual("[{a: 1}, {b: 2}, 'a:1', 'b:2']");
+    expect(node.toString()).toMatchSnapshot();
   });
 
   test('testStreamAsSingleDoc', () => {    
     const reader = new StringCharSource(testData.stream);
     const doc = TreeDoc_ofArray();
+    let docId = 0;
     while(reader.skipSpacesAndReturnsAndCommas())
-      TDJSONParser.get().parse(reader, new TDJSONParserOption(), doc.root.createChild());
+      TDJSONParser.get().parse(reader, new TDJSONParserOption().setDocId(docId++), doc.root.createChild());
     let node = doc.root;
     console.log("testStream=" + node.toString());
-    expect(node.toString()).toEqual("[{a: 1}, {b: 2}, 'a:1', 'b:2']", );
+    expect(node.toString()).toMatchSnapshot();
 
     const docFirstElement = TreeDoc_ofNode(node.children![0]);
     node = docFirstElement.root;
     console.log("testStream=" + node.toString());
     expect(node.key).toEqual("root");
-    expect(node.toString()).toEqual("{a: 1}");
+    expect(node.toString()).toMatchSnapshot();
   });
 });

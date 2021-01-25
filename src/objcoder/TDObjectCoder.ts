@@ -47,21 +47,13 @@ export default class TDObjectCoder {
     return TDObjectCoder.it;
   }
 
-  public static encode(
-    obj: any,
-    opt = new TDObjectCoderOption(),
-    target = new TreeDoc().root,
-    ctx = new ObjectCoderContext(),
-  ) {
+  public static encode( 
+    obj: any, opt = new TDObjectCoderOption(), target = new TreeDoc().root, ctx = new ObjectCoderContext()) {
     return TDObjectCoder.get().encode(obj, opt, target, ctx);
   }
 
   public encode(
-    obj: any,
-    opt = new TDObjectCoderOption(),
-    target = new TreeDoc().root,
-    ctx = new ObjectCoderContext(),
-  ): TDNode {
+    obj: any, opt = new TDObjectCoderOption(), target = new TreeDoc().root, ctx = new ObjectCoderContext()): TDNode {
     if (this.isNullOrUndefined(obj))
       return target;
 

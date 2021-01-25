@@ -20,6 +20,9 @@ class TransientData {
 }
 
 export default class TDNode {
+  public static readonly ID_KEY = "$id";
+  public static readonly REF_KEY = "$ref";
+  
   public parent?: TDNode;
   public type = TDNodeType.SIMPLE;
   /** The value of the node, only available for leave node */
@@ -55,6 +58,7 @@ export default class TDNode {
   public setKey(key?: string): TDNode { this.key = key; return this.touch(); }
   public setValue(val?: ValueType): TDNode { this.mValue = val; return this.touch(); }
   public get value() { return this.mValue; }
+  public set value(value: ValueType) { this.mValue = value; }
   public setType(type: TDNodeType): TDNode { this.type = type; return this; }
   public setStart(start: Bookmark) { this.start = start; return this;}
   public setEnd(end: Bookmark) { this.end = end; return this;}

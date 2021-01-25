@@ -1,4 +1,6 @@
 import { TDNodeType } from '.';
+import ListUtil from './core/ListUtil';
+import LangUtil from './core/LangUtil';
 import TDNode from './TDNode';
 
 export default class TreeDoc {
@@ -26,17 +28,22 @@ export default class TreeDoc {
   /**
    * Create a TreeDoc with array root node contains the input nodes. This method will mutate the input nodes without
    * copying them. So the original Treedoc and parent associated with nodes will be obsoleted.
-   * For idMap merge, if there's duplicated keys, later one will override previous one.
+   * For idMap merge, all the id will be reassigned as id + "_" + docId to avoid collision.
    */
   public static merge(nodes: TDNode[]) {
     const result = new TreeDoc();
     result.root.type = TDNodeType.ARRAY;
+    let docId = 0;
     for (const node of nodes) {
       node.setKey(undefined);
-      result.idMap = {...result.idMap, ...node.doc.idMap};
+      result.idMap = {...result.idMap, ...ListUtil.mapKey(node.doc.idMap, k => k + "_" + docId) };
+      node.foreach(n => {
+        n.doc = result;
+        LangUtil.doIfNotNull(n.getChild(TDNode.REF_KEY), nRef => nRef!.value += "_" + docId);
+        LangUtil.doIfNotNull(n.getChild(TDNode.ID_KEY), nRef => nRef!.value += "_" + docId);
+      });
       result.root.addChild(node);
     }
-    result.root.foreach(n => n.doc = result);
     return result;
   }
 
