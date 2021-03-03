@@ -1,8 +1,8 @@
 export default class ClassUtil {
  /**
-   * To Simple Object without type. It will to convert str into null, boolean, double, long or Integer.
-   * For number, it supports Hex number with prefix of "0x". If conversion fails. It will return the original str.
-   */
+  * To Simple Object without type. It will to convert str into null, boolean, double, long or Integer.
+  * For number, it supports Hex number with prefix of "0x". If conversion fails. It will return the original str.
+  */
   public static toSimpleObject(str: string): number | boolean | string | null {
     if ("null" === str)
       return null;
@@ -18,7 +18,7 @@ export default class ClassUtil {
       if (str.startsWith("0x") || str.startsWith(("0X")))
         return this.parseNumber(str.substring(2), true);
       const c = str.charAt(0);
-      if (c == '-' || c == '+' || c == '.' || (c >= '0' && c <= '9'))
+      if (c === '-' || c === '+' || c === '.' || (c >= '0' && c <= '9'))
         return this.parseNumber(str, false);
     }
     return str;
