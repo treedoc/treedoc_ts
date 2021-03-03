@@ -1,9 +1,10 @@
-import TDNode, { TDNodeType } from '../TDNode';
+import TDNode, { TDNodeType, ValueType } from '../TDNode';
 import CSVOption from './CSVOption';
 import CharSource from '../core/CharSource';
 import StringBuilder from '../core/StringBuilder';
 import TreeDoc from '../TreeDoc';
 import { StringCharSource } from '..';
+import ClassUtil from '../core/ClassUtil';
 
 const SPACE_CHARS = " \r";
 
@@ -46,11 +47,13 @@ export default class CSVParser {
       src.read();  // Skip the recordSep
   }
 
-  readField(source: CharSource, opt: CSVOption): string {
+  readField(source: CharSource, opt: CSVOption): ValueType {
     const sb = new StringBuilder();
     let previousQuoted = false;
+    let isString = false;
     while(!source.isEof() && source.peek() !== opt.fieldSep && source.peek() !== opt.recordSep) {
       if (source.peek() === opt.quoteChar) {
+        isString = true;
         if (previousQuoted)
           sb.append(opt.quoteChar);
         source.skip();  // for "", we will keep one quote
@@ -66,6 +69,7 @@ export default class CSVParser {
     if (!source.isEof() && source.peek() === opt.fieldSep)
       source.skip();  // Skip fieldSep
 
-    return sb.toString();
+    const str = sb.toString();
+    return isString ? str : ClassUtil.toSimpleObject(str);
   }
 }

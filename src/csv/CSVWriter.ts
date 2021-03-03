@@ -4,6 +4,7 @@ import StringBuilder from '../core/StringBuilder';
 import Appendable from '../core/Appendable';
 import StringUtil from '../core/StringUtil';
 import { TreeDoc } from '..';
+import ClassUtil from '../core/ClassUtil';
 
 const { contains } = StringUtil;
 
@@ -33,11 +34,21 @@ export default class CSVNWriter {
   writeField(out: Appendable, field: TDNode, opt: CSVOption): typeof out {
     const quote = opt.quoteChar;
     let str = "" + field.value;
-    if (contains(str, quote) || contains(str, opt.fieldSep) || contains(str, opt.recordSep)) {
+    if (this.needQuote(field, opt)) {
       if (contains(str, quote))
         str = str.replace(new RegExp(quote, 'g'), quote + quote);
       return out.append(quote).append(str).append(quote);
     }
     return out.append(str);
+  }
+
+  needQuote(field: TDNode, opt: CSVOption): boolean  {
+    if (typeof(field.value) !== 'string')
+      return false;
+    const str = field.value;
+    return contains(str, opt.quoteChar)
+        || contains(str, opt.fieldSep)
+        || contains(str, opt.recordSep)
+        || typeof(ClassUtil.toSimpleObject(str)) !== 'string';
   }
 }

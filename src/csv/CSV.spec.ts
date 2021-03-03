@@ -4,11 +4,11 @@ import CSVWriter from './CSVWriter';
 import { StringCharSource } from '..';
 
 const testCsv = `
-field1,field2,field3
-v11,v12,v13
+field1,field2,field3,field4
+v11,v12,v13,1
 v21, "v2l1
-V2l2" ,v23
-"v31""v31","v32""""v32",v33
+V2l2" ,v23,true
+"v31""v31","v32""""v32",v33,"3"
 `;
 
 describe('CSVParser and CSVWriter', () => {
@@ -21,12 +21,13 @@ describe('CSVParser and CSVWriter', () => {
   
   test('testParseAndWriter', () => {
     const node = CSVParser.get().parse(testCsv);
-    expect(node.toString()).toBe("[['field1', 'field2', 'field3'], ['v11', 'v12', 'v13'], ['v21', 'v2l1\\nV2l2', 'v23'], ['v31\"v31', 'v32\"\"v32', 'v33']]");
+    expect(node.toString()).toMatchSnapshot();
 
     const opt = new CSVOption().setFieldSep('|');
     const str = CSVWriter.get().writeAsString(node, opt);
     expect(str).toMatchSnapshot();
     const node1 = CSVParser.get().parse(str, opt);
+    expect(node1.toString()).toMatchSnapshot();
     expect(node1.toString()).toEqual(node.toString());
   });
 
