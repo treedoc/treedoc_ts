@@ -20,6 +20,10 @@ import TDObjectCoder from './objcoder/TDObjectCoder';
 import { TDObjectCoderOption } from './objcoder/TDObjectCoder';
 import TD, { TDDecodeOption, TDEncodeOption } from './TD';
 
+import LangUtil from './core/LangUtil';
+import StringUtil from './core/StringUtil';
+import ListUtil from './core/ListUtil';
+
 export {
   TreeDoc,
   TDNode,
@@ -43,4 +47,9 @@ export {
   CSVWriter,
   CSVParser,
   NodeFilter,
+
+  // Utils
+  LangUtil,
+  StringUtil,
+  ListUtil,
 };

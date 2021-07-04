@@ -164,13 +164,8 @@ describe('TDJsonParser', () => {
     expect(node.toString()).toMatchSnapshot();
   });
 
-  test('testStreamAsSingleDoc', () => {    
-    const reader = new StringCharSource(testData.stream);
-    const doc = TreeDoc_ofArray();
-    let docId = 0;
-    while(reader.skipSpacesAndReturnsAndCommas())
-      TDJSONParser.get().parse(reader, new TDJSONParserOption().setDocId(docId++), doc.root.createChild());
-    let node = doc.root;
+  test('testParseAll', () => {    
+    let node = TDJSONParser.get().parseAll(testData.stream);
     console.log("testStream=" + node.toString());
     expect(node.toString()).toMatchSnapshot();
 

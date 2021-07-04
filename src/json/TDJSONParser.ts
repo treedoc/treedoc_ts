@@ -14,10 +14,21 @@ export default class TDJSONParser {
     return TDJSONParser.instance;
   }
 
-  public parse(src: CharSource | string, opt = new TDJSONParserOption(), node = new TreeDoc('root', opt.uri).root, isRoot = true): TDNode {
-    if (typeof src === 'string') {
+  /** Parse all the JSON objects in the input stream until EOF and store them inside an root node with array type */
+  public parseAll(src: CharSource | string, opt = new TDJSONParserOption(), node = new TreeDoc('root', opt.uri).root, isRoot = true): TDNode {
+    if (typeof src === 'string')
       src = new StringCharSource(src);
-    }
+
+    const doc = TreeDoc.ofArray();
+    let docId = 0;
+    while(src.skipSpacesAndReturnsAndCommas())
+      TDJSONParser.get().parse(src, new TDJSONParserOption().setDocId(docId++), doc.root.createChild());
+    return doc.root;
+  }
+
+  public parse(src: CharSource | string, opt = new TDJSONParserOption(), node = new TreeDoc('root', opt.uri).root, isRoot = true): TDNode {
+    if (typeof src === 'string')
+      src = new StringCharSource(src);
 
     const c = TDJSONParser.skipSpaceAndComments(src);
     if (c === EOF) 
