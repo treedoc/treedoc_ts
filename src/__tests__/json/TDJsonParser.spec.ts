@@ -118,7 +118,8 @@ describe('TDJsonParser', () => {
     const node = TDJSONParser.get().parse(testData.testData);
     const node1 = jp.query(node, '#1') as TDNode;
     expect(node1.getChildValue('name')).toBe('Some Name 1');
-    expect(jp.query(node1, '2/limit')!.value).toBe(10);
+    // Relative with number support removed
+    // expect(jp.query(node1, '2/limit')!.value).toBe(10);
     expect(node.value).toBeNull();
   });
 
@@ -169,7 +170,7 @@ describe('TDJsonParser', () => {
     console.log("testStream=" + node.toString());
     expect(node.toString()).toMatchSnapshot();
 
-    const docFirstElement = TreeDoc_ofNode(node.children![0]);
+    const docFirstElement = node.doc.retain(node.children![0]);
     node = docFirstElement.root;
     console.log("testStream=" + node.toString());
     expect(node.key).toEqual("root");

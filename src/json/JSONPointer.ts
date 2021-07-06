@@ -27,7 +27,7 @@ export default class JSONPointer {
     return new JSONPointer();
   }
 
-  public parse(str: string): TDPath {
+  public parse(str: string, supportRelativeWithNum = false): TDPath {
     const path = new TDPath();
     if (!str)
       return path;
@@ -37,7 +37,7 @@ export default class JSONPointer {
       str = str.substring(0, str.length - 1);
 
     if (str.indexOf('#') < 0) {
-      if (this.parseParts(str, path, true))
+      if (this.parseParts(str, path, supportRelativeWithNum))
         return path;
       path.docPath = str;
       path.addParts(Part.ofRoot());
