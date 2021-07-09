@@ -4,6 +4,7 @@ import StringBuilder from '../core/StringBuilder';
 import Appendable from '../core/Appendable';
 import StringUtil from '../core/StringUtil';
 import { TreeDoc } from '..';
+import LangUtil from '../core/LangUtil';
 
 export default class TDJSONWriter {
   public static readonly instance = new TDJSONWriter();
@@ -11,24 +12,25 @@ export default class TDJSONWriter {
     return TDJSONWriter.instance;
   }
 
-  public static writeAsString(node: TDNode, opt = new TDJSONWriterOption()): string {
+  public static writeAsString(node: TDNode, opt: Partial<TDJSONWriterOption> = {}): string {
     return TDJSONWriter.get().writeAsString(node, opt);
   }
 
-  public static write(out: Appendable, node: TDNode, opt: TDJSONWriterOption, indentStr = ''): Appendable {
+  public static write(out: Appendable, node: TDNode, opt: Partial<TDJSONWriterOption> = {}, indentStr = ''): Appendable {
     return TDJSONWriter.get().write(out, node, opt, (indentStr = ''));
   }
 
-  public writeAsString(node: TDNode, opt = new TDJSONWriterOption()): string {
+  public writeAsString(node: TDNode, opt: Partial<TDJSONWriterOption> = {}): string {
     const out = new StringBuilder();
     this.write(out, node, opt);
     return out.toString();
   }
 
-  public write(out: Appendable, node: TDNode, opt: TDJSONWriterOption, indentStr = ''): Appendable {
+  public write(out: Appendable, node: TDNode, option: Partial<TDJSONWriterOption> = {}, indentStr = ''): Appendable {
     if (!node)
       return out.append('null');
 
+    const opt = LangUtil.mergeDeep(new TDJSONWriterOption(), option);
     let childIndentStr = '';
     if (opt.hasIndent())
       childIndentStr = indentStr + opt.indentStr;

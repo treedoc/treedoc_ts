@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`testToObject 1`] = `"{\\"start\\":{\\"line\\":3,\\"col\\":11,\\"pos\\":31},\\"end\\":{\\"line\\":3,\\"col\\":18,\\"pos\\":38}}"`;
+
+exports[`testToObject 2`] = `"{\\"$\\":{\\"start\\":{\\"line\\":1,\\"col\\":4,\\"pos\\":5},\\"end\\":{\\"line\\":5,\\"col\\":5,\\"pos\\":61}},\\"a\\":1,\\"b\\":[1,2,3],\\"c\\":\\"str\\"}"`;

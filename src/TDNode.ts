@@ -2,6 +2,8 @@ import Bookmark from './Bookmark';
 import TreeDoc from './TreeDoc';
 import TDPath, { Part, PathPartType } from './TDPath';
 import StringUtil from './core/StringUtil';
+import TDNodeProxyHandler from './TDNodeProxyHandler';
+
 
 export enum TDNodeType {
   MAP,
@@ -17,6 +19,7 @@ class TransientData {
   hash?: number;
   str?: string;
   obj?: any;
+  proxy?: any;
 }
 
 export default class TDNode {
@@ -230,6 +233,12 @@ export default class TDNode {
     }
   }
 
+  public toProxy(): any {
+    if (this.tData.proxy)
+      return this.tData.proxy;
+    return this.tData.proxy = new Proxy(this, new TDNodeProxyHandler());
+  }
+
   public get pathAsString() {
     return '/' + this.path.join('/');
   }
@@ -295,6 +304,8 @@ export default class TDNode {
     sb += this.type === TDNodeType.ARRAY ? ']' : '}';
     return sb;
   }
+
+  
 
   public freeze() {
     const children = this.children;
