@@ -32,15 +32,14 @@ const commonObjStr = `{
 }`;
 
 // ES6 doesn't work
-const commonObjConstructor_es5 = `{
+const commonObjConstructorEs5 = `{
   $type:'TestObject',
   functionObj:'function (num) {\\n        console.log(num);\\n    }'
 }`
 
-const commonObjConstructor_es6 = `{
+const commonObjConstructorEs6 = `{
   $type:'TestObject'
 }`
-
 
 const objStr = `{
   "num":10,
@@ -95,7 +94,7 @@ describe('TD', () => {
         .setShowType(true)
         .setShowFunction(true);
     // Not sure why Object.keys doesn't return any keys for this particular test case for ES6
-    expect(TD.stringify(commonObj.constructor.prototype, opt)).toBe(commonObjConstructor_es5);
+    expect(TD.stringify(commonObj.constructor.prototype, opt)).toBe(commonObjConstructorEs5);
   });
 
   test('stringify cyclic without options', () => {
