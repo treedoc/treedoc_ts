@@ -1,5 +1,5 @@
 import Bookmark from '../Bookmark';
-import Predicate from './Predicate';
+import { Predicate } from './LangUtil';
 import StringBuilder from './StringBuilder';
 import EOFRuntimeException from './EOFRuntimeException';
 import ParseRuntimeException from './ParseRuntimeException';

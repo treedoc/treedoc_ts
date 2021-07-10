@@ -1,5 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`testToObject 1`] = `"{\\"start\\":{\\"line\\":3,\\"col\\":11,\\"pos\\":31},\\"end\\":{\\"line\\":3,\\"col\\":18,\\"pos\\":38}}"`;
+exports[`TDNode testToObject 1`] = `"{'start':{'line':3,'col':9,'pos':25},'end':{'line':3,'col':16,'pos':32}}"`;
 
-exports[`testToObject 2`] = `"{\\"$\\":{\\"start\\":{\\"line\\":1,\\"col\\":4,\\"pos\\":5},\\"end\\":{\\"line\\":5,\\"col\\":5,\\"pos\\":61}},\\"a\\":1,\\"b\\":[1,2,3],\\"c\\":\\"str\\"}"`;
+exports[`TDNode testToObject 2`] = `"{'$':{'start':{'line':1,'col':2,'pos':3},'end':{'line':5,'col':3,'pos':51}},'a':1,'b':[1,2,3],'c':'str'}"`;
+
+exports[`TDNode testToProxy 1`] = `"'[object Undefined]'"`;

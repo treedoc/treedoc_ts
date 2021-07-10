@@ -1,6 +1,6 @@
 import CharSource from './CharSource';
 import EOFRuntimeException from './EOFRuntimeException';
-import Predicate from './Predicate';
+import { Predicate } from './LangUtil';
 import StringBuilder from './StringBuilder';
 
 export default class StringCharSource extends CharSource {

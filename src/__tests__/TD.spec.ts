@@ -95,7 +95,7 @@ describe('TD', () => {
         .setShowType(true)
         .setShowFunction(true);
     // Not sure why Object.keys doesn't return any keys for this particular test case for ES6
-    expect(TD.stringify(commonObj.constructor.prototype, opt)).toBe(commonObjConstructor_es6);
+    expect(TD.stringify(commonObj.constructor.prototype, opt)).toBe(commonObjConstructor_es5);
   });
 
   test('stringify cyclic without options', () => {

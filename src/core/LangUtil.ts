@@ -18,20 +18,9 @@ export default class LangUtil {
     return enumType[value];
   }
 
-  // https://stackoverflow.com/questions/27936772/how-to-deep-merge-instead-of-shallow-merge
-  /**
-   * Simple object check.
-   * @param item
-   * @returns {boolean}
-   */
-  static isObject(item: any) {
-    return (item && typeof item === 'object' && !Array.isArray(item));
-  }
-
   /**
    * Deep merge two objects.
-   * @param target
-   * @param ...sources
+   * Reference:  https://stackoverflow.com/questions/27936772/how-to-deep-merge-instead-of-shallow-merge
    */
   static mergeDeep<T>(target: T, ...sources: any): T {
     if (!sources.length) return target;
@@ -50,7 +39,16 @@ export default class LangUtil {
 
     return LangUtil.mergeDeep(target, ...sources);
   }
+
+  static isObject(item: any) {
+    return (item && typeof item === 'object' && !Array.isArray(item));
+  }
+
+  static isNumber(value: any) {
+    return typeof value === 'number' && isFinite(value);
+  }
 }
+
 
 export type RecursivePartial<T> = {
   [P in keyof T]?:
@@ -58,4 +56,10 @@ export type RecursivePartial<T> = {
     T[P] extends object ? RecursivePartial<T[P]> :
     T[P];
 };
+
+export type Predicate<T> = (i: T) => boolean;
+export type Comparator<T> = (o1: T, o2: T) => number;
+export type Func<TI,TO> = (o: TI)=> TO;
+export const identity = (o: any) => o;
+
 

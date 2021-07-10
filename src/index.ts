@@ -53,3 +53,6 @@ export {
   StringUtil,
   ListUtil,
 };
+
+
+export {default, RecursivePartial, Predicate, Comparator, Func, identity } from  './core/LangUtil';

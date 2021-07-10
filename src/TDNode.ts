@@ -252,6 +252,8 @@ export default class TDNode {
   private touch(): TDNode {
     this.tData.hash = undefined;
     this.tData.str = undefined;
+    this.tData.proxy = undefined;
+    this.tData.obj = undefined;
     if (this.parent != null)
       this.parent.touch();
     return this;
