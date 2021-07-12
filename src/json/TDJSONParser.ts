@@ -20,7 +20,7 @@ export default class TDJSONParser {
   public parseAll(src: CharSource | string, 
       option:RecursivePartial<TDJSONParserOption> = new TDJSONParserOption(), 
       node = new TreeDoc('root', option.uri).root, isRoot = true): TDNode {
-    let opt = LangUtil.mergeDeep(new TDJSONParserOption(), option);
+    const opt = LangUtil.mergeDeep(new TDJSONParserOption(), option);
 
     if (typeof src === 'string')
       src = new StringCharSource(src);
@@ -35,7 +35,7 @@ export default class TDJSONParser {
   public parse(src: CharSource | string, 
       option: RecursivePartial<TDJSONParserOption> = new TDJSONParserOption(), 
       node = new TreeDoc('root', option.uri).root, isRoot = true): TDNode {
-    let opt = LangUtil.mergeDeep(new TDJSONParserOption(), option);
+    const opt = LangUtil.mergeDeep(new TDJSONParserOption(), option);
 
     if (typeof src === 'string')
       src = new StringCharSource(src);
