@@ -20,6 +20,7 @@ class TransientData {
   str?: string;
   obj?: any;
   proxy?: any;
+  [key: string]: any;
 }
 
 export default class TDNode {
@@ -40,7 +41,7 @@ export default class TDNode {
   public deduped = false;
 
   // transient properties
-  private tData = new TransientData();
+  public readonly tData = new TransientData();
 
   // Create a root node if parent is undefined
   public constructor(public doc: TreeDoc, public key?: string) {}
@@ -306,8 +307,6 @@ export default class TDNode {
     sb += this.type === TDNodeType.ARRAY ? ']' : '}';
     return sb;
   }
-
-  
 
   public freeze() {
     const children = this.children;

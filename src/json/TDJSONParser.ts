@@ -5,6 +5,8 @@ import StringCharSource from '../core/StringCharSource';
 import StringBuilder from '../core/StringBuilder';
 import TreeDoc from '../TreeDoc';
 import ClassUtil from '../core/ClassUtil';
+import { RecursivePartial } from '../core/LangUtil';
+import { LangUtil } from '..';
 
 const EOF = '\uFFFF';
 
@@ -15,18 +17,26 @@ export default class TDJSONParser {
   }
 
   /** Parse all the JSON objects in the input stream until EOF and store them inside an root node with array type */
-  public parseAll(src: CharSource | string, opt = new TDJSONParserOption(), node = new TreeDoc('root', opt.uri).root, isRoot = true): TDNode {
+  public parseAll(src: CharSource | string, 
+      option:RecursivePartial<TDJSONParserOption> = new TDJSONParserOption(), 
+      node = new TreeDoc('root', option.uri).root, isRoot = true): TDNode {
+    let opt = LangUtil.mergeDeep(new TDJSONParserOption(), option);
+
     if (typeof src === 'string')
       src = new StringCharSource(src);
 
     const doc = TreeDoc.ofArray();
     let docId = 0;
     while(src.skipSpacesAndReturnsAndCommas())
-      TDJSONParser.get().parse(src, new TDJSONParserOption().setDocId(docId++), doc.root.createChild());
+      TDJSONParser.get().parse(src, opt.setDocId(docId++), doc.root.createChild());
     return doc.root;
   }
 
-  public parse(src: CharSource | string, opt = new TDJSONParserOption(), node = new TreeDoc('root', opt.uri).root, isRoot = true): TDNode {
+  public parse(src: CharSource | string, 
+      option: RecursivePartial<TDJSONParserOption> = new TDJSONParserOption(), 
+      node = new TreeDoc('root', option.uri).root, isRoot = true): TDNode {
+    let opt = LangUtil.mergeDeep(new TDJSONParserOption(), option);
+
     if (typeof src === 'string')
       src = new StringCharSource(src);
 

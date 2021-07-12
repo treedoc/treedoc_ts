@@ -7,20 +7,23 @@ const KEY = "$key";
 
 export default class TDNodeProxyHandler<T extends TDNode> implements ProxyHandler<T> {
   get?(target: T, prop: string | symbol, receiver: any): any {
-    const p = prop as string;
-    // console.log(`get: p=${p}, target=${target.pathAsString}`);
+    if (typeof(prop) !== 'string') {
+      console.log(`Got symbol prop: ${prop.toString()}`);
+      return (target as any)[prop];
+    }
 
-    if (p === 'length') 
+    // console.log(`get: p=${p}, target=${target.pathAsString}`);
+    if (prop === 'length') 
       return target.getChildrenSize();
     
-    if (p === TARGET)
+    if (prop === TARGET)
       return target;
     
-    if (p === KEY)
+    if (prop === KEY)
       return target.key;
     
-    const idx = Number(p);
-    const c = LangUtil.isNumber(idx) ? target.getChild(idx) : target.getChild(p);
+    const idx = Number(prop);
+    const c = LangUtil.isNumber(idx) ? target.getChild(idx) : target.getChild(prop);
     if (c) {
       if (c.type === TDNodeType.SIMPLE)
         return c.value;
@@ -28,7 +31,7 @@ export default class TDNodeProxyHandler<T extends TDNode> implements ProxyHandle
       return c.toProxy();
     }
     
-    return (target as any)[p];
+    return (target as any)[prop];
   }
 
   // Doesn't work for Object.keys(), not sure why

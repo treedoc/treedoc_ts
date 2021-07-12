@@ -2,6 +2,7 @@ import TDJSONWriter from '../json/TDJSONWriter';
 import TDJSONWriterOption from '../json/TDJSONWriterOption';
 
 import TD, { TDEncodeOption } from '../TD';
+import { TDNodeType } from '../TDNode';
 
 class TestObject {
   constructor(public title: string) {}
@@ -110,5 +111,10 @@ describe('TD', () => {
     expect(o.obj1).toBe(o.obj.nestObj);
     expect(o.obj.cyclic).toBe(o);
     expect(o.arrayRef).toBe(o.obj.specialArray);
+  });
+
+  test('parseWithOption', () => {
+    const o = TD.parse("a,b,c", { defaultRootType: TDNodeType.ARRAY });
+    expect(o).toEqual(["a", "b", "c"]);
   });
 });

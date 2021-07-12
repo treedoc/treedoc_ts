@@ -1,6 +1,7 @@
 import { TDJSONWriterOption, TDJSONWriter, TDObjectCoder, TDJSONParser } from '.';
 import { TDObjectCoderOption } from '.';
 import LangUtil, { RecursivePartial } from './core/LangUtil';
+import TDJSONParserOption from './json/TDJSONParserOption';
 
 export class TDEncodeOption {
   constructor(
@@ -37,7 +38,7 @@ export default class TD {
     );
   }
 
-  public static parse(str: string): any {
-    return TDJSONParser.get().parse(str).toObject(false);
+  public static parse(str: string, opts: RecursivePartial<TDJSONParserOption> = {}): any {
+    return TDJSONParser.get().parse(str, opts).toObject(false);
   }
 }
