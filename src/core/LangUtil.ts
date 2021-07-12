@@ -1,6 +1,6 @@
 export type Constructor = (...args: any[]) => any;  // Add just to avoid JS Lint complain
 
-export default class LangUtil {
+export class LangUtil {
   public static doIfNotNull<T>(obj: T | undefined, action: (obj: T) => void) { if (obj !== undefined && obj !== null)  action(obj); }
   public static doIfNotNullOrElse<T>(obj: T | undefined, action: (obj: T) => void, elseAction: () => void) { 
     obj !== undefined && obj !== null ?  action(obj) : elseAction();
@@ -62,4 +62,6 @@ export type Comparator<T> = (o1: T, o2: T) => number;
 export type Func<TI,TO> = (o: TI)=> TO;
 export const identity = (o: any) => o;
 
-
+export class ExtendedFields {
+  [key:string]: Func<any, any>;
+}

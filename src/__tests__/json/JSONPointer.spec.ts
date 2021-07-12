@@ -1,5 +1,5 @@
-import JSONPointer from '../../json/JSONPointer';
-import TDPath, { Part } from '../../TDPath';
+import { JSONPointer } from '../../json/JSONPointer';
+import { TDPath, Part } from '../../TDPath';
 
 test('testParse', () => {
   verify('//ab.c/p1#/p1', new TDPath('//ab.c/p1').addParts(Part.ofRoot(), Part.ofChild('p1')));

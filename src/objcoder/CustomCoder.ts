@@ -1,8 +1,8 @@
-import TDObjectCoder, { ICoder, ObjectCoderContext, TDObjectCoderOption } from './TDObjectCoder';
+import  { ICoder, ObjectCoderContext, TDObjectCoderOption } from './TDObjectCoder';
 import { TDNodeType } from '../TDNode';
-import TDNode from '../TDNode';
+import { TDNode } from '../TDNode';
 
-export default class CustomCoder implements ICoder {
+export class CustomCoder implements ICoder {
   public static it = new CustomCoder();
   public static get() {
     return CustomCoder.it;

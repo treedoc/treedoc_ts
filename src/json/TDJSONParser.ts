@@ -1,16 +1,16 @@
-import TDNode, { TDNodeType } from '../TDNode';
-import TDJSONParserOption from './TDJSONParserOption';
-import CharSource from '../core/CharSource';
-import StringCharSource from '../core/StringCharSource';
-import StringBuilder from '../core/StringBuilder';
-import TreeDoc from '../TreeDoc';
-import ClassUtil from '../core/ClassUtil';
+import { TDNode, TDNodeType } from '../TDNode';
+import { TDJSONParserOption } from './TDJSONParserOption';
+import { CharSource } from '../core/CharSource';
+import { StringCharSource } from '../core/StringCharSource';
+import { StringBuilder } from '../core/StringBuilder';
+import { TreeDoc } from '../TreeDoc';
+import { ClassUtil } from '../core/ClassUtil';
 import { RecursivePartial } from '../core/LangUtil';
 import { LangUtil } from '..';
 
 const EOF = '\uFFFF';
 
-export default class TDJSONParser {
+export class TDJSONParser {
   public static readonly instance = new TDJSONParser();
   public static get() {
     return TDJSONParser.instance;

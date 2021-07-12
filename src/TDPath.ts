@@ -1,4 +1,4 @@
-import TDNode from './TDNode';
+import { TDNode } from './TDNode';
 
 export enum PathPartType {
   ROOT,
@@ -39,7 +39,7 @@ export class Part {
   }
 }
 
-export default class TDPath {
+export class TDPath {
   /** The path parts */
   public readonly parts: Part[] = [];
   public addParts(...part: Part[]): TDPath {

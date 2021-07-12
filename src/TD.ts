@@ -1,7 +1,7 @@
 import { TDJSONWriterOption, TDJSONWriter, TDObjectCoder, TDJSONParser } from '.';
 import { TDObjectCoderOption } from '.';
-import LangUtil, { RecursivePartial } from './core/LangUtil';
-import TDJSONParserOption from './json/TDJSONParserOption';
+import { LangUtil, RecursivePartial } from './core/LangUtil';
+import { TDJSONParserOption } from './json/TDJSONParserOption';
 
 export class TDEncodeOption {
   constructor(
@@ -24,7 +24,7 @@ export class TDDecodeOption {}
 /**
  * A group of convenient methods similar to JSON
  */
-export default class TD {
+export class TD {
   public static stringify(obj: any, opts: string | RecursivePartial<TDEncodeOption> = ''): string {
     const opt = new TDEncodeOption();
     if (typeof opts === 'string') 

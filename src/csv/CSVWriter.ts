@@ -1,17 +1,16 @@
-import CSVOption from './CSVOption';
-import TDNode, { TDNodeType } from '../TDNode';
-import StringBuilder from '../core/StringBuilder';
-import Appendable from '../core/Appendable';
-import StringUtil from '../core/StringUtil';
-import { TreeDoc } from '..';
-import ClassUtil from '../core/ClassUtil';
+import { CSVOption } from './CSVOption';
+import { TDNode, TDNodeType } from '../TDNode';
+import { StringBuilder } from '../core/StringBuilder';
+import { Appendable } from '../core/Appendable';
+import { StringUtil } from '../core/StringUtil';
+import { ClassUtil } from '../core/ClassUtil';
 
 const { contains } = StringUtil;
 
-export default class CSVNWriter {
-  public static readonly instance = new CSVNWriter();
+export class CSVWriter {
+  public static readonly instance = new CSVWriter();
   public static get() {
-    return CSVNWriter.instance;
+    return CSVWriter.instance;
   }
 
   public writeAsString(node: TDNode, opt = new CSVOption()): string { return this.write(new StringBuilder(), node, opt).toString(); }

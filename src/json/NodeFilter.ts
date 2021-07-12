@@ -1,14 +1,12 @@
 import { TDNode, TDNodeType } from "..";
-import ListUtil from "../core/ListUtil";
+import { ListUtil } from "../core/ListUtil";
 
 /** if it returns undefined, node will be skipped */
-abstract class NodeFilter {
+export abstract class NodeFilter {
   abstract apply(n: TDNode): TDNode | undefined;
   static exclude(...patterns: string[]): ExcludeFilter { return new ExcludeFilter(...patterns); }
   static mask(...patterns: string[]): MaskFilter { return new MaskFilter(...patterns); }
 };
-
-export default NodeFilter;
 
 abstract class RegexFilter implements NodeFilter {
   public readonly pathPatterns:RegExp[] = [];

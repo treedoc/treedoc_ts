@@ -1,4 +1,4 @@
-export default class ListUtil {
+export class ListUtil {
   public static exists<V>(source: V[], pred: (t: V) => boolean): boolean {
     return source == null ? false : this.first(source, pred) !== undefined;
   }

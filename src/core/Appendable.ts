@@ -1,3 +1,3 @@
-export default interface IAppendable {
-  append(str: string): IAppendable;
+export interface Appendable {
+  append(str: string): Appendable;
 }

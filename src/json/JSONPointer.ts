@@ -1,4 +1,4 @@
-import TDPath, { Part } from '../TDPath';
+import { TDPath, Part } from '../TDPath';
 import { TDNode } from '../index';
 
 /**
@@ -22,7 +22,7 @@ import { TDNode } from '../index';
  * 6. Anchor with $id reference:  [http://a.com/path]#nodeId
  * </pre>
  */
-export default class JSONPointer {
+export class JSONPointer {
   public static get(): JSONPointer {
     return new JSONPointer();
   }

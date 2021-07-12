@@ -1,8 +1,8 @@
 import { TDNode } from '..';
 import { TDNodeType } from '../TDNode';
-import TreeDoc from '../TreeDoc';
-import CustomCoder from './CustomCoder';
-import StringUtil from '../core/StringUtil';
+import { TreeDoc } from '../TreeDoc';
+import { CustomCoder } from './CustomCoder';
+import { StringUtil } from '../core/StringUtil';
 import { LangUtil } from '..';
 
 export class ObjectCoderContext {
@@ -39,7 +39,7 @@ export class TDObjectCoderOption {
 }
 
 /** Javascript specific class that map JS object to/from TDNode */
-export default class TDObjectCoder {
+export class TDObjectCoder {
   public static it: TDObjectCoder = new TDObjectCoder();
   public readonly KEY_ID = '$id';
   public readonly KEY_REF = '$ref';

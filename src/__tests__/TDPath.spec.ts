@@ -1,8 +1,8 @@
-import TDObjectCoder from '../objcoder/TDObjectCoder';
-import TDJSONWriter from '../json/TDJSONWriter';
-import TDJSONWriterOption from '../json/TDJSONWriterOption';
+import { TDObjectCoder } from '../objcoder/TDObjectCoder';
+import { TDJSONWriter } from '../json/TDJSONWriter';
+import { TDJSONWriterOption } from '../json/TDJSONWriterOption';
 
-import TDPath from '../TDPath';
+import { TDPath } from '../TDPath';
 import { Part } from '..';
 
 describe('TDPath', () => {

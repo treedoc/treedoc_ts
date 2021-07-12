@@ -1,12 +1,11 @@
-import TDJSONWriterOption from './TDJSONWriterOption';
-import TDNode, { TDNodeType } from '../TDNode';
-import StringBuilder from '../core/StringBuilder';
-import Appendable from '../core/Appendable';
-import StringUtil from '../core/StringUtil';
-import { TreeDoc } from '..';
-import LangUtil from '../core/LangUtil';
+import { TDJSONWriterOption } from './TDJSONWriterOption';
+import { TDNode, TDNodeType } from '../TDNode';
+import { StringBuilder } from '../core/StringBuilder';
+import { Appendable } from '../core/Appendable';
+import { StringUtil } from '../core/StringUtil';
+import { LangUtil } from '../core/LangUtil';
 
-export default class TDJSONWriter {
+export class TDJSONWriter {
   public static readonly instance = new TDJSONWriter();
   public static get() {
     return TDJSONWriter.instance;

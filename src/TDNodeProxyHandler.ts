@@ -1,11 +1,12 @@
 import { TD, TDNode } from ".";
-import LangUtil from "./core/LangUtil";
+import { LangUtil, Func, ExtendedFields } from "./core/LangUtil";
 import { TDNodeType } from "./TDNode";
 
 const TARGET = "$target";
 const KEY = "$key";
+export const TRANSIENT_DATA_KEY_EXTENDED_FIELDS = "$extendedFields";
 
-export default class TDNodeProxyHandler<T extends TDNode> implements ProxyHandler<T> {
+export class TDNodeProxyHandler<T extends TDNode> implements ProxyHandler<T> {
   get?(target: T, prop: string | symbol, receiver: any): any {
     if (typeof(prop) !== 'string') {
       console.log(`Got symbol prop: ${prop.toString()}`);
@@ -21,13 +22,17 @@ export default class TDNodeProxyHandler<T extends TDNode> implements ProxyHandle
     
     if (prop === KEY)
       return target.key;
+
+    const extendedFields = target.tData[TRANSIENT_DATA_KEY_EXTENDED_FIELDS] as ExtendedFields;
+    if (extendedFields && extendedFields[prop])
+      return extendedFields[prop](receiver);
     
     const idx = Number(prop);
     const c = LangUtil.isNumber(idx) ? target.getChild(idx) : target.getChild(prop);
     if (c) {
       if (c.type === TDNodeType.SIMPLE)
         return c.value;
-      // TODO: Support reference objects
+      // TODO: Support reference objects of $ref
       return c.toProxy();
     }
     

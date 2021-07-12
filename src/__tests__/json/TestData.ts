@@ -1,4 +1,4 @@
-export default class TestData {
+export class TestData {
 testData = `
 // Some comments
 {\u00a0

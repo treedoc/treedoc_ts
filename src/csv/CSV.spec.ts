@@ -1,6 +1,6 @@
-import CSVParser from './CSVParser';
-import CSVOption from './CSVOption';
-import CSVWriter from './CSVWriter';
+import { CSVParser } from './CSVParser';
+import { CSVOption } from './CSVOption';
+import { CSVWriter } from './CSVWriter';
 import { StringCharSource } from '..';
 
 const testCsv = `

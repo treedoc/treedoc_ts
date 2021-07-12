@@ -1,5 +1,5 @@
 import { TD } from '..';
-import TDJSONParser from '../json/TDJSONParser';
+import { TDJSONParser } from '../json/TDJSONParser';
 
 describe('TDNode', () => {
   const testData = `

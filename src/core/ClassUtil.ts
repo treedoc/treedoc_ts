@@ -1,4 +1,4 @@
-export default class ClassUtil {
+export class ClassUtil {
  /**
   * To Simple Object without type. It will to convert str into null, boolean, double, long or Integer.
   * For number, it supports Hex number with prefix of "0x". If conversion fails. It will return the original str.

@@ -1,13 +1,13 @@
-import StringCharSource from '../../core/StringCharSource';
-import TDJSONParser from '../../json/TDJSONParser';
-import TDJSONParserOption from '../../json/TDJSONParserOption';
+import { StringCharSource } from '../../core/StringCharSource';
+import { TDJSONParser } from '../../json/TDJSONParser';
+import { TDJSONParserOption } from '../../json/TDJSONParserOption';
 import { TDNodeType } from '../../TDNode';
-import TDJSONWriter from '../../json/TDJSONWriter';
-import TDJSONWriterOption from '../../json/TDJSONWriterOption';
-import JSONPointer from '../../json/JSONPointer';
+import { TDJSONWriter } from '../../json/TDJSONWriter';
+import { TDJSONWriterOption } from '../../json/TDJSONWriterOption';
+import { JSONPointer } from '../../json/JSONPointer';
 import { TDNode } from '../..';
-import { TreeDoc_ofArray, TreeDoc_ofNode, TreeDoc_merge } from '../../TreeDoc';
-import TestData from './TestData';
+import { TreeDoc_merge } from '../../TreeDoc';
+import { TestData } from './TestData';
 
 const testData = new TestData()
 

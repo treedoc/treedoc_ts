@@ -1,9 +1,8 @@
-import TDJSONParser from '../../json/TDJSONParser';
-import TDJSONWriter from '../../json/TDJSONWriter';
-import TDJSONWriterOption from '../../json/TDJSONWriterOption';
-import { TDNode } from '../..';
-import TestData from './TestData';
-import NodeFilter from '../../json/NodeFilter';
+import { TDJSONParser } from '../../json/TDJSONParser';
+import {TDJSONWriter } from '../../json/TDJSONWriter';
+import { TDJSONWriterOption } from '../../json/TDJSONWriterOption';
+import { TestData } from './TestData';
+import { NodeFilter } from '../../json/NodeFilter';
 
 const testData = new TestData();
 

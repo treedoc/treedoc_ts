@@ -1,9 +1,9 @@
 import { TDNodeType } from '.';
-import ListUtil from './core/ListUtil';
-import LangUtil from './core/LangUtil';
-import TDNode from './TDNode';
+import { ListUtil } from './core/ListUtil';
+import { LangUtil } from './core/LangUtil';
+import { TDNode } from './TDNode';
 
-export default class TreeDoc {
+export class TreeDoc {
   public idMap: { [key: string]: TDNode } = {};
   public root: TDNode = new TDNode(this, "root");
   

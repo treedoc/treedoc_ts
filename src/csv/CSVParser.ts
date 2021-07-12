@@ -1,14 +1,14 @@
-import TDNode, { TDNodeType, ValueType } from '../TDNode';
-import CSVOption from './CSVOption';
-import CharSource from '../core/CharSource';
-import StringBuilder from '../core/StringBuilder';
-import TreeDoc from '../TreeDoc';
+import { TDNode, TDNodeType, ValueType } from '../TDNode';
+import { CSVOption } from './CSVOption';
+import { CharSource } from '../core/CharSource';
+import { StringBuilder } from '../core/StringBuilder';
+import { TreeDoc } from '../TreeDoc';
 import { StringCharSource } from '..';
-import ClassUtil from '../core/ClassUtil';
+import { ClassUtil } from '../core/ClassUtil';
 
 const SPACE_CHARS = " \r";
 
-export default class CSVParser {
+export class CSVParser {
 
   public static readonly instance = new CSVParser();
   public static get() { return CSVParser.instance; }

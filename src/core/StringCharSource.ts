@@ -1,9 +1,9 @@
-import CharSource from './CharSource';
-import EOFRuntimeException from './EOFRuntimeException';
+import { CharSource } from './CharSource';
+import { EOFRuntimeException } from './EOFRuntimeException';
 import { Predicate } from './LangUtil';
-import StringBuilder from './StringBuilder';
+import { StringBuilder } from './StringBuilder';
 
-export default class StringCharSource extends CharSource {
+export class StringCharSource extends CharSource {
   public constructor(public readonly str: string) {
     super();
   }

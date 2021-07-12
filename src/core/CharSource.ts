@@ -1,10 +1,10 @@
-import Bookmark from '../Bookmark';
+import { Bookmark } from '../Bookmark';
 import { Predicate } from './LangUtil';
-import StringBuilder from './StringBuilder';
-import EOFRuntimeException from './EOFRuntimeException';
-import ParseRuntimeException from './ParseRuntimeException';
+import { StringBuilder } from './StringBuilder';
+import { EOFRuntimeException } from './EOFRuntimeException';
+import { ParseRuntimeException } from './ParseRuntimeException';
 
-export default abstract class CharSource {
+export abstract class CharSource {
   private static readonly MAX_STRING_LEN = 20000;
   // HTML &nbsp; will be converted to \u00a0, that's why it need to be supported here
   private static readonly SPACE_RETURN_CHARS = ' \n\r\t\u00a0';

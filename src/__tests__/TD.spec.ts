@@ -1,7 +1,4 @@
-import TDJSONWriter from '../json/TDJSONWriter';
-import TDJSONWriterOption from '../json/TDJSONWriterOption';
-
-import TD, { TDEncodeOption } from '../TD';
+import { TD, TDEncodeOption } from '../TD';
 import { TDNodeType } from '../TDNode';
 
 class TestObject {

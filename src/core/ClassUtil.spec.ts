@@ -1,4 +1,4 @@
-import ClassUtil from "./ClassUtil";
+import { ClassUtil } from "./ClassUtil";
 
 describe('ClassUtil', () => {
   

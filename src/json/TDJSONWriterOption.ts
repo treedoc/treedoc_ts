@@ -1,8 +1,8 @@
 import { TDNode } from "..";
 import { ValueType } from "../TDNode";
-import NodeFilter from "./NodeFilter";
+import { NodeFilter } from "./NodeFilter";
 
-export default class TDJSONWriterOption {
+export class TDJSONWriterOption {
   private mIndentFactor = 0;
   public alwaysQuoteName = true;
   public quoteChar = '"';

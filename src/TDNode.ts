@@ -1,8 +1,8 @@
-import Bookmark from './Bookmark';
-import TreeDoc from './TreeDoc';
-import TDPath, { Part, PathPartType } from './TDPath';
-import StringUtil from './core/StringUtil';
-import TDNodeProxyHandler from './TDNodeProxyHandler';
+import { Bookmark } from './Bookmark';
+import { TreeDoc } from './TreeDoc';
+import { TDPath, Part, PathPartType } from './TDPath';
+import { StringUtil } from './core/StringUtil';
+import { TDNodeProxyHandler } from './TDNodeProxyHandler';
 
 
 export enum TDNodeType {
@@ -15,7 +15,7 @@ export type ValueType = string | number | boolean | null | undefined;
 
 const KEY_REF = '$ref';
 
-class TransientData {
+export class TransientData {
   hash?: number;
   str?: string;
   obj?: any;
@@ -23,7 +23,7 @@ class TransientData {
   [key: string]: any;
 }
 
-export default class TDNode {
+export class TDNode {
   public static readonly ID_KEY = "$id";
   public static readonly REF_KEY = "$ref";
   
