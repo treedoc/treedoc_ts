@@ -12,13 +12,6 @@ V2l2" ,v23,true
 `;
 
 describe('CSVParser and CSVWriter', () => {
-  
-  //   @Test public void testReadField() {
-  //     assertEquals("ab'cd", CSVParser.get().readField(new ArrayCharSource("'ab''cd'"),
-  //         new CSVOption().setQuoteChar('\'')));
-  //   }
-  // }
-  
   test('testParseAndWriter', () => {
     const node = CSVParser.get().parse(testCsv);
     expect(node.toString()).toMatchSnapshot();

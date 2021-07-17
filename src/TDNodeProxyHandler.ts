@@ -7,9 +7,15 @@ const KEY = "$key";
 export const TRANSIENT_DATA_KEY_EXTENDED_FIELDS = "$extendedFields";
 
 export class TDNodeProxyHandler<T extends TDNode> implements ProxyHandler<T> {
+  constructor(public useCache: boolean) {}
+
   get?(target: T, prop: string | symbol, receiver: any): any {
+    if (prop === Symbol.toPrimitive) {
+      return target.toString();
+    }
+
     if (typeof(prop) !== 'string') {
-      console.log(`Got symbol prop: ${prop.toString()}`);
+      console.log(`Got unknown symbol prop: ${prop.toString()}`);
       return (target as any)[prop];
     }
 
@@ -33,7 +39,7 @@ export class TDNodeProxyHandler<T extends TDNode> implements ProxyHandler<T> {
       if (c.type === TDNodeType.SIMPLE)
         return c.value;
       // TODO: Support reference objects of $ref
-      return c.toProxy();
+      return c.toProxy(this.useCache);
     }
     
     return (target as any)[prop];

@@ -21,7 +21,7 @@ describe('TDNode', () => {
 
   test('testToProxy', () => {
     const node = TDJSONParser.get().parse(testData);
-    const proxy = node.toProxy();
+    const proxy = node.toProxy() as any;
     expect(proxy.length).toBe(3);
     expect(proxy.a).toBe(1);
     expect(proxy.b.length).toBe(testJson.b.length);

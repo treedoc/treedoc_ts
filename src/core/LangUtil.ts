@@ -47,6 +47,45 @@ export class LangUtil {
   static isNumber(value: any) {
     return typeof value === 'number' && isFinite(value);
   }
+
+    /** 
+   * It will do eval first, if it returns function, that's it.
+   * otherwise wrap it in `(${args}) => ${script}` or `(${args}) => {${script}}`
+   */
+     static evalAsFunction(script: string, args: string): Function {
+      let res = LangUtil.tryEval(script);
+      if (typeof(res) === 'function')
+        return res;
+      res = LangUtil.tryEval(`(${args}) => ${script}`);
+      if (typeof(res) === 'function')
+        return res;
+      return eval(`(${args}) => {${script}}`);
+    }
+  
+    static tryEval(script: string): Function | undefined {
+      try {
+        return eval(script);
+      } catch(e) {
+        return undefined;
+      }
+    }
+  
+    static compare(o1: any, o2: any): number {
+      return o1 > o2 ? 1 : (o1 < o2 ? -1 : 0)
+    }
+  
+    static get<V, F>(o: V, identifier: Identifier<V, F>): F {
+      return typeof(identifier) === 'function' ? identifier(o) : (o as any)[identifier];
+    }
+  
+    // TS_SPECIFIC
+    static enumValues(enumType: any) {
+      return Object.keys(enumType).filter(key => !isNaN(Number(enumType[key])));
+    }
+  
+    static enumValueOf(enumType: any, value: number|string) {
+      return enumType[value];
+    }
 }
 
 
@@ -57,8 +96,10 @@ export type RecursivePartial<T> = {
     T[P];
 };
 
-export type Predicate<T> = (i: T) => boolean;
-export type Comparator<T> = (o1: T, o2: T) => number;
+export type Predicate<T=any> = (i: T) => boolean;
+export type Comparator<T=any> = (o1: T, o2: T) => number;
+export type Identifier<V=any, F=any> = string | Func<V, F>;
+
 export type Func<TI,TO> = (o: TI)=> TO;
 export const identity = (o: any) => o;
 

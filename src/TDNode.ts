@@ -194,8 +194,8 @@ export class TDNode {
   }
 
   /** JS specific logic */
-  public toObject(includePosition = false): any {
-    if (this.tData.obj !== undefined)
+  public toObject(includePosition = false, useCache = true): any {
+    if (this.tData.obj !== undefined && useCache)
       return this.tData.obj;
 
     const $ = {
@@ -234,10 +234,10 @@ export class TDNode {
     }
   }
 
-  public toProxy(): any {
-    if (this.tData.proxy)
+  public toProxy(useCache = true): TDNode {
+    if (useCache && this.tData.proxy)
       return this.tData.proxy;
-    return this.tData.proxy = new Proxy(this, new TDNodeProxyHandler());
+    return this.tData.proxy = new Proxy(this, new TDNodeProxyHandler(useCache));
   }
 
   public get pathAsString() {
