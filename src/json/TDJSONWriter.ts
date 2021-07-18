@@ -63,8 +63,9 @@ export class TDJSONWriter {
         }
         if (!StringUtil.isJavaIdentifier(cn.key) || opt.alwaysQuoteName)
           // Quote the key in case  it's not valid java identifier
-          this.writeQuotedString(out, opt.deco(cn.key as string, KEY), opt.quoteChar);
-        else out.append(cn.key as string); // Map key will never be null
+          this.writeQuotedString(out, cn.key as string, opt, KEY);
+        else 
+          out.append(opt.deco(cn.key as string, KEY)); // Map key will never be null
         out.append(opt.deco(":", OPERATOR));
         this.write(out, cn, opt, childIndentStr);
         if (i < node.getChildrenSize() - 1)
@@ -108,14 +109,14 @@ export class TDJSONWriter {
   private writeSimple(out: Appendable, node: TDNode, opt: TDJSONWriterOption): Appendable {
     const value = node.value;
     if (typeof value === 'string')
-      return this.writeQuotedString(out,  opt.deco(value as string, STRING), opt.quoteChar);
+      return this.writeQuotedString(out, value as string, opt, STRING);
 
     return out.append(opt.deco(value + '', NON_STRING));
   }
 
-  private writeQuotedString(out: Appendable, str: string, quoteChar: string): Appendable {
-    out.append(quoteChar);
-    out.append(StringUtil.cEscape(str, quoteChar) as string);
-    return out.append(quoteChar);
+  private writeQuotedString(out: Appendable, str: string, opt: TDJSONWriterOption, textType: TextType): Appendable {
+    out.append(opt.quoteChar);
+    out.append(opt.deco(StringUtil.cEscape(str, opt.quoteChar) as string, textType));
+    return out.append(opt.quoteChar);
   }
 }

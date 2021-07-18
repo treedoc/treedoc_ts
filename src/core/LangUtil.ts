@@ -48,44 +48,45 @@ export class LangUtil {
     return typeof value === 'number' && isFinite(value);
   }
 
-    /** 
+  /** 
    * It will do eval first, if it returns function, that's it.
    * otherwise wrap it in `(${args}) => ${script}` or `(${args}) => {${script}}`
    */
-     static evalAsFunction(script: string, args: string): Function {
-      let res = LangUtil.tryEval(script);
-      if (typeof(res) === 'function')
-        return res;
-      res = LangUtil.tryEval(`(${args}) => ${script}`);
-      if (typeof(res) === 'function')
-        return res;
-      return eval(`(${args}) => {${script}}`);
-    }
+
+  static evalAsFunction(script: string, args: string): Function { // tslint:disable-line
+    let res = LangUtil.tryEval(script);
+    if (typeof(res) === 'function')
+      return res;
+    res = LangUtil.tryEval(`(${args}) => ${script}`);
+    if (typeof(res) === 'function')
+      return res;
+    return eval(`(${args}) => {${script}}`);
+  }
   
-    static tryEval(script: string): Function | undefined {
-      try {
-        return eval(script);
-      } catch(e) {
-        return undefined;
-      }
+  static tryEval(script: string): Function | undefined {  // tslint:disable-line
+    try {
+      return eval(script);
+    } catch(e) {
+      return undefined;
     }
+  }
   
-    static compare(o1: any, o2: any): number {
-      return o1 > o2 ? 1 : (o1 < o2 ? -1 : 0)
-    }
-  
-    static get<V, F>(o: V, identifier: Identifier<V, F>): F {
-      return typeof(identifier) === 'function' ? identifier(o) : (o as any)[identifier];
-    }
-  
-    // TS_SPECIFIC
-    static enumValues(enumType: any) {
-      return Object.keys(enumType).filter(key => !isNaN(Number(enumType[key])));
-    }
-  
-    static enumValueOf(enumType: any, value: number|string) {
-      return enumType[value];
-    }
+  static compare(o1: any, o2: any): number {
+    return o1 > o2 ? 1 : (o1 < o2 ? -1 : 0)
+  }
+
+  static get<V, F>(o: V, identifier: Identifier<V, F>): F {
+    return typeof(identifier) === 'function' ? identifier(o) : (o as any)[identifier];
+  }
+
+  // TS_SPECIFIC
+  static enumValues(enumType: any) {
+    return Object.keys(enumType).filter(key => !isNaN(Number(enumType[key])));
+  }
+
+  static enumValueOf(enumType: any, value: number|string) {
+    return enumType[value];
+  }
 }
 
 
