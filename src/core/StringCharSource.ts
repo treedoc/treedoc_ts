@@ -24,12 +24,7 @@ export class StringCharSource extends CharSource {
     return this.bookmark.pos + idx >= this.str.length;
   }
 
-  public readUntil(
-    predicate: Predicate<CharSource>,
-    target: StringBuilder | null,
-    minLen = 0,
-    maxLen = Number.MAX_VALUE,
-  ): boolean {
+  public readUntil(predicate: Predicate<CharSource>, target: StringBuilder | null, minLen = 0, maxLen = Number.MAX_VALUE): boolean {
     const startPos = this.bookmark.pos;
     let len = 0;
     let matched = false;

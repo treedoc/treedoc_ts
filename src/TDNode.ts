@@ -237,7 +237,11 @@ export class TDNode {
   public toProxy(useCache = true): TDNode {
     if (useCache && this.tData.proxy)
       return this.tData.proxy;
-    return this.tData.proxy = new Proxy(this, new TDNodeProxyHandler(useCache));
+    const res = new Proxy(this, new TDNodeProxyHandler(useCache));
+    // res.toString = this.toString;  // Without this, the proxy.toString will return 
+    if (useCache)
+      this.tData.proxy = res;
+    return res;
   }
 
   public get pathAsString() {

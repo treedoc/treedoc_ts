@@ -27,4 +27,14 @@ describe('CSVParser and CSVWriter', () => {
   test('testReadField', () => {
     expect(CSVParser.get().readField(new StringCharSource("'ab''cd'"), new CSVOption().setQuoteChar('\''))).toBe("ab'cd");
   });
+
+  test("testReadFieldMissingQuote", () => {
+    let error = "";
+    try {
+      CSVParser.get().readField(new StringCharSource("'ab''cd"), new CSVOption().setQuoteChar('\''));
+    } catch (e: any) {
+      error = e.message;
+    }
+    expect(error).toBe("Can't find matching quote at position:4;line:0;col:4");
+  })
 });

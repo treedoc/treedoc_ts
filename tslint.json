@@ -10,6 +10,7 @@
     "max-classes-per-file": false,
     "radix": false,
     "member-access": false,
-    "interface-name" : false
+    "interface-name" : false,
+    "no-eval": false
   }
 }

@@ -10,7 +10,7 @@ export abstract class CharSource {
   private static readonly SPACE_RETURN_CHARS = ' \n\r\t\u00a0';
   private static readonly SPACE_RETURN_COMMA_CHARS = CharSource.SPACE_RETURN_CHARS + ",";
 
-  protected readonly bookmark = new Bookmark();
+  readonly bookmark = new Bookmark();
 
   public abstract read(): string;
   public /*abstract*/ peek(i = 0) {
@@ -30,24 +30,13 @@ export abstract class CharSource {
    *
    * @return true The terminate condition matches. otherwise, could be EOF or length matches
    */
-  public abstract readUntil(
-    predicate: Predicate<CharSource>,
-    target: StringBuilder | null,
-    minLen?: number,
-    maxLen?: number,
-  ): boolean;
+  public abstract readUntil(predicate: Predicate<CharSource>, target: StringBuilder | null, minLen?: number, maxLen?: number): boolean;
   public skipUntil(predicate: Predicate<CharSource>): boolean {
     return this.readUntil(predicate, null);
   }
 
     /** @return true Terminal conditions matches  */
-  public readUntilTerminatorToString(
-    chars: string,
-    target: StringBuilder | null,
-    include = true,
-    minLen = 0,
-    maxLen = Number.MAX_VALUE,
-  ) {
+  public readUntilTerminatorToString( chars: string, target: StringBuilder | null, include = true, minLen = 0, maxLen = Number.MAX_VALUE) {
     return this.readUntil(s => chars.indexOf(s.peek(0)) >= 0 === include, target, minLen, maxLen);
   }
 
@@ -82,13 +71,7 @@ export abstract class CharSource {
     return this.readToString(null, len);
   }
 
-  public readUntilMatch(
-    str: string,
-    skipStr: boolean,
-    target: StringBuilder | null,
-    minLen = 0,
-    maxLen = CharSource.MAX_STRING_LEN,
-  ): boolean {
+  public readUntilMatch( str: string, skipStr: boolean, target: StringBuilder | null, minLen = 0, maxLen = CharSource.MAX_STRING_LEN): boolean {
     const matches = this.readUntil(s => s.startsWidth(str), target, minLen, maxLen);
     if (matches && skipStr)
       this.skip(str.length);
@@ -140,10 +123,13 @@ export abstract class CharSource {
 
   public readQuotedToString(quote: string, sb: StringBuilder): StringBuilder {
     const terminator = this.getTermStrWithQuoteAndEscape(quote);
+    // Not calling getBookmark() to avoid clone an object
     const pos = this.bookmark.pos;
+    const line = this.bookmark.line;
+    const col = this.bookmark.col;
     while (true) {
       if (!this.readUntilTerminatorToString(terminator, sb))
-        throw new EOFRuntimeException("Can't find matching quote at position:" + pos);
+        throw new EOFRuntimeException(`Can't find matching quote at position:${pos};line:${line};col:${col}`);
       let c = this.read();
       if (c === quote)
         break;

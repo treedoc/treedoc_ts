@@ -131,7 +131,7 @@ export class TDJSONParser {
       let c = TDJSONParser.skipSpaceAndComments(src);
       if (c === EOF) {
         if (withStartBracket)
-          throw src.createParseRuntimeException("EOF encountered while expecting matching '}'");
+          throw src.createParseRuntimeException("EOF while expecting matching '}' with '{' at " + node.start);
         break;
       }
 
@@ -151,8 +151,8 @@ export class TDJSONParser {
         src.read();
         key = src.readQuotedString(c);
         c = TDJSONParser.skipSpaceAndComments(src);
-        if (c === EOF)
-          break;
+        // if (c === EOF)
+        //   break;
         if (c !== ':' && c !== '{' && c !== '[' && c !== ',' && c !== '}')
           throw src.createParseRuntimeException("No ':' after key:" + key);
       } else {
@@ -194,7 +194,7 @@ export class TDJSONParser {
       let c = TDJSONParser.skipSpaceAndComments(src);
       if (c === EOF) {
         if (withStartBracket)
-          throw src.createParseRuntimeException("EOF encountered while expecting matching ']'");
+          throw src.createParseRuntimeException("EOF while expecting matching ']' with '[' at " + node.start);
         break;
       }
 

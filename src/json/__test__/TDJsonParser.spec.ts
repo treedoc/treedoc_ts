@@ -176,4 +176,22 @@ describe('TDJsonParser', () => {
     expect(node.key).toEqual("root");
     expect(node.toString()).toMatchSnapshot();
   });
+
+
+  function parseWithException(str: string, expectedError: string) {
+    let error = null;
+    try {
+      TDJSONParser.get().parse(str);
+    } catch(e: any) {
+      error = e.message;
+    }
+    expect(error).toBe(expectedError);
+  }
+
+  test('testParseAll', () => {
+    parseWithException("{abc:1", "EOF while expecting matching '}' with '{' at Bookmark(line=0, col=0, pos=0), Bookmark(line=0, col=6, pos=6), digest:");
+    parseWithException("{a:[abc,def}", "EOF while expecting matching ']' with '[' at Bookmark(line=0, col=3, pos=3), Bookmark(line=0, col=12, pos=12), digest:");
+    parseWithException("{a", "No ':' after key:a, Bookmark(line=0, col=2, pos=2), digest:");
+    parseWithException("{'a'", "No ':' after key:a, Bookmark(line=0, col=4, pos=4), digest:");
+  })
 });

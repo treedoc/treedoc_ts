@@ -10,6 +10,8 @@ export class TDNodeProxyHandler<T extends TDNode> implements ProxyHandler<T> {
   constructor(public useCache: boolean) {}
 
   get?(target: T, prop: string | symbol, receiver: any): any {
+    // console.log(`prop: ${prop.toString()}`);
+
     if (prop === Symbol.toPrimitive) {
       return target.toString();
     }
@@ -42,17 +44,22 @@ export class TDNodeProxyHandler<T extends TDNode> implements ProxyHandler<T> {
       return c.toProxy(this.useCache);
     }
     
-    return (target as any)[prop];
+    // Prevent: Function Proxy .toString() Errors
+    // https://stackoverflow.com/questions/38259885/function-proxy-tostring-errors
+    const res = (target as any)[prop];
+    // return res;
+    // console.log(`prop: ${prop}, res:${res}, typeof res=${typeof res}`);
+    return (typeof res === 'function') ? res.bind(target) : res
   }
 
   // Doesn't work for Object.keys(), not sure why
-  ownKeys?(target: T): Array<string | symbol> {
-    // console.log(`ownKeys: target=${target.pathAsString}`);
-    const res = [TARGET, KEY];
-    if (target.type === TDNodeType.MAP)
-      target.children!.forEach(n => res.push(n.key!));
-    else if (target.type === TDNodeType.ARRAY)
-      res.push("length")
-    return res;
-  }
+  // ownKeys?(target: T): Array<string | symbol> {
+  //   // console.log(`ownKeys: target=${target.pathAsString}`);
+  //   const res = [TARGET, KEY];
+  //   if (target.type === TDNodeType.MAP)
+  //     target.children!.forEach(n => res.push(n.key!));
+  //   else if (target.type === TDNodeType.ARRAY)
+  //     res.push("length")
+  //   return res;
+  // }
 }
