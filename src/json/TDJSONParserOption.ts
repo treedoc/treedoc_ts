@@ -5,11 +5,11 @@ export class TDJSONParserOption {
   public static ofMapToString(): TDJSONParserOption { return new TDJSONParserOption().setDeliminatorKey("=").setDeliminatorValue(", "); }
 
   KEY_ID = `$id`;
-  private _deliminatorKey = ":";
-  private _deliminatorValue = ",";  
+  private mDeliminatorKey = ":";
+  private mDeliminatorValue = ",";  
 
-  get deliminatorKey() { return this._deliminatorKey; }
-  get deliminatorValue () { return this._deliminatorValue ; }
+  get deliminatorKey() { return this.mDeliminatorKey; }
+  get deliminatorValue () { return this.mDeliminatorValue ; }
 
   uri?: string;
 
@@ -34,8 +34,8 @@ export class TDJSONParserOption {
     return this;
   }
   
-  public setDeliminatorKey(val: string): TDJSONParserOption { this._deliminatorKey = val; this.buildTerms(); return this; }
-  public setDeliminatorValue(val: string): TDJSONParserOption { this._deliminatorValue = val; this.buildTerms(); return this; }
+  public setDeliminatorKey(val: string): TDJSONParserOption { this.mDeliminatorKey = val; this.buildTerms(); return this; }
+  public setDeliminatorValue(val: string): TDJSONParserOption { this.mDeliminatorValue = val; this.buildTerms(); return this; }
 
   // Package scopes used by parser
   termValue = "";
@@ -50,17 +50,17 @@ export class TDJSONParserOption {
     this.termKey = "{[}";
     this.termValueStrs = [];
     this.termKeyStrs = [];
-    if (this._deliminatorValue.length == 1) {  // If more than 1, will use separate string collection as term
-      this.termValue += this._deliminatorValue;
-      this.termKey += this._deliminatorValue;
+    if (this.mDeliminatorValue.length === 1) {  // If more than 1, will use separate string collection as term
+      this.termValue += this.mDeliminatorValue;
+      this.termKey += this.mDeliminatorValue;
     } else {
-      this.termValueStrs.push(this._deliminatorValue);
-      this.termKeyStrs.push(this._deliminatorValue);
+      this.termValueStrs.push(this.mDeliminatorValue);
+      this.termKeyStrs.push(this.mDeliminatorValue);
     }
-    if (this._deliminatorKey.length == 1)
-      this.termKey += this._deliminatorKey;
+    if (this.mDeliminatorKey.length === 1)
+      this.termKey += this.mDeliminatorKey;
     else
-      this.termKeyStrs.push(this._deliminatorKey);
+      this.termKeyStrs.push(this.mDeliminatorKey);
 
     this.termValueInMap = this.termValue + "}";
     this.termValueInArray = this.termValue + "]";
