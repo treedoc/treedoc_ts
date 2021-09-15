@@ -60,7 +60,7 @@ export class CSVParser {
         // Not calling getBookmark() to avoid clone an object
         const {pos, line, col} = src.bookmark;
         src.skip();  // for "", we will keep one quote
-        src.readUntilTerminatorToString(opt.quoteChar, sb);
+        src.readUntilTerminatorToString(sb, opt.quoteChar);
         if (src.isEof())
           throw new EOFRuntimeException("Can't find matching quote at position:" + pos + ";line:" + line + ";col:" + col);
         if (src.peek() === opt.quoteChar)

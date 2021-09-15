@@ -5,6 +5,9 @@ import { NodeFilter } from "./NodeFilter";
 export enum TextType {OPERATOR, KEY, STRING, NON_STRING}
 
 export class TDJSONWriterOption {
+  deliminatorKey = ":";
+  deliminatorValue = ",";  
+
   private mIndentFactor = 0;
   public alwaysQuoteName = true;
   public quoteChar = '"';

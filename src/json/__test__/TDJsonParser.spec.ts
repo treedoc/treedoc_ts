@@ -52,7 +52,7 @@ describe('TDJsonParser', () => {
   });
 
   test('testParseProto', () => {
-    const node = TDJSONParser.get().parse(testData.proto, new TDJSONParserOption().setDefaultRootType(TDNodeType.MAP));
+    const node = TDJSONParser.get().parse(testData.proto, {defaultRootType: TDNodeType.MAP});
     const json = TDJSONWriter.get().writeAsString(node,
       new TDJSONWriterOption().setIndentFactor(2).setAlwaysQuoteName(false),
     );
@@ -193,5 +193,12 @@ describe('TDJsonParser', () => {
     parseWithException("{a:[abc,def}", "EOF while expecting matching ']' with '[' at Bookmark(line=0, col=3, pos=3), Bookmark(line=0, col=12, pos=12), digest:");
     parseWithException("{a", "No ':' after key:a, Bookmark(line=0, col=2, pos=2), digest:");
     parseWithException("{'a'", "No ':' after key:a, Bookmark(line=0, col=4, pos=4), digest:");
+  })
+
+  test('testParseMapToString', () => {
+    const str = "{K1=v1, k2=123, k3={c=Test with ,in}, k4=[ab,c, def]}";
+    console.log(TDJSONParserOption.ofMapToString());
+    const node = TDJSONParser.get().parse(str, TDJSONParserOption.ofMapToString());
+    expect(node.toString()).toBe("{K1: 'v1', k2: 123, k3: {c: 'Test with ,in'}, k4: ['ab,c', 'def']}");
   })
 });

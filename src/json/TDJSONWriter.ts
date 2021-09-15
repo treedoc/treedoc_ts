@@ -31,7 +31,8 @@ export class TDJSONWriter {
   }
 
   public write(out: Appendable, node: TDNode, option: Partial<TDJSONWriterOption> = {}, indentStr = ''): Appendable {
-    const opt = LangUtil.mergeDeep(new TDJSONWriterOption(), option);
+    const opt = option instanceof TDJSONWriterOption ? option : LangUtil.mergeDeep(new TDJSONWriterOption(), option);
+
     if (!node)
       return  out.append(opt.deco("null", NON_STRING))
 
@@ -66,11 +67,11 @@ export class TDJSONWriter {
           this.writeQuotedString(out, cn.key as string, opt, KEY);
         else 
           out.append(opt.deco(cn.key as string, KEY)); // Map key will never be null
-        out.append(opt.deco(":", OPERATOR));
+        out.append(opt.deco(opt.deliminatorKey, OPERATOR));
         this.write(out, cn, opt, childIndentStr);
         if (i < node.getChildrenSize() - 1)
           // No need "," for last entry
-          out.append(opt.deco(",", OPERATOR));
+          out.append(opt.deco(opt.deliminatorValue, OPERATOR));
       }
 
       if (opt.hasIndent() && node.hasChildren()) {
@@ -94,7 +95,7 @@ export class TDJSONWriter {
         this.write(out, cn, opt, childIndentStr);
         if (i < node.getChildrenSize() - 1)
           // No need "," for last entry
-          out.append(opt.deco(",", OPERATOR));
+          out.append(opt.deco(opt.deliminatorValue, OPERATOR));
       }
 
       if (opt.hasIndent() && node.children.length > 0) {

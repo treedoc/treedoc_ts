@@ -20,7 +20,7 @@ export class TDJSONParser {
   public parseAll(src: CharSource | string, 
       option:RecursivePartial<TDJSONParserOption> = new TDJSONParserOption(), 
       node = new TreeDoc('root', option.uri).root, isRoot = true): TDNode {
-    const opt = LangUtil.mergeDeep(new TDJSONParserOption(), option);
+    const opt = option instanceof TDJSONParserOption ? option : LangUtil.mergeDeep(new TDJSONParserOption(), option);
 
     if (typeof src === 'string')
       src = new StringCharSource(src);
@@ -35,7 +35,7 @@ export class TDJSONParser {
   public parse(src: CharSource | string, 
       option: RecursivePartial<TDJSONParserOption> = new TDJSONParserOption(), 
       node = new TreeDoc('root', option.uri).root, isRoot = true): TDNode {
-    const opt = LangUtil.mergeDeep(new TDJSONParserOption(), option);
+    const opt = option instanceof TDJSONParserOption ? option : LangUtil.mergeDeep(new TDJSONParserOption(), option);
 
     if (typeof src === 'string')
       src = new StringCharSource(src);
@@ -65,17 +65,17 @@ export class TDJSONParser {
       if (c === '"' || c === "'" || c === '`') {
         src.read();
         const sb = new StringBuilder();
-        src.readQuotedToString(c, sb);
+        src.readQuotedToString(sb, c);
         this.readContinuousString(src, sb);
         return node.setValue(sb.toString());
       }
 
-      let term = ',\n\r';
+      let term = opt.termValue;
       if (node.parent != null)
         // parent.type can either by ARRAY or MAP.
-        term = node.parent.type === TDNodeType.ARRAY ? ',\n\r]' : ',\n\r}';
+        term = node.parent.type === TDNodeType.ARRAY ? opt.termValueInArray : opt.termValueInMap;
 
-      const str = src.readUntilTerminator(term, 0, Number.MAX_VALUE).trim();
+      const str = src.readUntilTerminator(term, opt.termValueStrs).trim();
       return node.setValue(ClassUtil.toSimpleObject(str));
     } finally {
       node.end = src.getBookmark();
@@ -88,7 +88,7 @@ export class TDJSONParser {
       if ('"`\''.indexOf(c) < 0)
         break;
       src.read();
-      src.readQuotedToString(c, sb);
+      src.readQuotedToString(sb, c);
     }
   }
 
@@ -125,7 +125,7 @@ export class TDJSONParser {
   public parseMap(src: CharSource, opt: TDJSONParserOption, node: TDNode, withStartBracket: boolean): TDNode {
     node.type = TDNodeType.MAP;
     if (withStartBracket)
-      src.read();
+      src.skip();
 
     for (let i = 0; ; ) {
       let c = TDJSONParser.skipSpaceAndComments(src);
@@ -136,35 +136,34 @@ export class TDJSONParser {
       }
 
       if (c === '}') {
-        src.read();
+        src.skip();
         break;
       }
 
-      if (c === ',') {
-        // Skip ,
-        src.read();
+      if (src.startsWith(opt.deliminatorValue)) { // Skip ,
+        src.skip(opt.deliminatorValue.length);
         continue;
       }
 
       let key;
       if (c === '"' || c === "'" || c === '`') {
-        src.read();
+        src.skip();
         key = src.readQuotedString(c);
         c = TDJSONParser.skipSpaceAndComments(src);
         // if (c === EOF)
         //   break;
-        if (c !== ':' && c !== '{' && c !== '[' && c !== ',' && c !== '}')
-          throw src.createParseRuntimeException("No ':' after key:" + key);
+        if (!src.startsWith(opt.deliminatorKey) && c !== '{' && c !== '[' && c !== ',' && c !== '}')
+          throw src.createParseRuntimeException(`No '${opt.deliminatorKey}' after key:${key}`);
       } else {
-        key = src.readUntilTerminator(':{[,}"', 1, Number.MAX_VALUE).trim();
+        key = src.readUntilTerminator(opt.termKey, opt.termKeyStrs, 1, Number.MAX_VALUE).trim();
         if (src.isEof())
-          throw src.createParseRuntimeException("No ':' after key:" + key);
+          throw src.createParseRuntimeException(`No '${opt.deliminatorKey}' after key:${key}`);
         c = src.peek();
       }
-      if (c === ':') 
-        src.read();
+      if (src.startsWith(opt.deliminatorKey))
+        src.skip(opt.deliminatorKey.length);
 
-      if (c === ',' || c === '}')
+      if (src.startsWith(opt.deliminatorValue) || c === '}')
         // If there's no ':', we consider it as indexed value (array)
         node.createChild(i + '').setValue(key);
       else {
@@ -189,7 +188,7 @@ export class TDJSONParser {
   private parseArray(src: CharSource, opt: TDJSONParserOption, node: TDNode, withStartBracket: boolean): TDNode {
     node.type = TDNodeType.ARRAY;
     if (withStartBracket)
-      src.read();
+      src.skip();
     while (true) {
       let c = TDJSONParser.skipSpaceAndComments(src);
       if (c === EOF) {
@@ -199,15 +198,15 @@ export class TDJSONParser {
       }
 
       if (c === ']') {
-        src.read();
+        src.skip();
         break;
       }
 
       this.parse(src, opt, node.createChild(), false);
       c = TDJSONParser.skipSpaceAndComments(src);
-      if (c === ',') {
-        src.read();
-      }
+      if (src.startsWith(opt.deliminatorValue)) {
+        src.skip(opt.deliminatorValue.length);
+      }    
     }
     return node;
   }
