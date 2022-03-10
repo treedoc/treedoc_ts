@@ -20,7 +20,11 @@ export class ListUtil {
     return result;
   }
 
-  public static mapKey<V>(source: { [key: string]: V } | null, keyFunc: (k: string) => string): { [key: string]: V } | null {
+  public static mapKeys<V>(source: { [key: string]: V } | null, keyFunc: (k: string) => string): { [key: string]: V } | null {
+    return this.map(source, keyFunc, v => v);
+  }
+
+  public static mapValues<V>(source: { [key: string]: V } | null, keyFunc: (k: string) => string): { [key: string]: V } | null {
     return this.map(source, keyFunc, v => v);
   }
 }

@@ -36,7 +36,7 @@ export class TreeDoc {
     let docId = 0;
     for (const node of nodes) {
       node.setKey(undefined);
-      result.idMap = {...result.idMap, ...ListUtil.mapKey(node.doc.idMap, k => k + "_" + docId) };
+      result.idMap = {...result.idMap, ...ListUtil.mapKeys(node.doc.idMap, k => k + "_" + docId) };
       node.foreach(n => {
         n.doc = result;
         LangUtil.doIfNotNull(n.getChild(TDNode.REF_KEY), nRef => nRef!.value += "_" + docId);
