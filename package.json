@@ -1,6 +1,6 @@
 {
   "name": "treedoc",
-  "version": "0.3.4",
+  "version": "0.3.24",
   "description": "JSONex TreeDoc Json Parser",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -13,7 +13,8 @@
     "prepublishOnly": "npm test && npm run lint",
     "preversion": "npm run lint",
     "version": "git add -A src",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "npm-install": "npm install --no-bin-links"
   },
   "repository": {
     "type": "git",

@@ -1,21 +1,22 @@
-import Bookmark from '../Bookmark';
-import Predicate from './Predicate';
-import StringBuilder from './StringBuilder';
-import EOFRuntimeException from './EOFRuntimeException';
-import ParseRuntimeException from './ParseRuntimeException';
+import { Bookmark } from '../Bookmark';
+import { Predicate } from './LangUtil';
+import { StringBuilder } from './StringBuilder';
+import { EOFRuntimeException } from './EOFRuntimeException';
+import { ParseRuntimeException } from './ParseRuntimeException';
 
-export default abstract class CharSource {
+export abstract class CharSource {
   private static readonly MAX_STRING_LEN = 20000;
   // HTML &nbsp; will be converted to \u00a0, that's why it need to be supported here
   private static readonly SPACE_RETURN_CHARS = ' \n\r\t\u00a0';
+  private static readonly SPACE_RETURN_COMMA_CHARS = CharSource.SPACE_RETURN_CHARS + ",";
 
-  protected readonly bookmark = new Bookmark();
+  readonly bookmark = new Bookmark();
 
   public abstract read(): string;
-  public /*abstract*/ peek(i: number = 0) {
+  public /*abstract*/ peek(i = 0) {
     return '';
   }
-  public /*abstract*/ isEof(i: number = 0) {
+  public /*abstract*/ isEof(i = 0) {
     return false;
   }
 
@@ -29,46 +30,35 @@ export default abstract class CharSource {
    *
    * @return true The terminate condition matches. otherwise, could be EOF or length matches
    */
-  public abstract readUntil(
-    predicate: Predicate<CharSource>,
-    target: StringBuilder | null,
-    minLen?: number,
-    maxLen?: number,
-  ): boolean;
+  public abstract readUntil(target: StringBuilder | null, predicate: Predicate<CharSource>, minLen?: number, maxLen?: number): boolean;
   public skipUntil(predicate: Predicate<CharSource>): boolean {
-    return this.readUntil(predicate, null);
+    return this.readUntil(null, predicate);
   }
 
     /** @return true Terminal conditions matches  */
-  public readUntilTerminatorToString(
-    chars: string,
-    target: StringBuilder | null,
-    include = true,
-    minLen = 0,
-    maxLen = Number.MAX_VALUE,
-  ) {
-    return this.readUntil(s => chars.indexOf(s.peek(0)) >= 0 === include, target, minLen, maxLen);
+  public readUntilTerminatorToString(target: StringBuilder | null, chars: string, strs: string[] | null = null, include = true, minLen = 0, maxLen = Number.MAX_VALUE) {
+    return this.readUntil(target, s => (chars.indexOf(s.peek(0)) >= 0 || this.startsWithAny(strs)) === include, minLen, maxLen);
   }
 
   /** @return true Terminal conditions matches  */
-  public readUntilTerminator(chars: string, minLen = 0, maxLen = Number.MAX_VALUE): string {
+  public readUntilTerminator(chars: string, strs: string[] | null = null, minLen = 0, maxLen = Number.MAX_VALUE): string {
     const sb = new StringBuilder();
-    this.readUntilTerminatorToString(chars, sb, true, minLen, maxLen);
+    this.readUntilTerminatorToString(sb, chars, strs, true, minLen, maxLen);
     return sb.toString();
   }
 
   /** @return true Terminal conditions matches  */
   public skipUntilTerminator(chars: string, include = true): boolean {
-    return this.readUntilTerminatorToString(chars, null, include);
+    return this.readUntilTerminatorToString(null, chars, null, include);
   }
-  public skipSpacesAndReturns(): boolean {
-    return this.skipUntilTerminator(CharSource.SPACE_RETURN_CHARS, false);
-  }
-  
+  /** @return true Indicates more character in the stream  */
+  public skipSpacesAndReturns(): boolean { return this.skipUntilTerminator(CharSource.SPACE_RETURN_CHARS, false); }
+  public skipSpacesAndReturnsAndCommas(): boolean { return this.skipUntilTerminator(CharSource.SPACE_RETURN_COMMA_CHARS, false); }
+  /** @return true Indicates more character in the stream  */
   public skipChars(chars: string): boolean { return this.skipUntilTerminator(chars, false); }
 
   public readToString(target: StringBuilder | null, len: number): boolean {
-    return this.readUntil(s => false, target, len, len);
+    return this.readUntil(target, s => false, len, len);
   }
 
   public readString(len: number): string {
@@ -81,21 +71,15 @@ export default abstract class CharSource {
     return this.readToString(null, len);
   }
 
-  public readUntilMatch(
-    str: string,
-    skipStr: boolean,
-    target: StringBuilder | null,
-    minLen = 0,
-    maxLen = CharSource.MAX_STRING_LEN,
-  ): boolean {
-    const matches = this.readUntil(s => s.startsWidth(str), target, minLen, maxLen);
+  public readUntilMatch(target: StringBuilder | null, str: string, skipStr: boolean, minLen = 0, maxLen = CharSource.MAX_STRING_LEN): boolean {
+    const matches = this.readUntil(target, s => s.startsWith(str), minLen, maxLen);
     if (matches && skipStr)
       this.skip(str.length);
     return matches;
   }
 
   public skipUntilMatch(str: string, skipStr: boolean): boolean {
-    return this.readUntilMatch(str, skipStr, null);
+    return this.readUntilMatch(null, str, skipStr);
   }
 
   // TODO: performance optimization with string.substr()
@@ -108,8 +92,17 @@ export default abstract class CharSource {
     }
     return sb.toString();
   }
+  
+  public startsWithAny(strs: string[] | null): boolean {
+    if (strs != null) {
+      for (const s of strs)
+        if (this.startsWith(s))
+          return true;
+    }
+    return false;
+  }
 
-  public startsWidth(str: string): boolean {
+  public startsWith(str: string): boolean {
     if (this.isEof(str.length))
       return false;
     for (let i = 0; i < str.length; i++) {
@@ -134,15 +127,18 @@ export default abstract class CharSource {
   }
 
   public readQuotedString(quote: string): string {
-    return this.readQuotedToString(quote, new StringBuilder()).toString();
+    return this.readQuotedToString(new StringBuilder(), quote).toString();
   }
 
-  public readQuotedToString(quote: string, sb: StringBuilder): StringBuilder {
+  public readQuotedToString(sb: StringBuilder, quote: string): StringBuilder {
     const terminator = this.getTermStrWithQuoteAndEscape(quote);
+    // Not calling getBookmark() to avoid clone an object
     const pos = this.bookmark.pos;
+    const line = this.bookmark.line;
+    const col = this.bookmark.col;
     while (true) {
-      if (!this.readUntilTerminatorToString(terminator, sb))
-        throw new EOFRuntimeException("Can't find matching quote at position:" + pos);
+      if (!this.readUntilTerminatorToString(sb, terminator))
+        throw new EOFRuntimeException(`Can't find matching quote at position:${pos};line:${line};col:${col}`);
       let c = this.read();
       if (c === quote)
         break;

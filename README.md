@@ -26,7 +26,7 @@ const o1 = TDJSONParser.get().parse(new TDJSONParserOption(jsonStr)).toObject();
 
 ### Advanced Usage
 
-Please refer to the test class [JsonParser.test.ts](src/__tests__/json/TDJsonParser.test.ts) for more details.
+Please refer to the test class [TDJsonParser.spec.ts](src/__tests__/json/TDJsonParser.spec.ts) for more details.
 
 ## Live Demo
 
@@ -34,7 +34,7 @@ Please refer to the test class [JsonParser.test.ts](src/__tests__/json/TDJsonPar
 
 ## License
 
-Copyright 2019-2020 Jianwu Chen <BR>
+Copyright 2019-2022 Treedoc.org <BR>
 Author/Developer: Jianwu Chen
 
 Use of this source code is governed by an MIT-style license that can be found in the LICENSE file or at <https://opensource.org/licenses/MIT>.

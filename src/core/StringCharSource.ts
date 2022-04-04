@@ -1,9 +1,9 @@
-import CharSource from './CharSource';
-import EOFRuntimeException from './EOFRuntimeException';
-import Predicate from './Predicate';
-import StringBuilder from './StringBuilder';
+import { CharSource } from './CharSource';
+import { EOFRuntimeException } from './EOFRuntimeException';
+import { Predicate } from './LangUtil';
+import { StringBuilder } from './StringBuilder';
 
-export default class StringCharSource extends CharSource {
+export class StringCharSource extends CharSource {
   public constructor(public readonly str: string) {
     super();
   }
@@ -24,12 +24,7 @@ export default class StringCharSource extends CharSource {
     return this.bookmark.pos + idx >= this.str.length;
   }
 
-  public readUntil(
-    predicate: Predicate<CharSource>,
-    target: StringBuilder | null,
-    minLen = 0,
-    maxLen = Number.MAX_VALUE,
-  ): boolean {
+  public readUntil(target: StringBuilder | null, predicate: Predicate<CharSource>, minLen = 0, maxLen = Number.MAX_VALUE): boolean {
     const startPos = this.bookmark.pos;
     let len = 0;
     let matched = false;

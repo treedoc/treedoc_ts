@@ -1,6 +1,6 @@
-import StringCharSource from '../../core/StringCharSource';
-import EOFRuntimeException from '../../core/EOFRuntimeException';
-import StringBuilder from '../../core/StringBuilder';
+import { StringCharSource } from '../../core/StringCharSource';
+import { EOFRuntimeException } from '../../core/EOFRuntimeException';
+import { StringBuilder}  from '../../core/StringBuilder';
 
 test('testCharArraySource', () => {
   const cs = new StringCharSource('0123\n');
@@ -24,23 +24,23 @@ test('testParseText', () => {
   let target = new StringBuilder();
 
   // should match '/*'
-  expect(cs.readUntilMatch('/*', false, target, 0, 1000)).toBeTruthy();
+  expect(cs.readUntilMatch(target, '/*', false, 0, 1000)).toBeTruthy();
   expect(target.toString()).toBe('Text before ');
 
   // should start with '/*'
-  expect(cs.startsWidth('/*')).toBeTruthy();
+  expect(cs.startsWith('/*')).toBeTruthy();
 
   cs.skip(2); // skip /*
 
   target = new StringBuilder();
   // should match with '*/'
-  expect(cs.readUntilMatch('*/', false, target)).toBeTruthy();
+  expect(cs.readUntilMatch(target, '*/', false)).toBeTruthy();
 
   expect(target.toString()).toBe(' some comments ');
 
   target = new StringBuilder();
   // should match with '*/'
-  expect(cs.readUntilMatch('*/', false, target)).toBeTruthy();
+  expect(cs.readUntilMatch(target, '*/', false)).toBeTruthy();
 });
 
 test('testReadQuotedString', () => {

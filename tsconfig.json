@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
     "target": "es5",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true, 
     "lib": ["es6", "es2017.string", "dom"],
+    "sourceMap": true,
     "declaration": true,
     "outDir": "./lib",
     "strict": true,

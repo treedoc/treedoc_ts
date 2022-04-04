@@ -1,0 +1,63 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TDJsonWriter testWriterWithNodeFilter 1`] = `
+"{
+  \\"total\\":\\"100000000000000000000\\",
+  \\"maxSafeInt\\":9007199254740991,
+  \\"limit\\":10,
+  \\"3\\":\\"valueWithoutKey\\",
+  \\"data\\":[
+    {
+      \\"name\\":\\"Some Name 1\\",
+      \\"address\\":\\"{Masked:size=2}\\",
+      \\"createdAt\\":\\"2017-07-14T17:17:33.010Z\\",
+      \\"ip\\":\\"<Masked:len=10>\\"
+    },
+    {
+      \\"name\\":\\"Some Name 2\\",
+      \\"address\\":\\"{Masked:size=2}\\",
+      \\"createdAt\\":\\"2017-07-14T17:17:33.010Z\\"
+    },
+    \\"Multiple line literal\\\\n    Line2\\"
+  ],
+  \\"objRef\\":{
+    \\"$ref\\":\\"1\\"
+  },
+  \\"6\\":\\"lastValueWithoutKey\\"
+}"
+`;
+
+exports[`TDJsonWriter testWriterWithTextDeco 1`] = `
+"<font color=red>{</font>
+  \\"<b>total</b>\\"<font color=red>:</font>\\"100000000000000000000\\"<font color=red>,</font>
+  \\"<b>maxSafeInt</b>\\"<font color=red>:</font><font color=green>9007199254740991</font><font color=red>,</font>
+  \\"<b>limit</b>\\"<font color=red>:</font><font color=green>10</font><font color=red>,</font>
+  \\"<b>3</b>\\"<font color=red>:</font>\\"valueWithoutKey\\"<font color=red>,</font>
+  \\"<b>data</b>\\"<font color=red>:</font><font color=red>[</font>
+    <font color=red>{</font>
+      \\"<b>$id</b>\\"<font color=red>:</font>\\"1\\"<font color=red>,</font>
+      \\"<b>name</b>\\"<font color=red>:</font>\\"Some Name 1\\"<font color=red>,</font>
+      \\"<b>address</b>\\"<font color=red>:</font><font color=red>{</font>
+        \\"<b>streetLine</b>\\"<font color=red>:</font>\\"1st st\\"<font color=red>,</font>
+        \\"<b>city</b>\\"<font color=red>:</font>\\"san jose\\"
+      <font color=red>}</font><font color=red>,</font>
+      \\"<b>createdAt</b>\\"<font color=red>:</font>\\"2017-07-14T17:17:33.010Z\\"<font color=red>,</font>
+      \\"<b>ip</b>\\"<font color=red>:</font>\\"10.1.22.22\\"
+    <font color=red>}</font><font color=red>,</font>
+    <font color=red>{</font>
+      \\"<b>$id</b>\\"<font color=red>:</font>\\"2\\"<font color=red>,</font>
+      \\"<b>name</b>\\"<font color=red>:</font>\\"Some Name 2\\"<font color=red>,</font>
+      \\"<b>address</b>\\"<font color=red>:</font><font color=red>{</font>
+        \\"<b>streetLine</b>\\"<font color=red>:</font>\\"2nd st\\"<font color=red>,</font>
+        \\"<b>city</b>\\"<font color=red>:</font>\\"san jose\\"
+      <font color=red>}</font><font color=red>,</font>
+      \\"<b>createdAt</b>\\"<font color=red>:</font>\\"2017-07-14T17:17:33.010Z\\"
+    <font color=red>}</font><font color=red>,</font>
+    \\"Multiple line literal\\\\n    Line2\\"
+  <font color=red>]</font><font color=red>,</font>
+  \\"<b>objRef</b>\\"<font color=red>:</font><font color=red>{</font>
+    \\"<b>$ref</b>\\"<font color=red>:</font>\\"1\\"
+  <font color=red>}</font><font color=red>,</font>
+  \\"<b>6</b>\\"<font color=red>:</font>\\"lastValueWithoutKey\\"
+<font color=red>}</font>"
+`;

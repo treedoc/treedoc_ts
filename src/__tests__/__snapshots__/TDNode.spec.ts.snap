@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TDNode testToObject 1`] = `"{'start':{'line':3,'col':9,'pos':25},'end':{'line':3,'col':16,'pos':32}}"`;
+
+exports[`TDNode testToObject 2`] = `"{'$':{'start':{'line':1,'col':2,'pos':3},'end':{'line':5,'col':3,'pos':51}},'a':1,'b':[1,2,3],'c':'str'}"`;
+
+exports[`TDNode testToProxy 2`] = `"'[object Undefined]'"`;
+
+exports[`TDNode testToProxy1 2`] = `"'[object Undefined]'"`;

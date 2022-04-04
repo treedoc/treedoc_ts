@@ -1,4 +1,4 @@
-export default class TDJSONParserOption {
+export class CSVOption {
   public fieldSep = ',';
   public recordSep = '\n';
   public quoteChar = '"';

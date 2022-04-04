@@ -7,21 +7,9 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
-      "program": "${workspaceFolder}/lib/index.js",
-      "preLaunchTask": "tsc: build - tsconfig.json",
-      "outFiles": [
-        "${workspaceFolder}/lib/**/*.js"
-      ]
-    },
-    {
-      "type": "node",
-      "request": "launch",
       "name": "Jest All",
       "program": "${workspaceFolder}/node_modules/.bin/jest",
-      "args": ["--runInBand",
-        "--config",
-        "jestconfig_debug.json"],
+      "args": ["--runInBand", "--config", "jestconfig_debug.json"],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "disableOptimisticBPs": true,
@@ -35,9 +23,7 @@
       "name": "Jest Current File",
       "program": "${workspaceFolder}/node_modules/.bin/jest",
       "args": [
-        "${fileBasenameNoExtension}",
-        "--config",
-        "jestconfig_debug.json"
+        "${fileBasenameNoExtension}", "--config", "jestconfig_debug.json"
       ],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",

@@ -1,35 +1,40 @@
-import TDJSONWriterOption from './TDJSONWriterOption';
-import TDNode, { TDNodeType } from '../TDNode';
-import StringBuilder from '../core/StringBuilder';
-import Appendable from '../core/Appendable';
-import StringUtil from '../core/StringUtil';
-import { TreeDoc } from '..';
+import { TDJSONWriterOption, TextType } from './TDJSONWriterOption';
+import { TDNode, TDNodeType } from '../TDNode';
+import { StringBuilder } from '../core/StringBuilder';
+import { Appendable } from '../core/Appendable';
+import { StringUtil } from '../core/StringUtil';
+import { LangUtil } from '../core/LangUtil';
 
-export default class TDJSONWriter {
+const NON_STRING = TextType.NON_STRING;
+const STRING = TextType.STRING;
+const KEY = TextType.KEY;
+const OPERATOR = TextType.OPERATOR;
+
+export class TDJSONWriter {
   public static readonly instance = new TDJSONWriter();
   public static get() {
     return TDJSONWriter.instance;
   }
 
-  public static writeAsString(node: Readonly<TDNode>, opt = new TDJSONWriterOption()): string {
+  public static writeAsString(node: TDNode, opt: Partial<TDJSONWriterOption> = {}): string {
     return TDJSONWriter.get().writeAsString(node, opt);
   }
 
-  public static write(out: Appendable, node: Readonly<TDNode>, opt: TDJSONWriterOption, indentStr = ''): void {
+  public static write(out: Appendable, node: TDNode, opt: Partial<TDJSONWriterOption> = {}, indentStr = ''): Appendable {
     return TDJSONWriter.get().write(out, node, opt, (indentStr = ''));
   }
 
-  public writeAsString(node: Readonly<TDNode>, opt = new TDJSONWriterOption()): string {
+  public writeAsString(node: TDNode, opt: Partial<TDJSONWriterOption> = {}): string {
     const out = new StringBuilder();
     this.write(out, node, opt);
     return out.toString();
   }
 
-  public write(out: Appendable, node: Readonly<TDNode>, opt: TDJSONWriterOption, indentStr = ''): void {
-    if (!node) {
-      out.append('null');
-      return;
-    }
+  public write(out: Appendable, node: TDNode, option: Partial<TDJSONWriterOption> = {}, indentStr = ''): Appendable {
+    const opt = option instanceof TDJSONWriterOption ? option : LangUtil.mergeDeep(new TDJSONWriterOption(), option);
+
+    if (!node)
+      return  out.append(opt.deco("null", NON_STRING))
 
     let childIndentStr = '';
     if (opt.hasIndent())
@@ -37,40 +42,36 @@ export default class TDJSONWriter {
 
     switch (node.type) {
       case TDNodeType.MAP:
-        this.writeMap(out, node, opt, indentStr, childIndentStr);
-        return;
+        return this.writeMap(out, node, opt, indentStr, childIndentStr);
       case TDNodeType.ARRAY:
-        this.writeArray(out, node, opt, indentStr, childIndentStr);
-        return;
+        return this.writeArray(out, node, opt, indentStr, childIndentStr);
       default:
-        this.writeSimple(out, node, opt);
+        return this.writeSimple(out, node, opt);
     }
   }
 
-  private writeMap(
-    out: Appendable,
-    node: Readonly<TDNode>,
-    opt: TDJSONWriterOption,
-    indentStr: string,
-    childIndentStr: string,
-  ): void {
-    out.append('{');
+  private writeMap(out: Appendable, node: Readonly<TDNode>, opt: TDJSONWriterOption, indentStr: string, childIndentStr: string): Appendable {
+    out.append(opt.deco("{", OPERATOR));
     if (node.children != null) {
       for (let i = 0; i < node.getChildrenSize(); i++) {
-        const cn = node.children[i];
+        const cn = opt.applyFilters(node.children[i]);
+        if (cn == null)
+          continue;
+
         if (opt.hasIndent()) {
           out.append('\n');
           out.append(childIndentStr);
         }
         if (!StringUtil.isJavaIdentifier(cn.key) || opt.alwaysQuoteName)
           // Quote the key in case  it's not valid java identifier
-          this.writeQuotedString(out, cn.key as string, opt.quoteChar);
-        else out.append(cn.key as string); // Map key will never be null
-        out.append(':');
+          this.writeQuotedString(out, cn.key as string, opt, KEY);
+        else 
+          out.append(opt.deco(cn.key as string, KEY)); // Map key will never be null
+        out.append(opt.deco(opt.deliminatorKey, OPERATOR));
         this.write(out, cn, opt, childIndentStr);
         if (i < node.getChildrenSize() - 1)
           // No need "," for last entry
-          out.append(',');
+          out.append(opt.deco(opt.deliminatorValue, OPERATOR));
       }
 
       if (opt.hasIndent() && node.hasChildren()) {
@@ -79,17 +80,11 @@ export default class TDJSONWriter {
       }
     }
 
-    out.append('}');
+    return out.append(opt.deco("}", OPERATOR));
   }
 
-  private writeArray(
-    out: Appendable,
-    node: Readonly<TDNode>,
-    opt: TDJSONWriterOption,
-    indentStr: string,
-    childIndentStr: string,
-  ): void {
-    out.append('[');
+  private writeArray(out: Appendable, node: Readonly<TDNode>, opt: TDJSONWriterOption, indentStr: string, childIndentStr: string): Appendable {
+    out.append(opt.deco("[", OPERATOR));
     if (node.children != null) {
       for (let i = 0; i < node.getChildrenSize(); i++) {
         const cn = node.children[i];
@@ -100,7 +95,7 @@ export default class TDJSONWriter {
         this.write(out, cn, opt, childIndentStr);
         if (i < node.getChildrenSize() - 1)
           // No need "," for last entry
-          out.append(',');
+          out.append(opt.deco(opt.deliminatorValue, OPERATOR));
       }
 
       if (opt.hasIndent() && node.children.length > 0) {
@@ -109,21 +104,20 @@ export default class TDJSONWriter {
       }
     }
 
-    out.append(']');
+    return out.append(opt.deco("]", OPERATOR));
   }
 
-  private writeSimple(out: Appendable, node: Readonly<TDNode>, opt: TDJSONWriterOption): void {
-    if (typeof node.value === 'string') {
-      this.writeQuotedString(out, node.value as string, opt.quoteChar);
-      return;
-    }
+  private writeSimple(out: Appendable, node: TDNode, opt: TDJSONWriterOption): Appendable {
+    const value = node.value;
+    if (typeof value === 'string')
+      return this.writeQuotedString(out, value as string, opt, STRING);
 
-    out.append(node.value + '');
+    return out.append(opt.deco(value + '', NON_STRING));
   }
 
-  private writeQuotedString(out: Appendable, str: string, quoteChar: string): void {
-    out.append(quoteChar);
-    out.append(StringUtil.cEscape(str, quoteChar) as string);
-    out.append(quoteChar);
+  private writeQuotedString(out: Appendable, str: string, opt: TDJSONWriterOption, textType: TextType): Appendable {
+    out.append(opt.quoteChar);
+    out.append(opt.deco(StringUtil.cEscape(str, opt.quoteChar) as string, textType));
+    return out.append(opt.quoteChar);
   }
 }

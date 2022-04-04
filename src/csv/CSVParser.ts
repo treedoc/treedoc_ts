@@ -1,13 +1,15 @@
-import TDNode, { TDNodeType } from '../TDNode';
-import CSVOption from './CSVOption';
-import CharSource from '../core/CharSource';
-import StringBuilder from '../core/StringBuilder';
-import TreeDoc from '../TreeDoc';
+import { TDNode, TDNodeType, ValueType } from '../TDNode';
+import { CSVOption } from './CSVOption';
+import { CharSource } from '../core/CharSource';
+import { StringBuilder } from '../core/StringBuilder';
+import { TreeDoc } from '../TreeDoc';
 import { StringCharSource } from '..';
+import { ClassUtil } from '../core/ClassUtil';
+import { EOFRuntimeException } from '../core/EOFRuntimeException';
 
 const SPACE_CHARS = " \r";
 
-export default class CSVParser {
+export class CSVParser {
 
   public static readonly instance = new CSVParser();
   public static get() { return CSVParser.instance; }
@@ -46,26 +48,33 @@ export default class CSVParser {
       src.read();  // Skip the recordSep
   }
 
-  readField(source: CharSource, opt: CSVOption): string {
+  readField(src: CharSource, opt: CSVOption): ValueType {
     const sb = new StringBuilder();
     let previousQuoted = false;
-    while(!source.isEof() && source.peek() !== opt.fieldSep && source.peek() !== opt.recordSep) {
-      if (source.peek() === opt.quoteChar) {
+    let isString = false;
+    while(!src.isEof() && src.peek() !== opt.fieldSep && src.peek() !== opt.recordSep) {
+      if (src.peek() === opt.quoteChar) {
+        isString = true;
         if (previousQuoted)
           sb.append(opt.quoteChar);
-        source.skip();  // for "", we will keep one quote
-        source.readUntilTerminatorToString(opt.quoteChar, sb);
-        if (source.peek() === opt.quoteChar)
-          source.skip();
+        // Not calling getBookmark() to avoid clone an object
+        const {pos, line, col} = src.bookmark;
+        src.skip();  // for "", we will keep one quote
+        src.readUntilTerminatorToString(sb, opt.quoteChar);
+        if (src.isEof())
+          throw new EOFRuntimeException("Can't find matching quote at position:" + pos + ";line:" + line + ";col:" + col);
+        if (src.peek() === opt.quoteChar)
+          src.skip();
         previousQuoted = true;
       } else {
-        sb.append(source.readUntilTerminator(opt.fieldSep + opt.recordSep).trim());
+        sb.append(src.readUntilTerminator(opt.fieldSep + opt.recordSep).trim());
         previousQuoted = false;
       }
     }
-    if (!source.isEof() && source.peek() === opt.fieldSep)
-      source.skip();  // Skip fieldSep
+    if (!src.isEof() && src.peek() === opt.fieldSep)
+      src.skip();  // Skip fieldSep
 
-    return sb.toString();
+    const str = sb.toString();
+    return isString ? str : ClassUtil.toSimpleObject(str);
   }
 }

@@ -1,88 +1,15 @@
-import StringCharSource from '../../core/StringCharSource';
-import TDJSONParser from '../../json/TDJSONParser';
-import TDJSONParserOption from '../../json/TDJSONParserOption';
+import { StringCharSource } from '../../core/StringCharSource';
+import { TDJSONParser } from '../../json/TDJSONParser';
+import { TDJSONParserOption } from '../../json/TDJSONParserOption';
 import { TDNodeType } from '../../TDNode';
-import TDJSONWriter from '../../json/TDJSONWriter';
-import TDJSONWriterOption from '../../json/TDJSONWriterOption';
-import JSONPointer from '../../json/JSONPointer';
+import { TDJSONWriter } from '../../json/TDJSONWriter';
+import { TDJSONWriterOption } from '../../json/TDJSONWriterOption';
+import { JSONPointer } from '../../json/JSONPointer';
 import { TDNode } from '../..';
+import { TreeDoc_merge } from '../../TreeDoc';
+import { TestData } from './TestData';
 
-const testData = `
-// Some comments
-{\u00a0
-  "total": 100000000000000000000,
-  "maxSafeInt": 9007199254740991,
-  "limit": 10,
-  "valueWithoutKey",
-
-  /* block comments */
-  "data": [
-    {
-      "$id": "1",
-      "name": "Some Name 1",  // More line comments
-      "address": {
-        "streetLine": "1st st",
-        city: "san jose",
-      },
-      "createdAt": "2017-07-14T17:17:33.010Z",
-      'ip': 10.1.22.22
-    },
-    {
-      "$id": "2",
-      "name": "Some Name 2",
-      "address": /*comments*/ {
-        "streetLine": "2nd st",
-        city: "san jose",
-      },
-      "createdAt": "2017-07-14T17:17:33.010Z",
-    },
-    \`Multiple line literal
-    Line2\`
-  ],
-  "objRef": {"$ref": "1"},
-  lastValueWithoutKey
-}`;
-
-const testDataProto = `
-n: {
-  n1: {
-    n11: 1
-    # Duplicated key; ':' is emitted before '{'
-    n11 {
-      n111: false
-    }
-    n12: "2"
-  }
-  # Multi-line comments
-  # Line2
-  ########
-  n1: {
-    n11: "abcd"
-    #  Extension keys
-    [d.e.f]: 4
-    n11: "multiline 1\n"
-    'line2'
-  }
-  n2: [1,2,3]
-  n2 [3,4,5]  # ':' is emitted before '['
-  "n3" [6, 7, 8, 9]
-  noVal:
-}`;
-
-const testDataJSON5 = `
-  // https://spec.json5.org/
-  {
-    // comments
-    unquoted: 'and you can quote me on that',
-    singleQuotes: 'I can use "double quotes" here',
-    lineBreaks: "Look, Mom! \
-  No \\n's!",
-    hexadecimal: 0xdecaf,
-    leadingDecimalPoint: .8675309, andTrailing: 8675309.,
-    positiveSign: +1,
-    trailingComma: 'in objects', andIn: ['arrays',],
-    "backwardsCompatible": "with JSON",
-  }`;
+const testData = new TestData()
 
 describe('TDJsonParser', () => {
   test('testSkipSpaceAndComments', () => {
@@ -100,7 +27,7 @@ describe('TDJsonParser', () => {
   });
 
   test('testParse', () => {
-    const node = TDJSONParser.get().parse(testData);
+    const node = TDJSONParser.get().parse(testData.testData);
     const json = TDJSONWriter.get().writeAsString(node);
 
     console.log(`testParse:json=${json}`);
@@ -125,7 +52,7 @@ describe('TDJsonParser', () => {
   });
 
   test('testParseProto', () => {
-    const node = TDJSONParser.get().parse(testDataProto, new TDJSONParserOption().setDefaultRootType(TDNodeType.MAP));
+    const node = TDJSONParser.get().parse(testData.proto, {defaultRootType: TDNodeType.MAP});
     const json = TDJSONWriter.get().writeAsString(node,
       new TDJSONWriterOption().setIndentFactor(2).setAlwaysQuoteName(false),
     );
@@ -138,7 +65,7 @@ describe('TDJsonParser', () => {
   });
 
   test('testParseJson5', () => {
-    const node = TDJSONParser.get().parse(testDataJSON5);
+    const node = TDJSONParser.get().parse(testData.JSON5);
     const json = TDJSONWriter.get().writeAsString(node,
       new TDJSONWriterOption().setIndentFactor(2).setAlwaysQuoteName(false),
     );
@@ -188,15 +115,16 @@ describe('TDJsonParser', () => {
 
   test('testTDPath', () => {
     const jp = JSONPointer.get();
-    const node = TDJSONParser.get().parse(testData);
+    const node = TDJSONParser.get().parse(testData.testData);
     const node1 = jp.query(node, '#1') as TDNode;
     expect(node1.getChildValue('name')).toBe('Some Name 1');
-    expect(jp.query(node1, '2/limit')!.value).toBe(10);
+    // Relative with number support removed
+    // expect(jp.query(node1, '2/limit')!.value).toBe(10);
     expect(node.value).toBeNull();
   });
 
   test('TDNode.toString', () => {
-    const node = TDJSONParser.get().parse(testData, new TDJSONParserOption().setDefaultRootType(TDNodeType.MAP));
+    const node = TDJSONParser.get().parse(testData.testData, new TDJSONParserOption().setDefaultRootType(TDNodeType.MAP));
     const str = node.toString();
     console.log('testToString:str=' + str);
     const str1 = node.toString();
@@ -223,6 +151,54 @@ describe('TDJsonParser', () => {
 
     const strWithoutRootKeyLimited = node.getChild("data")!.toStringInternal('', false, false, 10).toString();
     expect(strWithoutRootKeyLimited).toEqual("[{name: 'So...', ...}, ...]");
-    
   });
+
+  test('testStream', () => {
+    const reader = new StringCharSource(testData.stream);
+    const nodes: TDNode[] = [];
+    while(reader.skipSpacesAndReturnsAndCommas())
+      nodes.push(TDJSONParser.get().parse(reader));
+    const node = TreeDoc_merge(nodes).root;
+    console.log("testStream=" + node.toString());
+    expect(node.getChild(1)?.key).toEqual("1");
+    expect(node.getChild(1)?.getChild(0)?.doc).toBe(node.doc);
+    expect(node.toString()).toMatchSnapshot();
+  });
+
+  test('testParseAll', () => {    
+    let node = TDJSONParser.get().parseAll(testData.stream);
+    console.log("testStream=" + node.toString());
+    expect(node.toString()).toMatchSnapshot();
+
+    const docFirstElement = node.doc.retain(node.children![0]);
+    node = docFirstElement.root;
+    console.log("testStream=" + node.toString());
+    expect(node.key).toEqual("root");
+    expect(node.toString()).toMatchSnapshot();
+  });
+
+
+  function parseWithException(str: string, expectedError: string) {
+    let error = null;
+    try {
+      TDJSONParser.get().parse(str);
+    } catch(e: any) {
+      error = e.message;
+    }
+    expect(error).toBe(expectedError);
+  }
+
+  test('testParseAll', () => {
+    parseWithException("{abc:1", "EOF while expecting matching '}' with '{' at Bookmark(line=0, col=0, pos=0), Bookmark(line=0, col=6, pos=6), digest:");
+    parseWithException("{a:[abc,def}", "EOF while expecting matching ']' with '[' at Bookmark(line=0, col=3, pos=3), Bookmark(line=0, col=12, pos=12), digest:");
+    parseWithException("{a", "No ':' after key:a, Bookmark(line=0, col=2, pos=2), digest:");
+    parseWithException("{'a'", "No ':' after key:a, Bookmark(line=0, col=4, pos=4), digest:");
+  })
+
+  test('testParseMapToString', () => {
+    const str = "{K1=v1, k2=123, k3={c=Test with ,in}, k4=[ab,c, def]}";
+    console.log(TDJSONParserOption.ofMapToString());
+    const node = TDJSONParser.get().parse(str, TDJSONParserOption.ofMapToString());
+    expect(node.toString()).toBe("{K1: 'v1', k2: 123, k3: {c: 'Test with ,in'}, k4: ['ab,c', 'def']}");
+  })
 });

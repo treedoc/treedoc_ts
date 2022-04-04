@@ -1,4 +1,4 @@
-import TDPath, { Part } from '../TDPath';
+import { TDPath, Part } from '../TDPath';
 import { TDNode } from '../index';
 
 /**
@@ -22,22 +22,22 @@ import { TDNode } from '../index';
  * 6. Anchor with $id reference:  [http://a.com/path]#nodeId
  * </pre>
  */
-export default class JSONPointer {
+export class JSONPointer {
   public static get(): JSONPointer {
     return new JSONPointer();
   }
 
-  public parse(str: string): TDPath {
+  public parse(str: string, supportRelativeWithNum = false): TDPath {
     const path = new TDPath();
     if (!str)
       return path;
 
-    if (str.endsWith('#'))
-      // Ignore the last # which indicate "key" of the map
+    if (str.length > 1 && (str.endsWith('#') || str.endsWith('/')))
+      // Ignore the last # or / which indicate "key" of the map
       str = str.substring(0, str.length - 1);
 
     if (str.indexOf('#') < 0) {
-      if (this.parseParts(str, path, true))
+      if (this.parseParts(str, path, supportRelativeWithNum))
         return path;
       path.docPath = str;
       path.addParts(Part.ofRoot());
@@ -66,7 +66,7 @@ export default class JSONPointer {
       else if ('..' === parts[0])
         path.addParts(Part.ofRelative(1));
       else
-        path.addParts(Part.ofId(parts[0]));
+        path.addParts(Part.ofChildOrId(parts[0], parts[0]));
     }
 
     for (let i = 1; i < parts.length; i++) {

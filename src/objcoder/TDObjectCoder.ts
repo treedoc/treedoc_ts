@@ -1,8 +1,9 @@
 import { TDNode } from '..';
 import { TDNodeType } from '../TDNode';
-import TreeDoc from '../TreeDoc';
-import CustomCoder from './CustomCoder';
-import StringUtil from '../core/StringUtil';
+import { TreeDoc } from '../TreeDoc';
+import { CustomCoder } from './CustomCoder';
+import { StringUtil } from '../core/StringUtil';
+import { LangUtil } from '..';
 
 export class ObjectCoderContext {
   public nextId = 1;
@@ -38,7 +39,7 @@ export class TDObjectCoderOption {
 }
 
 /** Javascript specific class that map JS object to/from TDNode */
-export default class TDObjectCoder {
+export class TDObjectCoder {
   public static it: TDObjectCoder = new TDObjectCoder();
   public readonly KEY_ID = '$id';
   public readonly KEY_REF = '$ref';
@@ -47,21 +48,14 @@ export default class TDObjectCoder {
     return TDObjectCoder.it;
   }
 
-  public static encode(
-    obj: any,
-    opt = new TDObjectCoderOption(),
-    target = new TreeDoc().root,
-    ctx = new ObjectCoderContext(),
-  ) {
+  public static encode( 
+    obj: any, opt: Partial<TDObjectCoderOption> = {}, target = new TreeDoc().root, ctx = new ObjectCoderContext()) {
     return TDObjectCoder.get().encode(obj, opt, target, ctx);
   }
 
   public encode(
-    obj: any,
-    opt = new TDObjectCoderOption(),
-    target = new TreeDoc().root,
-    ctx = new ObjectCoderContext(),
-  ): TDNode {
+    obj: any, option: Partial<TDObjectCoderOption> = {}, target = new TreeDoc().root, ctx = new ObjectCoderContext()): TDNode {
+    const opt = LangUtil.mergeDeep(new TDObjectCoderOption(), option);
     if (this.isNullOrUndefined(obj))
       return target;
 

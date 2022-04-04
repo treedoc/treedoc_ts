@@ -1,7 +1,9 @@
-import Bookmark from './Bookmark';
-import TreeDoc from './TreeDoc';
-import TDPath, { Part, PathPartType } from './TDPath';
-import StringUtil from './core/StringUtil';
+import { Bookmark } from './Bookmark';
+import { TreeDoc } from './TreeDoc';
+import { TDPath, Part, PathPartType } from './TDPath';
+import { StringUtil } from './core/StringUtil';
+import { TDNodeProxyHandler } from './TDNodeProxyHandler';
+
 
 export enum TDNodeType {
   MAP,
@@ -13,13 +15,18 @@ export type ValueType = string | number | boolean | null | undefined;
 
 const KEY_REF = '$ref';
 
-class TransientData {
+export class TransientData {
   hash?: number;
   str?: string;
   obj?: any;
+  proxy?: any;
+  [key: string]: any;
 }
 
-export default class TDNode {
+export class TDNode {
+  public static readonly ID_KEY = "$id";
+  public static readonly REF_KEY = "$ref";
+  
   public parent?: TDNode;
   public type = TDNodeType.SIMPLE;
   /** The value of the node, only available for leave node */
@@ -34,10 +41,10 @@ export default class TDNode {
   public deduped = false;
 
   // transient properties
-  private tData = new TransientData();
+  public readonly tData = new TransientData();
 
   // Create a root node if parent is undefined
-  public constructor(public readonly doc: TreeDoc, public key?: string) {}
+  public constructor(public doc: TreeDoc, public key?: string) {}
 
   public clone(): TDNode {
     const result = new TDNode(this.doc, this.key).setType(this.type).setValue(this.value);
@@ -49,9 +56,13 @@ export default class TDNode {
     return result;
   }
 
-  public setKey(key: string): TDNode { this.key = key; return this.touch(); }
+  public cloneOfSimpleType(value: ValueType): TDNode { return new TDNode(this.doc, this.key).setParent(this.parent).setType(TDNodeType.SIMPLE).setValue(value); }
+
+  public setParent(parent?: TDNode): TDNode { this.parent = parent; return this.touch(); }
+  public setKey(key?: string): TDNode { this.key = key; return this.touch(); }
   public setValue(val?: ValueType): TDNode { this.mValue = val; return this.touch(); }
   public get value() { return this.mValue; }
+  public set value(value: ValueType) { this.mValue = value; }
   public setType(type: TDNodeType): TDNode { this.type = type; return this; }
   public setStart(start: Bookmark) { this.start = start; return this;}
   public setEnd(end: Bookmark) { this.end = end; return this;}
@@ -88,11 +99,11 @@ export default class TDNode {
     if (!this.children) 
       this.children = [];
     node.parent = this;
+    node.doc = this.doc;
     if (node.key == null)  // Assume it's array element
       node.key = "" + this.getChildrenSize();
     this.children.push(node);
-    this.touch();
-    return this;
+    return this.touch();
   }
 
   public getChild(name: string | number): TDNode | null {
@@ -153,8 +164,8 @@ export default class TDNode {
     switch (part.type) {
       case PathPartType.ROOT:
         return this.doc.root;
-      case PathPartType.ID:
-        return this.doc.idMap[part.key!];
+      case PathPartType.CHILD_OR_ID:
+        return this.getChild(part.key!) || this.doc.idMap[part.id!];
       case PathPartType.RELATIVE:
         return this.getAncestor(part.level!);
       case PathPartType.CHILD:
@@ -171,13 +182,20 @@ export default class TDNode {
     return result;
   }
 
+  public foreach(action: (n: TDNode) => void) {
+    action(this);
+    if (this.children != null)
+      this.children.forEach(n => n.foreach(action));
+    return this;
+  }
+
   public isRoot() {
     return !this.parent;
   }
 
   /** JS specific logic */
-  public toObject(includePosition = true): any {
-    if (this.tData.obj !== undefined)
+  public toObject(includePosition = false, useCache = true): any {
+    if (this.tData.obj !== undefined && useCache)
       return this.tData.obj;
 
     const $ = {
@@ -216,6 +234,16 @@ export default class TDNode {
     }
   }
 
+  public toProxy(useCache = true): TDNode {
+    if (useCache && this.tData.proxy)
+      return this.tData.proxy;
+    const res = new Proxy(this, new TDNodeProxyHandler(useCache));
+    // res.toString = this.toString;  // Without this, the proxy.toString will return 
+    if (useCache)
+      this.tData.proxy = res;
+    return res;
+  }
+
   public get pathAsString() {
     return '/' + this.path.join('/');
   }
@@ -229,6 +257,8 @@ export default class TDNode {
   private touch(): TDNode {
     this.tData.hash = undefined;
     this.tData.str = undefined;
+    this.tData.proxy = undefined;
+    this.tData.obj = undefined;
     if (this.parent != null)
       this.parent.touch();
     return this;
@@ -239,6 +269,9 @@ export default class TDNode {
       this.tData.str = this.toStringInternal('');
     return this.tData.str;
   }
+
+  /** method specific for JSON.stringify() */
+  public toJSON() { return toString(); }
 
   public toStringInternal(sb: string, includeRootKey = true, includeReservedKeys = true, limit = 100000) {
     if (this.parent != null && this.parent.type === TDNodeType.MAP && includeRootKey)

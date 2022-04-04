@@ -1,10 +1,10 @@
-import StringBuilder from './StringBuilder';
+import { StringBuilder } from './StringBuilder';
 
 const C_ESC_CHAR = '\'"`\\\b\f\n\r\t';
 const C_ESC_SYMB = '\'"`\\bfnrt';
 const MIN_PRINTABLE_CHAR = ' ';
 
-export default class StringUtil {
+export class StringUtil {
   public static isJavaIdentifier(str?: string | null): boolean {
     if (str == null || str.length < 1)
       return false;

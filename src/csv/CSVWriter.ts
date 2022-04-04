@@ -1,16 +1,16 @@
-import CSVOption from './CSVOption';
-import TDNode, { TDNodeType } from '../TDNode';
-import StringBuilder from '../core/StringBuilder';
-import Appendable from '../core/Appendable';
-import StringUtil from '../core/StringUtil';
-import { TreeDoc } from '..';
+import { CSVOption } from './CSVOption';
+import { TDNode, TDNodeType } from '../TDNode';
+import { StringBuilder } from '../core/StringBuilder';
+import { Appendable } from '../core/Appendable';
+import { StringUtil } from '../core/StringUtil';
+import { ClassUtil } from '../core/ClassUtil';
 
 const { contains } = StringUtil;
 
-export default class CSVNWriter {
-  public static readonly instance = new CSVNWriter();
+export class CSVWriter {
+  public static readonly instance = new CSVWriter();
   public static get() {
-    return CSVNWriter.instance;
+    return CSVWriter.instance;
   }
 
   public writeAsString(node: TDNode, opt = new CSVOption()): string { return this.write(new StringBuilder(), node, opt).toString(); }
@@ -33,11 +33,21 @@ export default class CSVNWriter {
   writeField(out: Appendable, field: TDNode, opt: CSVOption): typeof out {
     const quote = opt.quoteChar;
     let str = "" + field.value;
-    if (contains(str, quote) || contains(str, opt.fieldSep) || contains(str, opt.recordSep)) {
+    if (this.needQuote(field, opt)) {
       if (contains(str, quote))
-        str = str.replace(quote, quote + quote);
+        str = str.replace(new RegExp(quote, 'g'), quote + quote);
       return out.append(quote).append(str).append(quote);
     }
     return out.append(str);
+  }
+
+  needQuote(field: TDNode, opt: CSVOption): boolean  {
+    if (typeof(field.value) !== 'string')
+      return false;
+    const str = field.value;
+    return contains(str, opt.quoteChar)
+        || contains(str, opt.fieldSep)
+        || contains(str, opt.recordSep)
+        || typeof(ClassUtil.toSimpleObject(str)) !== 'string';
   }
 }

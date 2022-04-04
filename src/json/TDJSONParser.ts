@@ -1,27 +1,44 @@
-import TDNode, { TDNodeType } from '../TDNode';
-import TDJSONParserOption from './TDJSONParserOption';
-import CharSource from '../core/CharSource';
-import StringCharSource from '../core/StringCharSource';
-import StringBuilder from '../core/StringBuilder';
-import TreeDoc from '../TreeDoc';
+import { TDNode, TDNodeType } from '../TDNode';
+import { TDJSONParserOption } from './TDJSONParserOption';
+import { CharSource } from '../core/CharSource';
+import { StringCharSource } from '../core/StringCharSource';
+import { StringBuilder } from '../core/StringBuilder';
+import { TreeDoc } from '../TreeDoc';
+import { ClassUtil } from '../core/ClassUtil';
+import { RecursivePartial } from '../core/LangUtil';
+import { LangUtil } from '..';
 
 const EOF = '\uFFFF';
 
-export default class TDJSONParser {
+export class TDJSONParser {
   public static readonly instance = new TDJSONParser();
   public static get() {
     return TDJSONParser.instance;
   }
 
-  public static parse(src: CharSource | string, opt = new TDJSONParserOption()): TDNode {
-    return TDJSONParser.get().parse(src, opt);
+  /** Parse all the JSON objects in the input stream until EOF and store them inside an root node with array type */
+  public parseAll(src: CharSource | string, 
+      option:RecursivePartial<TDJSONParserOption> = new TDJSONParserOption(), 
+      node = new TreeDoc('root', option.uri).root, isRoot = true): TDNode {
+    const opt = option instanceof TDJSONParserOption ? option : LangUtil.mergeDeep(new TDJSONParserOption(), option);
+
+    if (typeof src === 'string')
+      src = new StringCharSource(src);
+
+    const doc = TreeDoc.ofArray();
+    let docId = 0;
+    while(src.skipSpacesAndReturnsAndCommas())
+      TDJSONParser.get().parse(src, opt.setDocId(docId++), doc.root.createChild());
+    return doc.root;
   }
 
-  
-  public parse(src: CharSource | string, opt = new TDJSONParserOption(), node = new TreeDoc('root', opt.uri).root): TDNode {
-    if (typeof src === 'string') {
+  public parse(src: CharSource | string, 
+      option: RecursivePartial<TDJSONParserOption> = new TDJSONParserOption(), 
+      node = new TreeDoc('root', option.uri).root, isRoot = true): TDNode {
+    const opt = option instanceof TDJSONParserOption ? option : LangUtil.mergeDeep(new TDJSONParserOption(), option);
+
+    if (typeof src === 'string')
       src = new StringCharSource(src);
-    }
 
     const c = TDJSONParser.skipSpaceAndComments(src);
     if (c === EOF) 
@@ -48,28 +65,18 @@ export default class TDJSONParser {
       if (c === '"' || c === "'" || c === '`') {
         src.read();
         const sb = new StringBuilder();
-        src.readQuotedToString(c, sb);
+        src.readQuotedToString(sb, c);
         this.readContinuousString(src, sb);
         return node.setValue(sb.toString());
       }
 
-      let term = ',\n\r';
+      let term = opt.termValue;
       if (node.parent != null)
         // parent.type can either by ARRAY or MAP.
-        term = node.parent.type === TDNodeType.ARRAY ? ',\n\r]' : ',\n\r}';
+        term = node.parent.type === TDNodeType.ARRAY ? opt.termValueInArray : opt.termValueInMap;
 
-      const str = src.readUntilTerminator(term, 0, Number.MAX_VALUE).trim();
-      if ('null' === str)
-        return node.setValue(null);
-      if ('true' === str) 
-        return node.setValue(true);
-      if ('false' === str)
-        return node.setValue(false);
-      if (str.startsWith('0x') || str.startsWith('0X'))
-        return node.setValue(this.parseNumber(str.substring(2), true));
-      if (c === '-' || c === '+' || c === '.' || (c >= '0' && c <= '9'))
-        return node.setValue(this.parseNumber(str, false));
-      return node.setValue(str);
+      const str = src.readUntilTerminator(term, opt.termValueStrs).trim();
+      return node.setValue(ClassUtil.toSimpleObject(str));
     } finally {
       node.end = src.getBookmark();
     }
@@ -81,7 +88,7 @@ export default class TDJSONParser {
       if ('"`\''.indexOf(c) < 0)
         break;
       src.read();
-      src.readQuotedToString(c, sb);
+      src.readQuotedToString(sb, c);
     }
   }
 
@@ -118,52 +125,60 @@ export default class TDJSONParser {
   public parseMap(src: CharSource, opt: TDJSONParserOption, node: TDNode, withStartBracket: boolean): TDNode {
     node.type = TDNodeType.MAP;
     if (withStartBracket)
-      src.read();
+      src.skip();
 
     for (let i = 0; ; ) {
       let c = TDJSONParser.skipSpaceAndComments(src);
       if (c === EOF) {
         if (withStartBracket)
-          throw src.createParseRuntimeException("EOF encountered while expecting matching '}'");
+          throw src.createParseRuntimeException("EOF while expecting matching '}' with '{' at " + node.start);
         break;
       }
 
       if (c === '}') {
-        src.read();
+        src.skip();
         break;
       }
 
-      if (c === ',') {
-        // Skip ,
-        src.read();
+      if (src.startsWith(opt.deliminatorValue)) { // Skip ,
+        src.skip(opt.deliminatorValue.length);
         continue;
       }
 
       let key;
       if (c === '"' || c === "'" || c === '`') {
-        src.read();
+        src.skip();
         key = src.readQuotedString(c);
         c = TDJSONParser.skipSpaceAndComments(src);
-        if (c === EOF)
-          break;
-        if (c !== ':' && c !== '{' && c !== '[' && c !== ',' && c !== '}')
-          throw src.createParseRuntimeException("No ':' after key:" + key);
+        // if (c === EOF)
+        //   break;
+        if (!src.startsWith(opt.deliminatorKey) && c !== '{' && c !== '[' && c !== ',' && c !== '}')
+          throw src.createParseRuntimeException(`No '${opt.deliminatorKey}' after key:${key}`);
       } else {
-        key = src.readUntilTerminator(':{[,}"', 1, Number.MAX_VALUE).trim();
+        key = src.readUntilTerminator(opt.termKey, opt.termKeyStrs, 1, Number.MAX_VALUE).trim();
         if (src.isEof())
-          throw src.createParseRuntimeException("No ':' after key:" + key);
+          throw src.createParseRuntimeException(`No '${opt.deliminatorKey}' after key:${key}`);
         c = src.peek();
       }
-      if (c === ':') 
-        src.read();
+      if (src.startsWith(opt.deliminatorKey))
+        src.skip(opt.deliminatorKey.length);
 
-      if (c === ',' || c === '}')
+      if (src.startsWith(opt.deliminatorValue) || c === '}')
         // If there's no ':', we consider it as indexed value (array)
         node.createChild(i + '').setValue(key);
       else {
-        const childNode = this.parse(src, opt, node.createChild(key));
-        if (opt.KEY_ID === key && childNode.type === TDNodeType.SIMPLE)
-          node.doc.idMap[childNode.value + ''] = node;
+        const childNode = this.parse(src, opt, node.createChild(key), false);
+        if (opt.KEY_ID === key && childNode.type === TDNodeType.SIMPLE) {
+          let id = childNode.value + '';
+          if (opt.docId !== undefined) {
+            id += "_" + opt.docId;
+            childNode.value = id;
+          }
+          node.doc.idMap[id] = node;
+        } else if (TDNode.REF_KEY === key && childNode.type === TDNodeType.SIMPLE) {
+          if (opt.docId !== undefined)
+            childNode.value += "_" + opt.docId;
+        }   
       }
       i++;
     }
@@ -173,35 +188,26 @@ export default class TDJSONParser {
   private parseArray(src: CharSource, opt: TDJSONParserOption, node: TDNode, withStartBracket: boolean): TDNode {
     node.type = TDNodeType.ARRAY;
     if (withStartBracket)
-      src.read();
+      src.skip();
     while (true) {
       let c = TDJSONParser.skipSpaceAndComments(src);
       if (c === EOF) {
         if (withStartBracket)
-          throw src.createParseRuntimeException("EOF encountered while expecting matching ']'");
+          throw src.createParseRuntimeException("EOF while expecting matching ']' with '[' at " + node.start);
         break;
       }
 
       if (c === ']') {
-        src.read();
+        src.skip();
         break;
       }
 
-      this.parse(src, opt, node.createChild());
+      this.parse(src, opt, node.createChild(), false);
       c = TDJSONParser.skipSpaceAndComments(src);
-      if (c === ',') {
-        src.read();
-      }
+      if (src.startsWith(opt.deliminatorValue)) {
+        src.skip(opt.deliminatorValue.length);
+      }    
     }
     return node;
-  }
-
-  private parseNumber(str: string, isHex: boolean): number | string {
-    if (str.indexOf('.') !== str.lastIndexOf('.'))  // More than 2 `.`, javascript parseInt won't complain
-      return str;
-
-    const isDouble = !isHex && str.indexOf('.') >= 0;
-    const num = isDouble ? parseFloat(str) : parseInt(str, isHex ? 16 : 10);
-    return Number.isNaN(num) || (!isDouble && num > Number.MAX_SAFE_INTEGER) ? str : num;
   }
 }
