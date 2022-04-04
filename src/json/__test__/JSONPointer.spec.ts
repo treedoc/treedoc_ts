@@ -8,6 +8,7 @@ test('testParse', () => {
     new TDPath().addParts(Part.ofRelative(1), Part.ofChild('p1')));
   verify('#../p1', new TDPath().addParts(Part.ofRelative(1), Part.ofChild('p1')));
   verify('#./p1', new TDPath().addParts(Part.ofRelative(0), Part.ofChild('p1')));
+  verify('../', new TDPath().addParts(Part.ofRelative(1)));
 });
 
 function verify(str: string, expected: TDPath) {

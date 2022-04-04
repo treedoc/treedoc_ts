@@ -53,8 +53,11 @@ export class TDPath {
   ) {}
 
   public static parse(str: string | string[]): TDPath {
-    if (typeof str === 'string')
+    if (typeof str === 'string') {
+      if (str.length > 1 && str.endsWith('/'))
+        str = str.substring(0, str.length - 1);
       str = str.split('/');
+    }
 
     if (str.length === 0)
       return new TDPath().addParts(Part.ofRelative(0));

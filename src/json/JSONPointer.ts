@@ -32,8 +32,8 @@ export class JSONPointer {
     if (!str)
       return path;
 
-    if (str.endsWith('#'))
-      // Ignore the last # which indicate "key" of the map
+    if (str.length > 1 && (str.endsWith('#') || str.endsWith('/')))
+      // Ignore the last # or / which indicate "key" of the map
       str = str.substring(0, str.length - 1);
 
     if (str.indexOf('#') < 0) {

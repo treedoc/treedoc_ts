@@ -22,5 +22,8 @@ describe('TDPath', () => {
     expect(TDPath.parse('#/p1/p2')).toEqual(
       new TDPath().addParts(Part.ofRoot(), Part.ofChild('p1'), Part.ofChild('p2')),
     );
+    expect(TDPath.parse('../')).toEqual(
+      new TDPath().addParts(Part.ofRelative(1)),
+    );
   });
 });
