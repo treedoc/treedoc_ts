@@ -2,7 +2,7 @@
 
 exports[`TDNode testToObject 1`] = `"{'start':{'line':3,'col':9,'pos':25},'end':{'line':3,'col':16,'pos':32}}"`;
 
-exports[`TDNode testToObject 2`] = `"{'$':{'start':{'line':1,'col':2,'pos':3},'end':{'line':5,'col':3,'pos':51}},'a':1,'b':[1,2,3],'c':'str'}"`;
+exports[`TDNode testToObject 2`] = `"{'$':{'start':{'line':1,'col':2,'pos':3},'end':{'line':7,'col':3,'pos':110}},'a':1,'b':[1,2,3],'c':'str','validRef':1,'invalidRef':{'$':{'start':{'line':6,'col':18,'pos':95},'end':{'line':6,'col':29,'pos':106}},'$ref':'abc'}}"`;
 
 exports[`TDNode testToProxy 2`] = `"'[object Undefined]'"`;
 
