@@ -208,18 +208,7 @@ export class TDNode {
         return this.value;
       case TDNodeType.MAP: {
         this.tData.obj = includePosition ? { $ } : {};
-
-        const refVal = this.getChildValue(KEY_REF);
-        if (typeof refVal === 'string') {
-          const target = this.getByPath(refVal);
-          if (target == null)
-            throw new Error(`Reference is not found: ref:${refVal}; current Node:${this.pathAsString}`);
-          this.tData.obj = target.toObject(includePosition);
-        } else {
-          if (this.children) 
-            this.children.forEach(c => c.key && (this.tData.obj[c.key] = c.toObject(includePosition)));
-        }
-        return this.tData.obj;
+        return this.toObjectMap(includePosition);
       }
       case TDNodeType.ARRAY: {
         this.tData.obj = [];
@@ -232,6 +221,18 @@ export class TDNode {
       default:
         throw new Error('Unknown type');
     }
+  }
+
+  private toObjectMap(includePosition: boolean) {
+    const refVal = this.getChildValue(KEY_REF);
+    if (typeof refVal === 'string') {
+      const target = this.getByPath(refVal);
+      if (target !== null)
+        return this.tData.obj = target.toObject(includePosition);
+      console.warn(`Reference is not found: ref:${refVal}; current Node:${this.pathAsString}`);
+    }
+    this.children?.forEach(c => c.key && (this.tData.obj[c.key] = c.toObject(includePosition)));
+    return this.tData.obj;
   }
 
   public toProxy(useCache = true): TDNode {

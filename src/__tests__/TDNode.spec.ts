@@ -6,7 +6,9 @@ describe('TDNode', () => {
   {
     "a": 1
     "b": [1,2,3]
-    "c": "str"
+    "c": "str",
+    "validRef": {$ref: /a},
+    "invalidRef": {$ref: abc}
   }
   `;
 
@@ -32,12 +34,14 @@ describe('TDNode', () => {
     test('testToProxy', () => {
       const node = TDJSONParser.get().parse(testData);
       const proxy = node.toProxy() as any;
-      expect(proxy.length).toBe(3);
+      expect(proxy.length).toBe(5);
       expect(proxy.a).toBe(1);
       expect(proxy.b.length).toBe(testJson.b.length);
       expect(proxy.b[2]).toBe(3);
       expect(proxy.c).toBe('str');
-      expect(proxy.toString()).toMatchInlineSnapshot(`"{a: 1, b: [1, 2, 3], c: 'str'}"`);
+      expect(proxy.toString()).toMatchInlineSnapshot(
+        `"{a: 1, b: [1, 2, 3], c: 'str', validRef: {$ref: '/a'}, invalidRef: {$ref: 'abc'}}"`,
+      );
 
       // expect(Object.keys(proxy.b)).toBe(["@target"]);
       expect(TD.stringify(proxy, { jsonOption: { quoteChar: "'" } })).toMatchSnapshot();
