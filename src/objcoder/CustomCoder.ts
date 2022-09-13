@@ -1,6 +1,7 @@
 import  { ICoder, ObjectCoderContext, TDObjectCoderOption } from './TDObjectCoder';
 import { TDNodeType } from '../TDNode';
 import { TDNode } from '../TDNode';
+import { TDJSONParser } from '../json/TDJSONParser';
 
 export class CustomCoder implements ICoder {
   public static it = new CustomCoder();
@@ -11,7 +12,11 @@ export class CustomCoder implements ICoder {
   public encode(obj: any, opt: TDObjectCoderOption, target: TDNode, ctx: ObjectCoderContext): boolean {
     if (!obj.toJSON)
       return false;
-    target.setType(TDNodeType.SIMPLE).setValue(obj.toJSON());
+    const jsonStr = obj.toJSON();
+    if (typeof(jsonStr) !== 'string')
+      return false;
+    const node = TDJSONParser.get().parse(obj.toJSON());
+    target.setType(node.type).setValue(node.value).children = node.children;
     return true;
   }
 }
