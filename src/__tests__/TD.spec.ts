@@ -1,9 +1,11 @@
+import { TDJSONParser } from '../json/TDJSONParser';
+import { TDJSONWriterOption } from '../json/TDJSONWriterOption';
 import { TD, TDEncodeOption } from '../TD';
 import { TDNodeType } from '../TDNode';
 
 class TestObject {
   constructor(public title: string) {}
-  nullObj: null;
+  nullObj = null;
   functionObj(num: number[]) {
     console.log(num);
   }
@@ -114,4 +116,11 @@ describe('TD', () => {
     const o = TD.parse("a,b,c", { defaultRootType: TDNodeType.ARRAY });
     expect(o).toEqual(["a", "b", "c"]);
   });
+
+  test('stringifyTDNode', () => {
+    const td = TDJSONParser.get().parse("{a:1, b:2}");
+    const encodeOpt = new TDEncodeOption();
+    encodeOpt.coderOption.coders = [];   // remote default coder which will use `toJSON()` method
+    expect(TD.stringify(td, encodeOpt)).toMatchSnapshot();
+  })
 });
