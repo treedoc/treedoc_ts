@@ -62,4 +62,8 @@ export class TDNodeProxyHandler<T extends TDNode> implements ProxyHandler<T> {
   //     res.push("length")
   //   return res;
   // }
+
+  // getOwnPropertyDescriptor(target: T, key:string) {
+  //   return { enumerable: true, configurable: true };
+  // }
 }

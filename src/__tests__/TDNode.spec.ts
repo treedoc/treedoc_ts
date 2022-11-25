@@ -28,7 +28,6 @@ describe('TDNode', () => {
   test('testToObject', () => {
     const node = TDJSONParser.get().parse(testData);
     const obj = node.toObject(true);
-    expect(TD.stringify(obj.b.$, { jsonOption: { quoteChar: "'" } })).toMatchSnapshot();
     expect(TD.stringify(obj, { jsonOption: { quoteChar: "'" } })).toMatchSnapshot();
   }),
     test('testToProxy', () => {

@@ -194,28 +194,23 @@ export class TDNode {
   }
 
   /** JS specific logic */
-  public toObject(includePosition = false, useCache = true): any {
+  public toObject(includeTdNode = false, useCache = true): any {
     if (this.tData.obj !== undefined && useCache)
       return this.tData.obj;
-
-    const $ = {
-      start: this.start,
-      end: this.end,
-    };
 
     switch (this.type) {
       case TDNodeType.SIMPLE:
         return this.value;
       case TDNodeType.MAP: {
-        this.tData.obj = includePosition ? { $ } : {};
-        return this.toObjectMap(includePosition);
+        this.tData.obj = includeTdNode ? { $$tdNode: this } : {};
+        return this.toObjectMap(includeTdNode);
       }
       case TDNodeType.ARRAY: {
         this.tData.obj = [];
-        if (includePosition)
-          (this.tData.obj as any).$ = $;
+        if (includeTdNode)
+          (this.tData.obj as any).$$tdNode = this;
         if (this.children)
-          this.children.forEach(c => this.tData.obj.push(c.toObject(includePosition)));
+          this.children.forEach(c => this.tData.obj.push(c.toObject(includeTdNode)));
         return this.tData.obj;
       }
       default:
@@ -223,15 +218,15 @@ export class TDNode {
     }
   }
 
-  private toObjectMap(includePosition: boolean) {
+  private toObjectMap(includeTdNode: boolean) {
     const refVal = this.getChildValue(KEY_REF);
     if (typeof refVal === 'string') {
       const target = this.getByPath(refVal);
       if (target !== null)
-        return this.tData.obj = target.toObject(includePosition);
+        return this.tData.obj = target.toObject(includeTdNode);
       console.warn(`Reference is not found: ref:${refVal}; current Node:${this.pathAsString}`);
     }
-    this.children?.forEach(c => c.key && (this.tData.obj[c.key] = c.toObject(includePosition)));
+    this.children?.forEach(c => c.key && (this.tData.obj[c.key] = c.toObject(includeTdNode)));
     return this.tData.obj;
   }
 
