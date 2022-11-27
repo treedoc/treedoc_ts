@@ -202,32 +202,34 @@ export class TDNode {
       case TDNodeType.SIMPLE:
         return this.value;
       case TDNodeType.MAP: {
-        this.tData.obj = includeTdNode ? { $$tdNode: this } : {};
-        return this.toObjectMap(includeTdNode);
+        const result:any = includeTdNode ? { $$tdNode: this } : {};
+        if (useCache) this.tData.obj = result;
+        return this.toObjectMap(result, includeTdNode);
       }
       case TDNodeType.ARRAY: {
-        this.tData.obj = [];
+        const result: any = [];
+        if (useCache) this.tData.obj = result;
         if (includeTdNode)
-          (this.tData.obj as any).$$tdNode = this;
+          (result as any).$$tdNode = this;
         if (this.children)
-          this.children.forEach(c => this.tData.obj.push(c.toObject(includeTdNode)));
-        return this.tData.obj;
+          this.children.forEach(c => result.push(c.toObject(includeTdNode)));
+        return result;
       }
       default:
         throw new Error('Unknown type');
     }
   }
 
-  private toObjectMap(includeTdNode: boolean) {
+  private toObjectMap(result: any, includeTdNode: boolean) {
     const refVal = this.getChildValue(KEY_REF);
     if (typeof refVal === 'string') {
       const target = this.getByPath(refVal);
       if (target !== null)
-        return this.tData.obj = target.toObject(includeTdNode);
+        return target.toObject(includeTdNode);
       console.warn(`Reference is not found: ref:${refVal}; current Node:${this.pathAsString}`);
     }
-    this.children?.forEach(c => c.key && (this.tData.obj[c.key] = c.toObject(includeTdNode)));
-    return this.tData.obj;
+    this.children?.forEach(c => c.key && (result[c.key] = c.toObject(includeTdNode)));
+    return result;
   }
 
   public toProxy(useCache = true): TDNode {
