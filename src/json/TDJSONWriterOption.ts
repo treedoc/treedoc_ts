@@ -1,13 +1,11 @@
 import { TDNode } from "..";
 import { ValueType } from "../TDNode";
 import { NodeFilter } from "./NodeFilter";
+import { TDJSONOption } from "./TDJSONOption";
 
 export enum TextType {OPERATOR, KEY, STRING, NON_STRING}
 
-export class TDJSONWriterOption {
-  deliminatorKey = ":";
-  deliminatorValue = ",";  
-
+export class TDJSONWriterOption extends TDJSONOption {
   private mIndentFactor = 0;
   public alwaysQuoteName = true;
   public quoteChar = '"';

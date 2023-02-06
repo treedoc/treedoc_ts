@@ -32,10 +32,15 @@ export class TDJSONParser {
     return doc.root;
   }
 
+  private contains(str: string, c: string): boolean {
+    return str.indexOf(c) >= 0;
+  }
+
   public parse(src: CharSource | string, 
       option: RecursivePartial<TDJSONParserOption> = new TDJSONParserOption(), 
       node = new TreeDoc('root', option.uri).root, isRoot = true): TDNode {
     const opt = option instanceof TDJSONParserOption ? option : LangUtil.mergeDeep(new TDJSONParserOption(), option);
+    opt.buildTerms();
 
     if (typeof src === 'string')
       src = new StringCharSource(src);
@@ -47,10 +52,10 @@ export class TDJSONParser {
     try {
       node.start = src.getBookmark();
 
-      if (c === '{')  
+      if (this.contains(opt.deliminatorObjectStart, c))
         return this.parseMap(src, opt, node, true);
 
-      if (c === '[')
+      if (this.contains(opt.deliminatorArrayStart, c))
         return this.parseArray(src, opt, node, true);
 
       if (node.isRoot()) {
@@ -72,11 +77,18 @@ export class TDJSONParser {
 
       let term = opt.termValue;
       if (node.parent != null)
-        // parent.type can either by ARRAY or MAP.
+        // parent.type can either be ARRAY or MAP.
         term = node.parent.type === TDNodeType.ARRAY ? opt.termValueInArray : opt.termValueInMap;
 
       const str = src.readUntilTerminator(term, opt.termValueStrs).trim();
-      return node.setValue(ClassUtil.toSimpleObject(str));
+      node.setValue(ClassUtil.toSimpleObject(str));
+      if (!src.isEof() && this.contains(opt.deliminatorObjectStart, src.peek())) {
+        // A value with type in the form of `type{attr1:val1:attr2:val2}
+        node.createChild(opt.KEY_TYPE).setValue(node.value);
+        return this.parseMap(src, opt, node, true);
+      }
+      return node;
+
     } finally {
       node.end = src.getBookmark();
     }
@@ -135,7 +147,7 @@ export class TDJSONParser {
         break;
       }
 
-      if (c === '}') {
+      if (this.contains(opt.deliminatorObjectEnd, c)) {
         src.skip();
         break;
       }
@@ -152,7 +164,13 @@ export class TDJSONParser {
         c = TDJSONParser.skipSpaceAndComments(src);
         // if (c === EOF)
         //   break;
-        if (!src.startsWith(opt.deliminatorKey) && c !== '{' && c !== '[' && c !== ',' && c !== '}')
+//        if (c == EOF)
+//          break;
+        if (!src.startsWith(opt.deliminatorKey)
+            && !this.contains(opt.deliminatorObjectStart, c)
+            && !this.contains(opt.deliminatorArrayStart, c)
+            && !this.contains(opt.deliminatorValue, c)
+            && !this.contains(opt.deliminatorObjectEnd, c))
           throw src.createParseRuntimeException(`No '${opt.deliminatorKey}' after key:${key}`);
       } else {
         key = src.readUntilTerminator(opt.termKey, opt.termKeyStrs, 1, Number.MAX_VALUE).trim();
@@ -163,8 +181,7 @@ export class TDJSONParser {
       if (src.startsWith(opt.deliminatorKey))
         src.skip(opt.deliminatorKey.length);
 
-      if (src.startsWith(opt.deliminatorValue) || c === '}')
-        // If there's no ':', we consider it as indexed value (array)
+      if (src.startsWith(opt.deliminatorValue) || this.contains(opt.deliminatorObjectEnd, c))  // If there's no ':', we consider it as indexed value (array)
         node.createChild(i + '').setValue(key);
       else {
         const childNode = this.parse(src, opt, node.createChild(key), false);
@@ -197,7 +214,7 @@ export class TDJSONParser {
         break;
       }
 
-      if (c === ']') {
+      if (this.contains(opt.deliminatorArrayEnd, c)) {
         src.skip();
         break;
       }

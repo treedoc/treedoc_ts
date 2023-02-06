@@ -75,7 +75,7 @@ export class TDNode {
       return cnode;
     }
 
-    // special handling for textproto due to it's bad design that allows duplicated keys
+    // special handling for textproto due to its bad design that allows duplicated keys
     let existNode = this.children![childIndex].clone();
 
     if (!existNode.deduped) {

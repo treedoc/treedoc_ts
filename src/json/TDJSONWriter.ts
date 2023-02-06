@@ -51,7 +51,7 @@ export class TDJSONWriter {
   }
 
   private writeMap(out: Appendable, node: Readonly<TDNode>, opt: TDJSONWriterOption, indentStr: string, childIndentStr: string): Appendable {
-    out.append(opt.deco("{", OPERATOR));
+    out.append(opt.deco(opt.deliminatorObjectStart.substring(0, 1), OPERATOR));
     if (node.children != null) {
       for (let i = 0; i < node.getChildrenSize(); i++) {
         const cn = opt.applyFilters(node.children[i]);
@@ -80,11 +80,11 @@ export class TDJSONWriter {
       }
     }
 
-    return out.append(opt.deco("}", OPERATOR));
+    return out.append(opt.deco(opt.deliminatorObjectEnd.substring(0, 1), OPERATOR));
   }
 
   private writeArray(out: Appendable, node: Readonly<TDNode>, opt: TDJSONWriterOption, indentStr: string, childIndentStr: string): Appendable {
-    out.append(opt.deco("[", OPERATOR));
+    out.append(opt.deco(opt.deliminatorArrayStart.substring(0, 1), OPERATOR));
     if (node.children != null) {
       for (let i = 0; i < node.getChildrenSize(); i++) {
         const cn = node.children[i];
@@ -104,7 +104,7 @@ export class TDJSONWriter {
       }
     }
 
-    return out.append(opt.deco("]", OPERATOR));
+    return out.append(opt.deco(opt.deliminatorArrayEnd.substring(0, 1), OPERATOR));
   }
 
   private writeSimple(out: Appendable, node: TDNode, opt: TDJSONWriterOption): Appendable {
@@ -112,7 +112,7 @@ export class TDJSONWriter {
     if (typeof value === 'string')
       return this.writeQuotedString(out, value as string, opt, STRING);
 
-    return out.append(opt.deco(value + '', NON_STRING));
+    return out.append(opt.deco("" + value, NON_STRING));
   }
 
   private writeQuotedString(out: Appendable, str: string, opt: TDJSONWriterOption, textType: TextType): Appendable {

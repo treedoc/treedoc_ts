@@ -1,22 +1,16 @@
 import { TDNodeType } from '../TDNode';
+import { TDJSONOption } from './TDJSONOption';
 
-export class TDJSONParserOption {
+export class TDJSONParserOption extends TDJSONOption {
   public static ofDefaultRootType(type: TDNodeType): TDJSONParserOption { return new TDJSONParserOption().setDefaultRootType(type); }
   public static ofMapToString(): TDJSONParserOption { return new TDJSONParserOption().setDeliminatorKey("=").setDeliminatorValue(", "); }
-
-  KEY_ID = `$id`;
-  private mDeliminatorKey = ":";
-  private mDeliminatorValue = ",";  
-
-  get deliminatorKey() { return this.mDeliminatorKey; }
-  get deliminatorValue () { return this.mDeliminatorValue ; }
-
+  
   uri?: string;
 
   /** In case there's no enclosed '[' of '{' on the root level, the default type. */
   defaultRootType = TDNodeType.SIMPLE;
 
-  constructor() { this.buildTerms(); }
+  constructor() { super(); this.buildTerms(); }
 
   public setDefaultRootType(type: TDNodeType) {
     this.defaultRootType = type;
@@ -34,8 +28,20 @@ export class TDJSONParserOption {
     return this;
   }
   
-  public setDeliminatorKey(val: string): TDJSONParserOption { this.mDeliminatorKey = val; this.buildTerms(); return this; }
-  public setDeliminatorValue(val: string): TDJSONParserOption { this.mDeliminatorValue = val; this.buildTerms(); return this; }
+  public setDeliminatorKey(val: string): TDJSONParserOption { this.deliminatorKey = val; return this; }
+  public setDeliminatorValue(val: string): TDJSONParserOption { this.deliminatorValue = val; return this; }
+
+  public setDeliminatorObject(start: string, end: string): TDJSONParserOption {
+    this.deliminatorObjectStart = start;
+    this.deliminatorObjectEnd = end;
+    return this;
+  }
+
+  public setDeliminatorArray(start: string, end: string): TDJSONParserOption {
+    this.deliminatorArrayStart = start;
+    this.deliminatorArrayEnd = end;
+    return this;
+  }
 
   // Package scopes used by parser
   termValue = "";
@@ -46,23 +52,23 @@ export class TDJSONParserOption {
   termKeyStrs: string[] = [];
 
   buildTerms() {
-    this.termValue = "\n\r";
-    this.termKey = "{[}";
+    this.termValue = "\n\r" + this.deliminatorObjectStart;  // support tree with a type in the form of "type{attr1:val1}"
+    this.termKey = this.deliminatorObjectStart + this.deliminatorObjectEnd + this.deliminatorArrayStart;
     this.termValueStrs = [];
     this.termKeyStrs = [];
-    if (this.mDeliminatorValue.length === 1) {  // If more than 1, will use separate string collection as term
-      this.termValue += this.mDeliminatorValue;
-      this.termKey += this.mDeliminatorValue;
+    if (this.deliminatorValue.length === 1) {  // If more than 1, will use separate string collection as term
+      this.termValue += this.deliminatorValue;
+      this.termKey += this.deliminatorValue;
     } else {
-      this.termValueStrs.push(this.mDeliminatorValue);
-      this.termKeyStrs.push(this.mDeliminatorValue);
+      this.termValueStrs.push(this.deliminatorValue);
+      this.termKeyStrs.push(this.deliminatorValue);
     }
-    if (this.mDeliminatorKey.length === 1)
-      this.termKey += this.mDeliminatorKey;
+    if (this.deliminatorKey.length === 1)
+      this.termKey += this.deliminatorKey;
     else
-      this.termKeyStrs.push(this.mDeliminatorKey);
+      this.termKeyStrs.push(this.deliminatorKey);
 
-    this.termValueInMap = this.termValue + "}";
-    this.termValueInArray = this.termValue + "]";
-  }
+      this.termValueInMap = this.termValue + this.deliminatorObjectEnd;
+      this.termValueInArray = this.termValue + this.deliminatorArrayEnd;
+    }
 }
