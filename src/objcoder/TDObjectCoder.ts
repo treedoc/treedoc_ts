@@ -101,6 +101,8 @@ export class TDObjectCoder {
       if (opt.showType && obj.constructor && obj.constructor.name !== 'Object')
         target.createChild(this.KEY_TYPE).setValue(obj.constructor.name)
       for (const k of Object.keys(obj)) {
+        if (k.startsWith("$$tdNode"))
+          continue;
         if (this.isNullOrUndefined(obj[k]))
           continue;
         if (!opt.showFunction && typeof obj === 'function')

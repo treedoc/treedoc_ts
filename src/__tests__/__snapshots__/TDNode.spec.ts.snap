@@ -1,7 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`TDNode testToObject 1`] = `"{'$$tdNode':{'a':1,'b':[1,2,3],'c':'str','validRef':{'$ref':'/a'},'invalidRef':{'$ref':'abc'}},'a':1,'b':[1,2,3],'c':'str','validRef':1,'invalidRef':{'$$tdNode':'invalidRef: {$ref: \\\\'abc\\\\'}','$ref':'abc'}}"`;
+exports[`TDNode testToObject 1`] = `"{'a':1,'b':[1,2,3],'c':'str','validRef':1,'invalidRef':{'$ref':'abc'}}"`;
 
 exports[`TDNode testToProxy 2`] = `"{'a':1,'b':[1,2,3],'c':'str','validRef':{'$ref':'/a'},'invalidRef':{'$ref':'abc'}}"`;
-
-exports[`TDNode testToProxy1 2`] = `"'creator: {name: \\\\'WebInspector\\\\''"`;

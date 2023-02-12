@@ -15,7 +15,7 @@ export class CustomCoder implements ICoder {
     const jsonStr = obj.toJSON();
     if (typeof(jsonStr) !== 'string')
       return false;
-    const node = TDJSONParser.get().parse(obj.toJSON());
+    const node = TDJSONParser.get().parse(jsonStr);
     target.setType(node.type).setValue(node.value).children = node.children;
     return true;
   }
