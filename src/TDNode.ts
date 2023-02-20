@@ -26,6 +26,8 @@ export class TransientData {
 export class TDNode {
   public static readonly ID_KEY = "$id";
   public static readonly REF_KEY = "$ref";
+  public static readonly COLUMN_KEY = "@key";
+  public static readonly COLUMN_VALUE = "@value";
   
   public parent?: TDNode;
   public type = TDNodeType.SIMPLE;
@@ -310,6 +312,55 @@ export class TDNode {
     return sb;
   }
 
+  public childrenValueAsList(): any[]  {
+    return !this.children ? [] : this.children.map(c => c.value || c);
+  }
+
+  public childrenValueAsListOfList(): any[][] {
+    return ! this.children ? [] : this.children.map(c => c.childrenValueAsList());
+  }
+
+  public childrenValueAsListWithKeys(keys: string[], target: any[]): any[] {
+    for (const k of keys) {
+      if (k === TDNode.COLUMN_KEY)
+        continue;
+      if (k === TDNode.COLUMN_VALUE)
+        target.push(this.value);
+      else {
+        const c = this.getChild(k);
+        target.push(c?.value || c);
+      }
+    }
+    return target;
+  }
+
+  public childrenValueAsListOfListWithKeys(keys: string[]): any[][] {
+    return !this.children ? [] :
+        this.children.map(c => c.childrenValueAsListWithKeys(keys, keys[0] === TDNode.COLUMN_KEY ? [c.key] : []));
+  }
+
+  /** Get union of keys for all children, it's used for represent children in a table view */
+  public getChildrenKeys(): string[] {
+    const result: any = [];
+    if (this.type === TDNodeType.SIMPLE || !this.children)
+      return result;
+    // Add the key column
+    result.push(TDNode.COLUMN_KEY);
+    let hasValue = false;
+    for (const c of this.children) {
+      if (c.value != null)
+        hasValue = true;
+      if (c.children)
+        for (const cc of c.children) 
+          if (result.indexOf(cc.key) < 0)
+            result.push(cc.key);
+    }
+    if (hasValue)
+      result.splice(1, 0, TDNode.COLUMN_VALUE);
+    return result;
+  }
+
+  // JS Specific
   public freeze() {
     const children = this.children;
     if (children) {

@@ -21,57 +21,109 @@ export class CSVParser {
   public parse(src: CharSource | string, opt: CSVOption = new CSVOption(), root = new TreeDoc('root').root): TDNode {
     if (typeof src === 'string')
       src = new StringCharSource(src);
-
+    let fields: string[] | undefined = undefined;
     root.setType(TDNodeType.ARRAY);
+    if (opt.includeHeader) {
+      fields = this.readNonEmptyRecord(src, opt).map(f => "" + f);
+      if (fields.length == 0)
+        return root;
+      if (fields[0] === TDNode.COLUMN_KEY)
+        root.setType(TDNodeType.MAP);
+    }
+
     while (!src.isEof()) {
       if (!src.skipChars(SPACE_CHARS))
         break;
-      this.readRecord(src, opt, root);
+      this.readRecordToTDNode(src, opt, root, fields);
     }
     return root;
   }
 
-  readRecord(src: CharSource, opt: CSVOption, root: TDNode) {
-    const row = new TDNode(root.doc).setType(TDNodeType.ARRAY);
+  private readRecordToTDNode(src: CharSource, opt: CSVOption, root: TDNode, fields?: string[]) {
+    const row = new TDNode(root.doc).setType(fields == null ? TDNodeType.ARRAY: TDNodeType.MAP);
     row.setStart(src.getBookmark());
-    while(!src.isEof() && src.peek() !== opt.recordSep) {
+    let i = 0;
+    while (!src.isEof() && src.peek() != opt.recordSep) {
       if (!src.skipChars(SPACE_CHARS))
         break;
       const start = src.getBookmark();
-      const fieldNode = row.createChild().setValue(this.readField(src, opt));
-      fieldNode.setStart(start).setEnd(src.getBookmark());
+      const val = this.readField(src, opt);
+      let key = undefined;
+      if (fields != null) {
+        if (i >= fields.length)
+          throw src.createParseRuntimeException("The row has more columns than headers");
+        key = fields[i++];
+        if (key === TDNode.COLUMN_KEY) {
+          row.setKey(val!.toString());
+          continue;
+        }
+      }
+      const field = row.createChild(key).setValue(val);
+      field.setStart(start).setEnd(src.getBookmark());
     }
     row.setEnd(src.getBookmark());
-    if (row.getChildrenSize() > 0)
+    if (row.hasChildren())
       root.addChild(row);
     if (!src.isEof())
       src.read();  // Skip the recordSep
   }
 
+  public readNonEmptyRecord(src: CharSource, opt: CSVOption): any[] {
+    while(!src.isEof()) {
+      const res = this.readRecord(src, opt);
+      if (res.length > 0)
+        return res;
+    }
+    return [];
+  }
+
+  public readRecord(src: CharSource, opt: CSVOption): any[] {
+    const result: any[] = [];
+    while (!src.isEof() && src.peek() != opt.recordSep) {
+      if (!src.skipChars(SPACE_CHARS))
+        break;
+      result.push(this.readField(src, opt));
+    }
+    if (!src.isEof())
+      src.read();  // Skip the recordSep
+    return result;
+  }
+
   readField(src: CharSource, opt: CSVOption): ValueType {
     const sb = new StringBuilder();
-    let previousQuoted = false;
+    if (src.isEof())
+      return sb.toString();
+
     let isString = false;
-    while(!src.isEof() && src.peek() !== opt.fieldSep && src.peek() !== opt.recordSep) {
-      if (src.peek() === opt.quoteChar) {
-        isString = true;
-        if (previousQuoted)
-          sb.append(opt.quoteChar);
+    if (src.peek() != opt.quoteChar) {  // Read non-quoted string
+      sb.append(src.readUntilTerminator(opt._fieldAndRecord).trim());
+    } else {  // Read quoted string
+      isString = true;
+      src.skip();
+      while (!src.isEof() && src.peek() != opt.fieldSep && src.peek() != opt.recordSep) {
         // Not calling getBookmark() to avoid clone an object
-        const {pos, line, col} = src.bookmark;
-        src.skip();  // for "", we will keep one quote
+        const pos = src.bookmark.pos;
+        const line = src.bookmark.line;
+        const col = src.bookmark.col
+
         src.readUntilTerminatorToString(sb, opt.quoteChar);
         if (src.isEof())
-          throw new EOFRuntimeException("Can't find matching quote at position:" + pos + ";line:" + line + ";col:" + col);
-        if (src.peek() === opt.quoteChar)
+          throw src.createParseRuntimeException("Can't find matching quote at position:" + pos + ";line:" + line + ";col:" + col);
+
+        src.skip();
+        if (src.isEof())
+          break;
+        if (src.peek() == opt.quoteChar) {
+          sb.append(opt.quoteChar);
           src.skip();
-        previousQuoted = true;
-      } else {
-        sb.append(src.readUntilTerminator(opt.fieldSep + opt.recordSep).trim());
-        previousQuoted = false;
+        } else {
+          break;
+        }
       }
+      src.skipSpacesAndReturns();
     }
-    if (!src.isEof() && src.peek() === opt.fieldSep)
+
+    if (!src.isEof() && src.peek() == opt.fieldSep)
       src.skip();  // Skip fieldSep
 
     const str = sb.toString();
