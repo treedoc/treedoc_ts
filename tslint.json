@@ -11,6 +11,10 @@
     "radix": false,
     "member-access": false,
     "interface-name" : false,
-    "no-eval": false
+    "no-eval": false,
+    "variable-name": [
+      true,
+      "allow-leading-underscore"
+    ]
   }
 }
