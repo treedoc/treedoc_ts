@@ -12,7 +12,7 @@ V2l2" ,v23,true
 `;
 
 const testObj = `
-@key,field1,field2
+"@key","field1","field2"
 k1,v11,v12
 k2,v21,v22
 `
