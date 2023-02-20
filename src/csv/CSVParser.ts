@@ -21,11 +21,11 @@ export class CSVParser {
   public parse(src: CharSource | string, opt: CSVOption = new CSVOption(), root = new TreeDoc('root').root): TDNode {
     if (typeof src === 'string')
       src = new StringCharSource(src);
-    let fields: string[] | undefined = undefined;
+    let fields: string[] | undefined;
     root.setType(TDNodeType.ARRAY);
     if (opt.includeHeader) {
       fields = this.readNonEmptyRecord(src, opt).map(f => "" + f);
-      if (fields.length == 0)
+      if (fields.length === 0)
         return root;
       if (fields[0] === TDNode.COLUMN_KEY)
         root.setType(TDNodeType.MAP);
@@ -43,12 +43,12 @@ export class CSVParser {
     const row = new TDNode(root.doc).setType(fields == null ? TDNodeType.ARRAY: TDNodeType.MAP);
     row.setStart(src.getBookmark());
     let i = 0;
-    while (!src.isEof() && src.peek() != opt.recordSep) {
+    while (!src.isEof() && src.peek() !== opt.recordSep) {
       if (!src.skipChars(SPACE_CHARS))
         break;
       const start = src.getBookmark();
       const val = this.readField(src, opt);
-      let key = undefined;
+      let key;
       if (fields != null) {
         if (i >= fields.length)
           throw src.createParseRuntimeException("The row has more columns than headers");
@@ -79,7 +79,7 @@ export class CSVParser {
 
   public readRecord(src: CharSource, opt: CSVOption): any[] {
     const result: any[] = [];
-    while (!src.isEof() && src.peek() != opt.recordSep) {
+    while (!src.isEof() && src.peek() !== opt.recordSep) {
       if (!src.skipChars(SPACE_CHARS))
         break;
       result.push(this.readField(src, opt));
@@ -95,12 +95,12 @@ export class CSVParser {
       return sb.toString();
 
     let isString = false;
-    if (src.peek() != opt.quoteChar) {  // Read non-quoted string
+    if (src.peek() !== opt.quoteChar) {  // Read non-quoted string
       sb.append(src.readUntilTerminator(opt._fieldAndRecord).trim());
     } else {  // Read quoted string
       isString = true;
       src.skip();
-      while (!src.isEof() && src.peek() != opt.fieldSep && src.peek() != opt.recordSep) {
+      while (!src.isEof() && src.peek() !== opt.fieldSep && src.peek() !== opt.recordSep) {
         // Not calling getBookmark() to avoid clone an object
         const pos = src.bookmark.pos;
         const line = src.bookmark.line;
@@ -113,7 +113,7 @@ export class CSVParser {
         src.skip();
         if (src.isEof())
           break;
-        if (src.peek() == opt.quoteChar) {
+        if (src.peek() === opt.quoteChar) {
           sb.append(opt.quoteChar);
           src.skip();
         } else {
@@ -123,7 +123,7 @@ export class CSVParser {
       src.skipSpacesAndReturns();
     }
 
-    if (!src.isEof() && src.peek() == opt.fieldSep)
+    if (!src.isEof() && src.peek() === opt.fieldSep)
       src.skip();  // Skip fieldSep
 
     const str = sb.toString();
