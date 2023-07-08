@@ -7,8 +7,11 @@ export class TDJSONParserOption extends TDJSONOption {
   
   uri?: string;
 
-  /** In case there's no enclosed '[' of '{' on the root level, the default type. */
-  defaultRootType = TDNodeType.SIMPLE;
+  /**
+   * In case there's no enclosed '[' of '{' on the root level, the default type.
+   * By default, it will try to interpreter as a single value (either map, if there's ":", or a simple value.)
+   */
+  defaultRootType: TDNodeType | undefined;
 
   constructor() { super(); this.buildTerms(); }
 
@@ -52,7 +55,7 @@ export class TDJSONParserOption extends TDJSONOption {
   termKeyStrs: string[] = [];
 
   buildTerms() {
-    this.termValue = "\n\r" + this.deliminatorObjectStart;  // support tree with a type in the form of "type{attr1:val1}"
+    this.termValue = "\n\r" + this.deliminatorKey + this.deliminatorObjectStart;  // support tree with a type in the form of "type{attr1:val1}", key1:key2:type{att1:val1}    
     this.termKey = this.deliminatorObjectStart + this.deliminatorObjectEnd + this.deliminatorArrayStart;
     this.termValueStrs = [];
     this.termKeyStrs = [];
@@ -68,6 +71,7 @@ export class TDJSONParserOption extends TDJSONOption {
     else
       this.termKeyStrs.push(this.deliminatorKey);
 
+      this.termValueInMap = this.termValue + this.deliminatorObjectEnd + this.deliminatorArrayEnd; // It's possible object end is omitted for path compression. e.g [a:b:c]
       this.termValueInMap = this.termValue + this.deliminatorObjectEnd;
       this.termValueInArray = this.termValue + this.deliminatorArrayEnd;
     }

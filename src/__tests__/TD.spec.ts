@@ -98,8 +98,9 @@ describe('TD', () => {
   });
 
   test('stringify cyclic without options', () => {
-    console.log(TD.stringify(obj));
-    expect(TD.stringify(obj, "  ")).toBe(objStr);
+    const str = TD.stringify(obj, "  ");
+    console.log(str);
+    expect(str).toBe(objStr);
   });
 
   test('parse', () => {

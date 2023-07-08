@@ -18,9 +18,10 @@ export class TDJSONParser {
 
   /** Parse all the JSON objects in the input stream until EOF and store them inside an root node with array type */
   public parseAll(src: CharSource | string, 
-      option:RecursivePartial<TDJSONParserOption> = new TDJSONParserOption(), 
+      option: RecursivePartial<TDJSONParserOption> = new TDJSONParserOption(), 
       node = new TreeDoc('root', option.uri).root, isRoot = true): TDNode {
     const opt = option instanceof TDJSONParserOption ? option : LangUtil.mergeDeep(new TDJSONParserOption(), option);
+    opt.setDefaultRootType(TDNodeType.MAP);
 
     if (typeof src === 'string')
       src = new StringCharSource(src);
@@ -58,7 +59,7 @@ export class TDJSONParser {
       if (this.contains(opt.deliminatorArrayStart, c))
         return this.parseArray(src, opt, node, true);
 
-      if (node.isRoot()) {
+      if (node.isRoot() && opt.defaultRootType !== undefined) {
         switch (opt.defaultRootType) {
           case TDNodeType.MAP:
             return this.parseMap(src, opt, node, false);
@@ -75,18 +76,31 @@ export class TDJSONParser {
         return node.setValue(sb.toString());
       }
 
+      if (isRoot && opt.defaultRootType === TDNodeType.SIMPLE) {
+        return node.setValue(ClassUtil.toSimpleObject(src.readUntilTerminator("\r\n")));
+      }
+
       let term = opt.termValue;
       if (node.parent != null)
         // parent.type can either be ARRAY or MAP.
         term = node.parent.type === TDNodeType.ARRAY ? opt.termValueInArray : opt.termValueInMap;
 
       const str = src.readUntilTerminator(term, opt.termValueStrs).trim();
-      node.setValue(ClassUtil.toSimpleObject(str));
+      if (!src.isEof() && this.contains(opt.deliminatorKey, src.peek())) {  // it's a path compression such as: a:b:c,d:e -> {a: {b: c}}
+        src.skip();
+        node.setType(TDNodeType.MAP);
+        this.parse(src, opt, node.createChild(str), false);
+        return node;
+      }
+
       if (!src.isEof() && this.contains(opt.deliminatorObjectStart, src.peek())) {
         // A value with type in the form of `type{attr1:val1:attr2:val2}
-        node.createChild(opt.KEY_TYPE).setValue(node.value);
+        node.createChild(opt.KEY_TYPE).setValue(str);
         return this.parseMap(src, opt, node, true);
       }
+            
+      // A simple value
+      node.setValue(ClassUtil.toSimpleObject(str));
       return node;
 
     } finally {

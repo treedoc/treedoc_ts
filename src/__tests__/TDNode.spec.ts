@@ -51,7 +51,10 @@ describe('TDNode', () => {
     const node = TDJSONParser.get().parse(testData1);
     const proxy = node.getByPath('log/creator')!.toProxy() as any;
     expect(proxy.toString()).toMatchInlineSnapshot(`"creator: {name: 'WebInspector', version: '537.36'}"`);
+    expect(proxy.toJSON()).toMatchInlineSnapshot(`"{name: 'WebInspector', version: '537.36'}"`);
     // TODO: fix, the string should be "{'creator': {'name':'WebInspector','version':'537.36'}}"
-    expect(TD.stringify(proxy, { jsonOption: { quoteChar: "'" } })).toMatchInlineSnapshot(`"{'$type':'creator:','name':'WebInspector','version':'537.36'}"`);
+    expect(TD.stringify(proxy, { jsonOption: { quoteChar: "'" } })).toMatchInlineSnapshot(
+      `"{'name':'WebInspector','version':'537.36'}"`,
+    );
   });
 });

@@ -271,7 +271,7 @@ export class TDNode {
   }
 
   /** method specific for JSON.stringify() */
-  public toJSON() { return this.toString(); }
+  public toJSON() { return this.toStringInternal('', false); }
 
   public toStringInternal(sb: string, includeRootKey = true, includeReservedKeys = true, limit = 100000) {
     if (this.parent != null && this.parent.type === TDNodeType.MAP && includeRootKey)

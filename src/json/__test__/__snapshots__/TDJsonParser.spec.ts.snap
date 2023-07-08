@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`TDJsonParser testParseAll 1`] = `"[{a: 1, obj: {$id: '1_0'}, ref: {$ref: '#1_0'}}, {b: 2, obj: {$id: '1_1'}, ref: {$ref: '#1_1'}}, 'a:1', 'b:2']"`;
+exports[`TDJsonParser testParseAll 1`] = `"[{a: 1, obj: {$id: '1_0'}, ref: {$ref: '#1_0'}}, {b: 2, obj: {$id: '1_1'}, ref: {$ref: '#1_1'}}, {a: 1}, {b: 2}]"`;
 
 exports[`TDJsonParser testParseAll 2`] = `"{a: 1, obj: {$id: '1_0'}, ref: {$ref: '#1_0'}}"`;
 
-exports[`TDJsonParser testStream 1`] = `"[{a: 1, obj: {$id: '1_0'}, ref: {$ref: '#1_0'}}, {b: 2, obj: {$id: '1_1'}, ref: {$ref: '#1_1'}}, 'a:1', 'b:2']"`;
+exports[`TDJsonParser testStream 1`] = `"[{a: 1, obj: {$id: '1_0'}, ref: {$ref: '#1_0'}}, {b: 2, obj: {$id: '1_1'}, ref: {$ref: '#1_1'}}, {a: 1}, {b: 2}]"`;
