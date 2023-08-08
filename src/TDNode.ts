@@ -19,11 +19,13 @@ export class TransientData {
   hash?: number;
   str?: string;
   obj?: any;
+  nameIndex?: Map<string, number>;
   proxy?: any;
   [key: string]: any;
 }
 
 export class TDNode {
+  private static readonly SIZE_TO_INIT_NAME_INDEX = 64;
   public static readonly ID_KEY = "$id";
   public static readonly REF_KEY = "$ref";
   public static readonly COLUMN_KEY = "@key";
@@ -105,7 +107,18 @@ export class TDNode {
     if (node.key == null)  // Assume it's array element
       node.key = "" + this.getChildrenSize();
     this.children.push(node);
+    if (this.children.length > TDNode.SIZE_TO_INIT_NAME_INDEX && this.tData.nameIndex == null)
+      this.initNameIndex();
     return this.touch();
+  }
+
+  private initNameIndex() {
+    this.tData.nameIndex = new Map();
+    for (let i = 0; i< this.children!.length; i++) {
+      const child = this.children![i];
+      if (child.key != null)
+        this.tData.nameIndex.set(child.key, i);
+    }
   }
 
   public getChild(name: string | number): TDNode | null {
@@ -115,12 +128,14 @@ export class TDNode {
   }
 
   public indexOf(name?: string): number {
+    if (this.tData.nameIndex != null)
+      return this.tData.nameIndex.get(name!) || -1;
+
     // VUETIPS: When VueJS instrument this object, it will generate getter to register the dep-graph.
-    // very call to getter could be very heavy if the number of children is huge e.g. > 10000.
+    // Every call to getter could be very heavy if the number of children is huge e.g. > 10000.
     // If we put the this.children inside for loop, it will cause O(n^2) problem.
     // so we have to cache it outside the for loop.
     // Relevant code: reactiveGetter (vue.runtime.esm.js?2b0e:1031)
-    // TODO: add index when the node number is huge
     const children = this.children;
     if (!children || name == null)
       return -1;
@@ -342,18 +357,23 @@ export class TDNode {
   /** Get union of keys for all children, it's used for represent children in a table view */
   public getChildrenKeys(): string[] {
     const result: any = [];
+    const keySet = new Set();
+
     if (this.type === TDNodeType.SIMPLE || !this.children)
       return result;
     // Add the key column
     result.push(TDNode.COLUMN_KEY);
+    keySet.add(TDNode.COLUMN_KEY);
     let hasValue = false;
     for (const c of this.children) {
       if (c.value != null)
         hasValue = true;
       if (c.children)
         for (const cc of c.children) 
-          if (result.indexOf(cc.key) < 0)
+          if (!keySet.has(cc.key)) {
             result.push(cc.key);
+            keySet.add(cc.key);
+          }
     }
     if (hasValue)
       result.splice(1, 0, TDNode.COLUMN_VALUE);
