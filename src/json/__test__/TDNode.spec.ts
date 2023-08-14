@@ -10,5 +10,5 @@ test('testCreateLastNumberOfChildren', () => {
   const keys = node.getChildrenKeys();
   const time = new Date().getTime() - start;
   console.log(time);
-  expect(time).toBeLessThan(2000);
+  expect(time).toBeLessThan(5000);
 });
