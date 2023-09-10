@@ -32,7 +32,7 @@ describe('CSVParser and CSVWriter', () => {
   test('ParseAndWriteObj', () => testParseAndWrite(new CSVOption(), testObj));
 
   test('JSONValue', () => {
-    const json = "[{f1: v1, f2: {a: 1}}]";
+    const json = "[{f1: v1, f2: {a: 1}}, {f1: 0}]";
     expect(CSVWriter.get().writeAsString(TDJSONParser.get().parse(json))).toMatchSnapshot();
   });
 

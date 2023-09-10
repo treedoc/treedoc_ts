@@ -281,7 +281,7 @@ export class TDNode {
 
   public toString() {
     if (this.tData.str === undefined)
-      this.tData.str = this.toStringInternal('');
+      this.tData.str = this.toStringInternal('', false);
     return this.tData.str;
   }
 
