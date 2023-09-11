@@ -107,8 +107,11 @@ export class TDNode {
     if (node.key == null)  // Assume it's array element
       node.key = "" + this.getChildrenSize();
     this.children.push(node);
-    if (this.children.length > TDNode.SIZE_TO_INIT_NAME_INDEX && this.tData.nameIndex == null)
+    if (this.tData.nameIndex != null)
+      this.tData.nameIndex.set(node.key, this.children.length - 1);
+    else if (this.children.length > TDNode.SIZE_TO_INIT_NAME_INDEX)
       this.initNameIndex();
+    
     return this.touch();
   }
 

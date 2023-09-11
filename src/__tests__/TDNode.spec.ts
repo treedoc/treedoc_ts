@@ -1,4 +1,4 @@
-import { TD } from '..';
+import { TD, TDNodeType, TreeDoc } from '..';
 import { TDJSONParser } from '../json/TDJSONParser';
 
 describe('TDNode', () => {
@@ -57,4 +57,19 @@ describe('TDNode', () => {
       `"{'name':'WebInspector','version':'537.36'}"`,
     );
   });
+
+  test('testCreateLargeNumberOfChildren', () => {
+    const node = new TreeDoc().root.setType(TDNodeType.ARRAY);
+    const start = new Date().getTime();
+    for (let i = 0; i < 500000; i++) {
+      node.createChild("name_" + i).setType(TDNodeType.MAP).createChild("name_" + i + "_1").setValue("value_" + i + "_1");
+    }
+    expect(node.getChild("name_1")).not.toBeNull();
+    expect(node.getChild("name_1000")).not.toBeNull();
+    node.getChildrenKeys();
+    const time = new Date().getTime() - start;
+    console.log(time);
+    expect(time).toBeLessThan(2000);
+  });
+  
 });
