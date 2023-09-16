@@ -2,8 +2,8 @@
 
 exports[`CSVParser and CSVWriter JSONValue 1`] = `
 "f1,f2
-v1,{a: 1}
-0,null
+v1,\\"{a: 1}\\"
+\\"0\\",
 "
 `;
 

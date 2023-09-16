@@ -43,9 +43,11 @@ export class CSVWriter {
   }
 
   public encodeField(field: any, opt: CSVOption): string {
+    if (field === null || field === undefined)
+      return "";
+    let str = typeof(field) === 'string' ? field : "" + field;
     const quote = opt.quoteChar;
-    let str = "" + field;
-    if (this.needQuote(field, opt)) {
+    if (this.needQuote(field, str, opt)) {
       if (str.indexOf(quote) > 0)
         // Very important to replace globally with RegExp. Otherwise, will only replace first occurence
         str = str.replace(new RegExp(quote, 'g'), quote + quote);
@@ -55,13 +57,10 @@ export class CSVWriter {
   }
 
 
-  needQuote(field: any, opt: CSVOption): boolean  {
-    if (typeof(field) !== 'string')
-      return false;
-    const str = field;
+  needQuote(field: any, str: string, opt: CSVOption): boolean  {
     return contains(str, opt.quoteChar)
         || contains(str, opt.fieldSep)
         || contains(str, opt.recordSep)
-        || typeof(ClassUtil.toSimpleObject(str)) !== 'string';
+        || ClassUtil.toSimpleObject(str) !== field;
   }
 }
