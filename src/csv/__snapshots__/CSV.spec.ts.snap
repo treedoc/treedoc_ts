@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`CSVParser and CSVWriter JSONValue 1`] = `
-"f1,f2
-v1,\\"{a: 1}\\"
-\\"0\\",
+"f1,f2,f3
+v1,\\"{a: 1}\\",
+\\"0\\",,
 "
 `;
 
@@ -16,23 +16,23 @@ k2|v21|v22
 "
 `;
 
-exports[`CSVParser and CSVWriter ParseAndWriteWithHeader 1`] = `"[{field1: 'v11', field2: 'v12', field3: 'v13', field4: 1}, {field1: 'v21', field2: 'v2l1\\\\nV2l2', field3: 'v23', field4: true}, {field1: 'v31\\"v31', field2: 'v32\\"\\"v32', field3: 'v33', field4: '3'}]"`;
+exports[`CSVParser and CSVWriter ParseAndWriteWithHeader 1`] = `"[{field1: 'v11', field2: 'v12', field3: '', field4: 1}, {field1: 'v21', field2: 'v2l1,\\\\nV2l2', field3: 'v23', field4: true}, {field1: 'v31\\"v31', field2: 'v32\\"\\"v32', field3: 'v33', field4: '3'}]"`;
 
 exports[`CSVParser and CSVWriter ParseAndWriteWithHeader 2`] = `
 "field1|field2|field3|field4
-v11|v12|v13|1
-v21|\\"v2l1
+v11|v12||1
+v21|\\"v2l1,
 V2l2\\"|v23|true
 \\"v31\\"\\"v31\\"|\\"v32\\"\\"\\"\\"v32\\"|v33|\\"3\\"
 "
 `;
 
-exports[`CSVParser and CSVWriter ParseAndWriteWithoutHeader 1`] = `"[['field1', 'field2', 'field3', 'field4'], ['v11', 'v12', 'v13', 1], ['v21', 'v2l1\\\\nV2l2', 'v23', true], ['v31\\"v31', 'v32\\"\\"v32', 'v33', '3']]"`;
+exports[`CSVParser and CSVWriter ParseAndWriteWithoutHeader 1`] = `"[['field1', 'field2', 'field3', 'field4'], ['v11', 'v12', '', 1], ['v21', 'v2l1,\\\\nV2l2', 'v23', true], ['v31\\"v31', 'v32\\"\\"v32', 'v33', '3']]"`;
 
 exports[`CSVParser and CSVWriter ParseAndWriteWithoutHeader 2`] = `
 "field1|field2|field3|field4
-v11|v12|v13|1
-v21|\\"v2l1
+v11|v12||1
+v21|\\"v2l1,
 V2l2\\"|v23|true
 \\"v31\\"\\"v31\\"|\\"v32\\"\\"\\"\\"v32\\"|v33|\\"3\\"
 "

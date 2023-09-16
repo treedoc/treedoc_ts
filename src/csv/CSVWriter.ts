@@ -46,6 +46,8 @@ export class CSVWriter {
     if (field === null || field === undefined)
       return "";
     let str = typeof(field) === 'string' ? field : "" + field;
+    if (str === "")
+      return str;
     const quote = opt.quoteChar;
     if (this.needQuote(field, str, opt)) {
       if (str.indexOf(quote) > 0)

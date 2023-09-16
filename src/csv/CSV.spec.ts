@@ -5,8 +5,8 @@ import { StringCharSource, TDJSONParser } from '..';
 
 const testCsv = `
 field1,field2,field3,field4
-v11,v12,v13,1
-v21, "v2l1
+v11,v12,"",1
+v21, "v2l1,
 V2l2" ,v23,true
 "v31""v31","v32""""v32",v33,"3"
 `;
@@ -32,7 +32,7 @@ describe('CSVParser and CSVWriter', () => {
   test('ParseAndWriteObj', () => testParseAndWrite(new CSVOption(), testObj));
 
   test('JSONValue', () => {
-    const json = "[{f1: v1, f2: {a: 1}}, {f1: 0}]";
+    const json = "[{f1: v1, f2: {a: 1}}, {f1: 0, f3:''}]";
     expect(CSVWriter.get().writeAsString(TDJSONParser.get().parse(json))).toMatchSnapshot();
   });
 

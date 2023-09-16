@@ -297,7 +297,7 @@ export class TDNode {
 
 
     if (this.value !== null && this.value !== undefined) {
-      if (typeof this.value !== 'string') {
+      if (typeof this.value !== 'string' || !includeRootKey) {
         sb += this.value;
       } else {
         let str = StringUtil.cEscape(this.value, '\'')!;
