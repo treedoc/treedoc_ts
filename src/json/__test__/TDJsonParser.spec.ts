@@ -77,7 +77,7 @@ describe('TDJsonParser', () => {
   });
 
   test('testRootMap', () => {
-    const node = TDJSONParser.get().parse("'a':1\nb:2", new TDJSONParserOption().setDefaultRootType(TDNodeType.MAP));
+    const node = TDJSONParser.get().parse("'a':1\nb:2,", new TDJSONParserOption().setDefaultRootType(TDNodeType.MAP));
     expect(node.getValueByPath('a')).toBe(1);
     expect(node.getValueByPath('b')).toBe(2);
   });

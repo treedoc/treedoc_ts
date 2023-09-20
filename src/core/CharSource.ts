@@ -103,7 +103,7 @@ export abstract class CharSource {
   }
 
   public startsWith(str: string): boolean {
-    if (this.isEof(str.length))
+    if (this.isEof(str.length - 1))
       return false;
     for (let i = 0; i < str.length; i++) {
       if (this.peek(i) !== str.charAt(i))
