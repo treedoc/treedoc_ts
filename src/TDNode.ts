@@ -2,6 +2,7 @@ import { Bookmark } from './Bookmark';
 import { TreeDoc } from './TreeDoc';
 import { TDPath, Part, PathPartType } from './TDPath';
 import { StringUtil } from './core/StringUtil';
+import { LangUtil } from './core/LangUtil';
 import { TDNodeProxyHandler } from './TDNodeProxyHandler';
 
 
@@ -132,7 +133,7 @@ export class TDNode {
 
   public indexOf(name?: string): number {
     if (this.tData.nameIndex != null)
-      return this.tData.nameIndex.get(name!) || -1;
+      return LangUtil.orElse(this.tData.nameIndex.get(name!), -1);
 
     // VUETIPS: When VueJS instrument this object, it will generate getter to register the dep-graph.
     // Every call to getter could be very heavy if the number of children is huge e.g. > 10000.

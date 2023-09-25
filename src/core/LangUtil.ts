@@ -9,6 +9,11 @@ export class LangUtil {
   public static doIf(condition: boolean, action: () => void) { if (condition) action(); }
   public static doIfOrElse(condition: boolean, action: () => void, elseAction: () => void) { condition ? action() : elseAction(); }
 
+  public static orElse<T>(value: T | null | undefined, fullBack: T): T {
+    return value === null || value === undefined ? fullBack : value;
+  }
+
+
 // TS_SPECIFIC
   public static EnumValues(enumType: any) {
     return Object.keys(enumType).filter(key => !isNaN(Number(enumType[key])));
