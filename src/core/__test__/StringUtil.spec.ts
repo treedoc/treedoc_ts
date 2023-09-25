@@ -1,4 +1,4 @@
-import { StringUtil } from '../../core/StringUtil';
+import { StringUtil } from '../StringUtil';
 
 test('testIsJavaIdentifier', () => {
   expect(StringUtil.isJavaIdentifier('Abcd')).toBeTruthy();
@@ -19,3 +19,9 @@ test('testCEscape', () => {
 
   expect(StringUtil.cEscape('abc', '"')).toBe('abc');
 });
+
+test('testIndexOfAnyChar', () => {
+  expect(StringUtil.indexOfAnyChar("1234", "234")).toBe(1);
+  expect(StringUtil.indexOfAnyChar("1234", "567")).toBe(-1);
+})
+

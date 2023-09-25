@@ -63,6 +63,6 @@ export class CSVWriter {
     return contains(str, opt.quoteChar)
         || contains(str, opt.fieldSep)
         || contains(str, opt.recordSep)
-        || ClassUtil.toSimpleObject(str) !== field;
+        || (typeof(field) === 'string' && typeof(ClassUtil.toSimpleObject(str)) !== 'string');
   }
 }

@@ -28,8 +28,8 @@ describe('TDNode', () => {
   test('testToObject', () => {
     const node = TDJSONParser.get().parse(testData);
     const obj = node.toObject(true);
-    const str = TD.stringify(obj, { jsonOption: { quoteChar: "'" } });
-    expect(TD.stringify(obj, { jsonOption: { quoteChar: "'" } })).toMatchSnapshot();
+    const str = TD.stringify(obj, { jsonOption: { quoteChars: "'" } });
+    expect(TD.stringify(obj, { jsonOption: { quoteChars: "'" } })).toMatchSnapshot();
   }),
     test('testToProxy', () => {
       const node = TDJSONParser.get().parse(testData);
@@ -44,7 +44,7 @@ describe('TDNode', () => {
       );
 
       // expect(Object.keys(proxy.b)).toBe(["@target"]);
-      expect(TD.stringify(proxy, { jsonOption: { quoteChar: "'" } })).toMatchSnapshot();
+      expect(TD.stringify(proxy, { jsonOption: { quoteChars: "'" } })).toMatchSnapshot();
     });
 
   test('testToProxy1', () => {
@@ -53,7 +53,7 @@ describe('TDNode', () => {
     expect(proxy.toString()).toMatchInlineSnapshot(`"{name: 'WebInspector', version: '537.36'}"`);
     expect(proxy.toJSON()).toMatchInlineSnapshot(`"{name: 'WebInspector', version: '537.36'}"`);
     // TODO: fix, the string should be "{'creator': {'name':'WebInspector','version':'537.36'}}"
-    expect(TD.stringify(proxy, { jsonOption: { quoteChar: "'" } })).toMatchInlineSnapshot(
+    expect(TD.stringify(proxy, { jsonOption: { quoteChars: "'" } })).toMatchInlineSnapshot(
       `"{'name':'WebInspector','version':'537.36'}"`,
     );
   });

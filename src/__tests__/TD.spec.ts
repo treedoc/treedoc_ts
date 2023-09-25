@@ -78,8 +78,8 @@ describe('TD', () => {
         showType: true
       },
       jsonOption: { 
-        alwaysQuoteName: false, 
-        quoteChar: "'", 
+        alwaysQuoteKey: false, 
+        quoteChars: "'", 
         indentFactor: 2}
     })).toBe(commonObjStr);
   });
@@ -87,8 +87,8 @@ describe('TD', () => {
   test('stringify with showFunction', () => {
     const opt = new TDEncodeOption();
     opt.jsonOption
-        .setAlwaysQuoteName(false)
-        .setQuoteChar("'")
+        .setAlwaysQuoteKey(false)
+        .setQuoteChars("'")
         .setIndentFactor(2);
     opt.coderOption
         .setShowType(true)

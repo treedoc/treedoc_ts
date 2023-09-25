@@ -1,14 +1,18 @@
 import { TDNode } from "..";
-import { ValueType } from "../TDNode";
+import { TDNodeType, ValueType } from "../TDNode";
 import { NodeFilter } from "./NodeFilter";
 import { TDJSONOption } from "./TDJSONOption";
 
-export enum TextType {OPERATOR, KEY, STRING, NON_STRING}
+export enum TextType {OPERATOR, KEY, STRING, NON_STRING, TYPE}
 
 export class TDJSONWriterOption extends TDJSONOption {
+  public static ofIndentFactor(factor: number): TDJSONWriterOption { return new TDJSONWriterOption().setIndentFactor(factor); }
+
   private mIndentFactor = 0;
-  public alwaysQuoteName = true;
-  public quoteChar = '"';
+  public alwaysQuoteKey = true;
+  public alwaysQuoteValue = true;
+  public useTypeWrapper = false;
+
   /** @internal */
   public indentStr = ''; // Used internally
   textDecorator?: (str: string, textType: TextType) => string;
@@ -25,8 +29,9 @@ export class TDJSONWriterOption extends TDJSONOption {
 
   public setIndentFactor(indentFactor: number) { this.indentFactor = indentFactor; return this; }
   public setIndentStr(str: string) { this.indentStr = str; return this; }
-  public setAlwaysQuoteName(alwaysQuoteName: boolean) { this.alwaysQuoteName = alwaysQuoteName; return this; }
-  public setQuoteChar(quoteChar: string) { this.quoteChar = quoteChar; return this; }
+  public setAlwaysQuoteKey(alwaysQuoteKey: boolean) { this.alwaysQuoteKey = alwaysQuoteKey; return this; }
+  public setAlwaysQuoteValue(alwaysQuoteValue: boolean) { this.alwaysQuoteValue = alwaysQuoteValue; return this; }
+  public setUseTypeWrapper(useTypeWrapper: boolean) { this.useTypeWrapper = useTypeWrapper; return this; }
   public setTextDecorator(deco: (str: string, textType: TextType) => string) { this.textDecorator = deco; return this; }
 
   public hasIndent() {

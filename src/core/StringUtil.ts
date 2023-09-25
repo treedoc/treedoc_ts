@@ -20,7 +20,7 @@ export class StringUtil {
    * @param quoteChar The quote char
    * @return The escaped String
    */
-  public static cEscape(str: string | null = '', quoteChar = '"'): string | null {
+  public static cEscape(str: string | null = '', quoteChar = '"'): typeof str {
     if (!str) 
       return str;
 
@@ -58,5 +58,13 @@ export class StringUtil {
 
   public static contains(str: string, pattern: string): boolean {
     return str.indexOf(pattern) >= 0;
+  }
+
+  public static indexOfAnyChar(str: string, toMatch: string) {
+    for (let i = 0; i < str.length; i++) {
+      if (toMatch.indexOf(str.charAt(i)) >= 0)
+        return i;
+    }
+    return -1;
   }
 }

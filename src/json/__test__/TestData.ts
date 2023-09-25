@@ -82,4 +82,12 @@ stream = `
 a:1
 b:2
 `
+
+testQuote = `{
+  "key with space": "value contains special chars: [",
+  "normalKey": "normal Value",
+  "keyWith:": "value has quotes: \" \", '",
+  "$type": "TestQuote"
+}
+`
 }

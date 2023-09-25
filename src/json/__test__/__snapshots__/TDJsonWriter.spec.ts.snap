@@ -1,5 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`TDJsonWriter testQuote 1`] = `
+"{
+  \\"key with space\\":value contains special chars: [,
+  normalKey:normal Value,
+  \\"keyWith:\\":value has quotes: , ',
+  $type:TestQuote
+}
+"
+`;
+
 exports[`TDJsonWriter testWriterWithNodeFilter 1`] = `
 "{
   \\"total\\":\\"100000000000000000000\\",
@@ -60,4 +70,13 @@ exports[`TDJsonWriter testWriterWithTextDeco 1`] = `
   <font color=red>}</font><font color=red>,</font>
   \\"<b>6</b>\\"<font color=red>:</font>\\"lastValueWithoutKey\\"
 <font color=red>}</font>"
+`;
+
+exports[`TDJsonWriter testWriterWithTypeWrapper 1`] = `
+"TestQuote{
+  \\"key with space\\":\\"value contains special chars: [\\",
+  \\"normalKey\\":\\"normal Value\\",
+  \\"keyWith:\\":\\"value has quotes: , '\\",
+}
+"
 `;

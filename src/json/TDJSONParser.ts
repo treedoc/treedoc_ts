@@ -80,12 +80,12 @@ export class TDJSONParser {
         return node.setValue(ClassUtil.toSimpleObject(src.readUntilTerminator("\r\n")));
       }
 
-      let term = opt.termValue;
+      let term = opt._termValue;
       if (node.parent != null)
         // parent.type can either be ARRAY or MAP.
-        term = node.parent.type === TDNodeType.ARRAY ? opt.termValueInArray : opt.termValueInMap;
+        term = node.parent.type === TDNodeType.ARRAY ? opt._termValueInArray : opt._termValueInMap;
 
-      const str = src.readUntilTerminator(term, opt.termValueStrs).trim();
+      const str = src.readUntilTerminator(term, opt._termValueStrs).trim();
       if (!src.isEof() && this.contains(opt.deliminatorKey, src.peek())) {  // it's a path compression such as: a:b:c,d:e -> {a: {b: c}}
         src.skip();
         node.setType(TDNodeType.MAP);
@@ -94,7 +94,7 @@ export class TDJSONParser {
       }
 
       if (!src.isEof() && this.contains(opt.deliminatorObjectStart, src.peek())) {
-        // A value with type in the form of `type{attr1:val1:attr2:val2}
+        // Type wrapper: A value with type in the form of `type{attr1:val1:attr2:val2}
         node.createChild(opt.KEY_TYPE).setValue(str);
         return this.parseMap(src, opt, node, true);
       }
@@ -187,7 +187,7 @@ export class TDJSONParser {
             && !this.contains(opt.deliminatorObjectEnd, c))
           throw src.createParseRuntimeException(`No '${opt.deliminatorKey}' after key:${key}`);
       } else {
-        key = src.readUntilTerminator(opt.termKey, opt.termKeyStrs, 1, Number.MAX_VALUE).trim();
+        key = src.readUntilTerminator(opt._termKey, opt._termKeyStrs, 1, Number.MAX_VALUE).trim();
         if (src.isEof())
           throw src.createParseRuntimeException(`No '${opt.deliminatorKey}' after key:${key}`);
         c = src.peek();

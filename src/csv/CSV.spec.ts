@@ -17,6 +17,12 @@ k1,v11,v12
 k2,v21,v22
 `
 
+const csvWithJson = `
+val,count,percent
+"[{""kind"":""exact"",""field_path"":""k8s_environment"",""value"":""production""}]",73,0.24333333333333335
+"[{""kind"":""exact"",""field_path"":""k8s_environment"",""value"":""production""},{""kind"":""regex"",""field_path"":""k8s_namespace""}]",61,0.20333333333333334
+`
+
 describe('CSVParser and CSVWriter', () => {
   function testParseAndWrite(opt: CSVOption, csv: string) {
     const node = CSVParser.get().parse(csv, opt);
@@ -30,6 +36,8 @@ describe('CSVParser and CSVWriter', () => {
   test('ParseAndWriteWithoutHeader', () => testParseAndWrite(new CSVOption().setIncludeHeader(false), testCsv));
   test('ParseAndWriteWithHeader', () => testParseAndWrite(new CSVOption(), testCsv));
   test('ParseAndWriteObj', () => testParseAndWrite(new CSVOption(), testObj));
+  
+  test('testParseAndWriteJson', () => testParseAndWrite(new CSVOption(), csvWithJson));
 
   test('JSONValue', () => {
     const json = "[{f1: v1, f2: {a: 1}}, {f1: 0, f3:''}]";

@@ -21,6 +21,13 @@ describe('TDJsonWriter', () => {
     expect(node.getValueByPath("/data/0/address")).toEqual("{Masked:size=2}");
   });
 
+  test('testQuote', () => {
+    const node = TDJSONParser.get().parse(testData.testQuote);
+    const opt = TDJSONWriterOption.ofIndentFactor(2).setQuoteChars("\"'").setAlwaysQuoteKey(false).setAlwaysQuoteValue(false);
+    const result = TDJSONWriter.get().writeAsString(node, opt) + "\n";
+    expect(result).toMatchSnapshot();
+  })
+
   test('testWriterWithTextDeco', () => {
     const node = TDJSONParser.get().parse(testData.testData);
     const opt = new TDJSONWriterOption().setIndentFactor(2)
@@ -41,4 +48,11 @@ describe('TDJsonWriter', () => {
     expect(str).toContain("<font color=red>:</font>");
     expect(str).toContain("<font color=green>9007199254740991</font>");
   });
+
+  test('testWriterWithTypeWrapper', () => {
+    const node = TDJSONParser.get().parse(testData.testQuote);
+    const opt = TDJSONWriterOption.ofIndentFactor(2).setUseTypeWrapper(true);
+    const str = TDJSONWriter.get().writeAsString(node, opt) + "\n";
+    expect(str).toMatchSnapshot();
+  })
 });

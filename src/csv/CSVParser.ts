@@ -100,7 +100,7 @@ export class CSVParser {
     } else {  // Read quoted string
       isString = true;
       src.skip();
-      while (!src.isEof() && src.peek() !== opt.fieldSep && src.peek() !== opt.recordSep) {
+      while (!src.isEof()) {
         // Not calling getBookmark() to avoid clone an object
         const pos = src.bookmark.pos;
         const line = src.bookmark.line;

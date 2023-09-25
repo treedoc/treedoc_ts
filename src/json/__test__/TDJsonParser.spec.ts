@@ -54,7 +54,7 @@ describe('TDJsonParser', () => {
   test('testParseProto', () => {
     const node = TDJSONParser.get().parse(testData.proto, {defaultRootType: TDNodeType.MAP});
     const json = TDJSONWriter.get().writeAsString(node,
-      new TDJSONWriterOption().setIndentFactor(2).setAlwaysQuoteName(false),
+      new TDJSONWriterOption().setIndentFactor(2).setAlwaysQuoteKey(false),
     );
     console.log(`testParseProto:json=${json}`);
     expect(node.getValueByPath('n/n1/0/n11/1/n111')).toBeFalsy();
@@ -67,7 +67,7 @@ describe('TDJsonParser', () => {
   test('testParseJson5', () => {
     const node = TDJSONParser.get().parse(testData.JSON5);
     const json = TDJSONWriter.get().writeAsString(node,
-      new TDJSONWriterOption().setIndentFactor(2).setAlwaysQuoteName(false),
+      new TDJSONWriterOption().setIndentFactor(2).setAlwaysQuoteKey(false),
     );
     console.log(`testParseJson5:json=${json}`);
     expect(node.getValueByPath('unquoted')).toBe('and you can quote me on that');
@@ -77,7 +77,8 @@ describe('TDJsonParser', () => {
   });
 
   test('testRootMap', () => {
-    const node = TDJSONParser.get().parse("'a':1\nb:2,", new TDJSONParserOption().setDefaultRootType(TDNodeType.MAP));
+    const node = TDJSONParser.get().parse("'a':1\nb:2,", 
+      new TDJSONParserOption().setDefaultRootType(TDNodeType.MAP));
     expect(node.getValueByPath('a')).toBe(1);
     expect(node.getValueByPath('b')).toBe(2);
   });
@@ -95,7 +96,7 @@ describe('TDJsonParser', () => {
     ,
     `;
     const node = TDJSONParser.get().parse(testDataRootArray, new TDJSONParserOption().setDefaultRootType(TDNodeType.ARRAY));
-    const json = TDJSONWriter.get().writeAsString(node, new TDJSONWriterOption().setIndentFactor(2).setAlwaysQuoteName(false));
+    const json = TDJSONWriter.get().writeAsString(node, new TDJSONWriterOption().setIndentFactor(2).setAlwaysQuoteKey(false));
     console.log(`testParseJson5:json=${json}`);
     expect(node.getChildrenSize()).toBe(7);
     expect(node.getValueByPath('2')).toBe(2);

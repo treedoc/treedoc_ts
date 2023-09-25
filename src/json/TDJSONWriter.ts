@@ -51,22 +51,23 @@ export class TDJSONWriter {
   }
 
   private writeMap(out: Appendable, node: Readonly<TDNode>, opt: TDJSONWriterOption, indentStr: string, childIndentStr: string): Appendable {
+    if (opt.useTypeWrapper) {
+      const type = node.getChildValue(opt.KEY_TYPE);
+      if (type != null) out.append(opt.deco(type as string, TextType.TYPE));
+    }    
     out.append(opt.deco(opt.deliminatorObjectStart.substring(0, 1), OPERATOR));
     if (node.children != null) {
       for (let i = 0; i < node.getChildrenSize(); i++) {
         const cn = opt.applyFilters(node.children[i]);
-        if (cn == null)
+        if (cn == null || (opt.useTypeWrapper && cn.key === opt.KEY_TYPE))
           continue;
 
         if (opt.hasIndent()) {
           out.append('\n');
           out.append(childIndentStr);
         }
-        if (!StringUtil.isJavaIdentifier(cn.key) || opt.alwaysQuoteName)
-          // Quote the key in case  it's not valid java identifier
-          this.writeQuotedString(out, cn.key as string, opt, KEY);
-        else 
-          out.append(opt.deco(cn.key as string, KEY)); // Map key will never be null
+        // Quote the key in case it's not valid java identifier so that it can be parsed back in Javascript
+        this.writeQuotedString(out, cn.key!, opt, KEY, !StringUtil.isJavaIdentifier(cn.key) || opt.alwaysQuoteKey);
         out.append(opt.deco(opt.deliminatorKey, OPERATOR));
         this.write(out, cn, opt, childIndentStr);
         if (i < node.getChildrenSize() - 1)
@@ -109,15 +110,37 @@ export class TDJSONWriter {
 
   private writeSimple(out: Appendable, node: TDNode, opt: TDJSONWriterOption): Appendable {
     const value = node.value;
-    if (typeof value === 'string')
-      return this.writeQuotedString(out, value as string, opt, STRING);
-
-    return out.append(opt.deco("" + value, NON_STRING));
+    return typeof value === 'string'
+      ? this.writeQuotedString(out, value, opt, STRING, opt.alwaysQuoteValue)
+      : out.append(opt.deco("" + value, NON_STRING));    
   }
 
-  private writeQuotedString(out: Appendable, str: string, opt: TDJSONWriterOption, textType: TextType): Appendable {
-    out.append(opt.quoteChar);
-    out.append(opt.deco(StringUtil.cEscape(str, opt.quoteChar) as string, textType));
-    return out.append(opt.quoteChar);
+  private writeQuotedString(out: Appendable, str: string, opt: TDJSONWriterOption, type: TextType, alwaysQuote: boolean): Appendable {
+    const quoteChar = this.determineQuoteChar(str, opt, alwaysQuote);
+    return quoteChar === '' ? out.append(opt.deco(str, type)) : out.append(quoteChar)
+        .append(opt.deco(StringUtil.cEscape(str, quoteChar)!, type))
+        .append(quoteChar);
   }
+
+    /** return '' indicate quote is not necessary */
+  private determineQuoteChar(str: string, opt: TDJSONWriterOption, alwaysQuote: boolean): string {
+      const needQuote = alwaysQuote || StringUtil.indexOfAnyChar(str, opt._quoteNeededChars) >= 0;
+      if (!needQuote)
+        return '';
+      if (opt.quoteChars.length === 1)
+        return opt.quoteChars.charAt(0);
+  
+      // Determine which quote char to use
+      const counts: number[] = new Array<number>(opt.quoteChars.length);
+      for(const ch of str) {
+        const idx = opt.quoteChars.indexOf(ch);
+        if (idx >= 0)
+          counts[idx]++;
+      }
+      let minIdx = 0;  // default to first quote char
+      for (let i = 1; i < counts.length; i++)
+        if (counts[i] < counts[minIdx])
+          minIdx = i;
+      return opt.quoteChars.charAt(minIdx);
+    }
 }
