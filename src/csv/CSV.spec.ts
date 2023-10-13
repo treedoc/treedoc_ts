@@ -44,6 +44,12 @@ describe('CSVParser and CSVWriter', () => {
     expect(CSVWriter.get().writeAsString(TDJSONParser.get().parse(json))).toMatchSnapshot();
   });
 
+  test('JSONValueSingleColumn', () => {
+    const json = "[{'@value': v1}, {'@value': v2}]";
+    expect(CSVWriter.get().writeAsString(TDJSONParser.get().parse(json))).toMatchSnapshot();
+  });
+
+
   test('testReadField', () => {
     expect(CSVParser.get().readField(new StringCharSource("'ab''cd'"), new CSVOption().setQuoteChar("'"))).toBe(
       "ab'cd",

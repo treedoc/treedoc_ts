@@ -7,6 +7,13 @@ v1,{a: 1},
 "
 `;
 
+exports[`CSVParser and CSVWriter JSONValueSingleColumn 1`] = `
+"@value
+v1
+v2
+"
+`;
+
 exports[`CSVParser and CSVWriter ParseAndWriteObj 1`] = `"{k1: {field1: 'v11', field2: 'v12'}, k2: {field1: 'v21', field2: 'v22'}}"`;
 
 exports[`CSVParser and CSVWriter ParseAndWriteObj 2`] = `

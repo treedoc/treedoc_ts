@@ -343,7 +343,7 @@ export class TDNode {
     for (const k of keys) {
       if (k === TDNode.COLUMN_KEY)
         continue;
-      if (k === TDNode.COLUMN_VALUE)
+      if (k === TDNode.COLUMN_VALUE && this.type === TDNodeType.SIMPLE)
         target.push(this.value);
       else {
         const c = this.getChild(k);
