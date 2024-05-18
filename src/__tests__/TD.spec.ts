@@ -117,6 +117,11 @@ describe('TD', () => {
     const o = TD.parse("a,b,c", { defaultRootType: TDNodeType.ARRAY });
     expect(o).toEqual(["a", "b", "c"]);
   });
+  
+  test('parseObjectWithoutStart', () => {
+    const o = TD.parse("a:1,b:c", { defaultRootType: TDNodeType.MAP });
+    expect(TD.stringify(o, {jsonOption: {quoteChars:"'"}})).toEqual("{'a':1,'b':'c'}");
+  });
 
   test('stringifyTDNode', () => {
     const td = TDJSONParser.get().parse("{a:1, b:2}");
