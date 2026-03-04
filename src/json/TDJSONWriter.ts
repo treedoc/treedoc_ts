@@ -32,6 +32,7 @@ export class TDJSONWriter {
 
   public write(out: Appendable, node: TDNode, option: Partial<TDJSONWriterOption> = {}, indentStr = ''): Appendable {
     const opt = option instanceof TDJSONWriterOption ? option : LangUtil.mergeDeep(new TDJSONWriterOption(), option);
+    opt.buildTerms();
 
     if (!node)
       return  out.append(opt.deco("null", NON_STRING))
