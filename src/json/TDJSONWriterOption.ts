@@ -20,6 +20,8 @@ export class TDJSONWriterOption extends TDJSONOption {
   /** Node mapper, if it returns null, node will be skipped */
   public nodeFilters: NodeFilter[] = [];
 
+  constructor() { super(); this.buildTerms(); }
+
   public set indentFactor(indentFactor: number) {
     this.mIndentFactor = indentFactor;
     this.indentStr = ' '.repeat(this.mIndentFactor);

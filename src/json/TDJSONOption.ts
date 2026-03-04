@@ -46,6 +46,6 @@ export class TDJSONOption {
       this._termValueInMap = this._termValue + this.deliminatorObjectEnd + this.deliminatorArrayEnd; // It's possible object end is omitted for path compression. e.g [a:b:c]
       this._termValueInMap = this._termValue + this.deliminatorObjectEnd;
       this._termValueInArray = this._termValue + this.deliminatorArrayEnd;
-      this._quoteNeededChars = this._termValue + this.deliminatorObjectEnd + this.deliminatorArrayEnd + this.deliminatorKey + this.deliminatorValue + this.quoteChars;
+      this._quoteNeededChars = this._termValue + this._termKey + this.deliminatorObjectEnd + this.deliminatorObjectEnd + this.deliminatorArrayEnd + this.deliminatorKey + this.deliminatorValue + this.quoteChars;
     }
 }

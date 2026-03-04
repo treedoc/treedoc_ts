@@ -87,6 +87,7 @@ testQuote = `{
   "key with space": "value contains special chars: [",
   "normalKey": "normal Value",
   "keyWith:": "value has quotes: \" \", '",
+  "keyWIth\n": "value with\n newline",
   "$type": "TestQuote"
 }
 `
