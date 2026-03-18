@@ -88,6 +88,7 @@ testQuote = `{
   "normalKey": "normal Value",
   "keyWith:": "value has quotes: \" \", '",
   "keyWIth\n": "value with\n newline",
+  "keyWith#": "#",
   "$type": "TestQuote"
 }
 `

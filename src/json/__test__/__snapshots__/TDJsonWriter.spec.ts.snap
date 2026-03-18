@@ -6,6 +6,7 @@ exports[`TDJsonWriter testQuote 1`] = `
   normalKey:normal Value,
   \\"keyWith:\\":\\"value has quotes: , '\\",
   \\"keyWIth\\\\n\\":\\"value with\\\\n newline\\",
+  \\"keyWith#\\":\\"#\\",
   $type:TestQuote
 }
 "
@@ -71,14 +72,4 @@ exports[`TDJsonWriter testWriterWithTextDeco 1`] = `
   <font color=red>}</font><font color=red>,</font>
   \\"<b>6</b>\\"<font color=red>:</font>\\"lastValueWithoutKey\\"
 <font color=red>}</font>"
-`;
-
-exports[`TDJsonWriter testWriterWithTypeWrapper 1`] = `
-"TestQuote{
-  \\"key with space\\":\\"value contains special chars: [\\",
-  \\"normalKey\\":\\"normal Value\\",
-  \\"keyWith:\\":\\"value has quotes: , '\\",
-  \\"keyWIth\\\\n\\":\\"value with\\\\n newline\\",
-}
-"
 `;
