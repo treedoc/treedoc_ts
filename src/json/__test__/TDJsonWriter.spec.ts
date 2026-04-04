@@ -3,6 +3,7 @@ import { TDJSONWriter } from '../../json/TDJSONWriter';
 import { TDJSONWriterOption, TextType } from '../../json/TDJSONWriterOption';
 import { TestData } from './TestData';
 import { NodeFilter } from '../../json/NodeFilter';
+import { TD } from '../..';
 
 const testData = new TestData();
 
@@ -28,9 +29,19 @@ describe('TDJsonWriter', () => {
       .setQuoteChars('"\'')
       .setAlwaysQuoteKey(false)
       .setAlwaysQuoteValue(false);
-    const result = TDJSONWriter.get().writeAsString(node, opt) + '\n';
+    const result = TD.stringify(node.toObject(), { jsonOption: opt }) + '\n';
     expect(result).toMatchSnapshot();
-    expect(TDJSONParser.get().parse(result).toString()).toEqual(node.toString());
+    expect(
+      TDJSONParser.get()
+        .parse(result)
+        .toString(),
+    ).toEqual(node.toString());
+  });
+
+  test('testQuote1', () => {
+    const obj = { name: 'test', columns: [{ field: '#' }, { field2: 'val2' }] };
+    const result = TD.stringify(obj, { jsonOption: { alwaysQuoteKey: false, alwaysQuoteValue: false } });
+    expect(result).toMatchInlineSnapshot(`"{name:test,columns:[{field:\\"#\\"},{field2:val2}]}"`);
   });
 
   test('testWriterWithTextDeco', () => {

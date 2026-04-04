@@ -47,11 +47,11 @@ export class CSVParser {
       if (!src.skipChars(SPACE_CHARS))
         break;
       const start = src.getBookmark();
-      const val = this.readField(src, opt);
+      const val = this.readField(src, opt, row);
       let key;
       if (fields != null) {
         if (i >= fields.length)
-          throw src.createParseRuntimeException("The row has more columns than headers");
+          throw src.createParseRuntimeException("The row has more columns than headers", row);
         key = fields[i++];
         if (key === TDNode.COLUMN_KEY) {
           row.setKey(val!.toString());
@@ -82,14 +82,14 @@ export class CSVParser {
     while (!src.isEof() && src.peek() !== opt.recordSep) {
       if (!src.skipChars(SPACE_CHARS))
         break;
-      result.push(this.readField(src, opt));
+      result.push(this.readField(src, opt, undefined));
     }
     if (!src.isEof())
       src.read();  // Skip the recordSep
     return result;
   }
 
-  readField(src: CharSource, opt: CSVOption): ValueType {
+  readField(src: CharSource, opt: CSVOption, row?: TDNode): ValueType {
     const sb = new StringBuilder();
     if (src.isEof())
       return sb.toString();
@@ -108,7 +108,7 @@ export class CSVParser {
 
         src.readUntilTerminatorToString(sb, opt.quoteChar);
         if (src.isEof())
-          throw src.createParseRuntimeException("Can't find matching quote at position:" + pos + ";line:" + line + ";col:" + col);
+          throw src.createParseRuntimeException("Can't find matching quote at position:" + pos + ";line:" + line + ";col:" + col, row);
 
         src.skip();
         if (src.isEof())

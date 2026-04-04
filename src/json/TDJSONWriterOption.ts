@@ -7,6 +7,7 @@ export enum TextType {OPERATOR, KEY, STRING, NON_STRING, TYPE}
 
 export class TDJSONWriterOption extends TDJSONOption {
   public static ofIndentFactor(factor: number): TDJSONWriterOption { return new TDJSONWriterOption().setIndentFactor(factor); }
+  public static ofCompact(): TDJSONWriterOption { return new TDJSONWriterOption().setAlwaysQuoteKey(false).setAlwaysQuoteValue(false).setIndentFactor(0); }
 
   private mIndentFactor = 0;
   public alwaysQuoteKey = true;

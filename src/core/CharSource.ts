@@ -143,7 +143,7 @@ export abstract class CharSource {
       if (c === quote)
         break;
 
-      // c should be '/', tt's a escape sequence
+      // c should be '/', it's a escape sequence
       c = this.read();
       switch (c) {
         case 'b':
@@ -200,7 +200,7 @@ export abstract class CharSource {
     return '0' <= c && c <= '8';
   }
 
-  public createParseRuntimeException(message: string) {
-    return new ParseRuntimeException(message, this.getBookmark(), this.peekString(10));
+  public createParseRuntimeException(message: string, partialObj?: any, cause?: Error) {
+    return new ParseRuntimeException(message, this.getBookmark(), this.peekString(10), cause, partialObj);
   }
 }

@@ -1,6 +1,8 @@
 import { TDNode, TDNodeType } from '../TDNode';
 import { TDJSONParserOption } from './TDJSONParserOption';
 import { CharSource } from '../core/CharSource';
+import { EOFRuntimeException } from '../core/EOFRuntimeException';
+import { ParseRuntimeException } from '../core/ParseRuntimeException';
 import { StringCharSource } from '../core/StringCharSource';
 import { StringBuilder } from '../core/StringBuilder';
 import { TreeDoc } from '../TreeDoc';
@@ -71,8 +73,14 @@ export class TDJSONParser {
       if (c === '"' || c === "'" || c === '`') {
         src.read();
         const sb = new StringBuilder();
-        src.readQuotedToString(sb, c);
-        this.readContinuousString(src, sb);
+        try {
+          src.readQuotedToString(sb, c);
+          this.readContinuousString(src, sb);
+        } catch (e) {
+          if (e instanceof EOFRuntimeException || e instanceof ParseRuntimeException)
+            throw src.createParseRuntimeException("Error read quoted string", node.setValue(sb.toString()), e);
+          throw e;
+        }
         return node.setValue(sb.toString());
       }
 
@@ -157,7 +165,7 @@ export class TDJSONParser {
       let c = TDJSONParser.skipSpaceAndComments(src);
       if (c === EOF) {
         if (withStartBracket)
-          throw src.createParseRuntimeException("EOF while expecting matching '}' with '{' at " + node.start);
+          throw src.createParseRuntimeException("EOF while expecting matching '}' with '{' at " + node.start, node);
         break;
       }
 
@@ -185,11 +193,11 @@ export class TDJSONParser {
             && !this.contains(opt.deliminatorArrayStart, c)
             && !this.contains(opt.deliminatorValue, c)
             && !this.contains(opt.deliminatorObjectEnd, c))
-          throw src.createParseRuntimeException(`No '${opt.deliminatorKey}' after key:${key}`);
+          throw src.createParseRuntimeException(`No '${opt.deliminatorKey}' after key:${key}`, node);
       } else {
         key = src.readUntilTerminator(opt._termKey, opt._termKeyStrs, 1, Number.MAX_VALUE).trim();
         if (src.isEof())
-          throw src.createParseRuntimeException(`No '${opt.deliminatorKey}' after key:${key}`);
+          throw src.createParseRuntimeException(`No '${opt.deliminatorKey}' after key:${key}`, node);
         c = src.peek();
       }
       if (src.startsWith(opt.deliminatorKey))
@@ -224,7 +232,7 @@ export class TDJSONParser {
       let c = TDJSONParser.skipSpaceAndComments(src);
       if (c === EOF) {
         if (withStartBracket)
-          throw src.createParseRuntimeException("EOF while expecting matching ']' with '[' at " + node.start);
+          throw src.createParseRuntimeException("EOF while expecting matching ']' with '[' at " + node.start, node);
         break;
       }
 
