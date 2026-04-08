@@ -8,6 +8,7 @@ import { JSONPointer } from '../../json/JSONPointer';
 import { TDNode } from '../..';
 import { TreeDoc_merge } from '../../TreeDoc';
 import { TestData } from './TestData';
+import { ParseRuntimeException } from '../../core/ParseRuntimeException';
 
 const testData = new TestData()
 
@@ -202,4 +203,23 @@ describe('TDJsonParser', () => {
     const node = TDJSONParser.get().parse(str, TDJSONParserOption.ofMapToString());
     expect(node.toString()).toBe("{K1: 'v1', k2: 123, k3: {c: 'Test with ,in'}, k4: ['ab,c', 'def']}");
   })
+
+  function verifyParsePartialJson(name: string, src: string, expected: string) {
+    try {
+      TDJSONParser.get().parse(src);
+      fail(name + ":Expected ParseRuntimeException");
+    } catch (e) {
+      expect(ParseRuntimeException.is(e)).toBe(true);
+      const node = (e as ParseRuntimeException).partialObject as TDNode;
+      expect(node).toBeDefined();
+      const root = node.doc.root;
+      expect(TDJSONWriter.get().writeAsString(root, TDJSONWriterOption.ofCompact())).toBe(expected);
+    }
+  }
+
+  test('testParsePartialJsonReturnsPartialNode', () => {
+    verifyParsePartialJson("Partial object", "{'a': 1, 'b': 2, ''c.: ", "{a:1,b:2}");
+    verifyParsePartialJson("Partial string value", "{'a': 'hello", "{a:hello}");
+    verifyParsePartialJson("Partial date value", '{"createdAt": "2026-04-07T11:30:', '{createdAt:"2026-04-07T11:30:"}');
+  });
 });

@@ -77,8 +77,8 @@ export class TDJSONParser {
           src.readQuotedToString(sb, c);
           this.readContinuousString(src, sb);
         } catch (e) {
-          if (e instanceof EOFRuntimeException || e instanceof ParseRuntimeException)
-            throw src.createParseRuntimeException("Error read quoted string", node.setValue(sb.toString()), e);
+          if (EOFRuntimeException.is(e) || ParseRuntimeException.is(e))
+            throw src.createParseRuntimeException("Error read quoted string", node.setValue(sb.toString()), e as Error);
           throw e;
         }
         return node.setValue(sb.toString());
