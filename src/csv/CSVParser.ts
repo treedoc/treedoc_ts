@@ -43,11 +43,15 @@ export class CSVParser {
     const row = new TDNode(root.doc).setType(fields == null ? TDNodeType.ARRAY: TDNodeType.MAP);
     row.setStart(src.getBookmark());
     let i = 0;
-    while (!src.isEof() && src.peek() !== opt.recordSep) {
+    let endOfRecord = false;
+    while (!endOfRecord) {
       if (!src.skipChars(SPACE_CHARS))
         break;
       const start = src.getBookmark();
       const val = this.readField(src, opt, row);
+      endOfRecord = src.isEof() || src.peek() === opt.recordSep;
+      if (!endOfRecord)
+        src.skip();
       let key;
       if (fields != null) {
         if (i >= fields.length)
@@ -65,7 +69,7 @@ export class CSVParser {
     if (row.hasChildren())
       root.addChild(row);
     if (!src.isEof())
-      src.read();  // Skip the recordSep
+      src.skip();  // Skip the recordSep
   }
 
   public readNonEmptyRecord(src: CharSource, opt: CSVOption): any[] {
@@ -79,13 +83,17 @@ export class CSVParser {
 
   public readRecord(src: CharSource, opt: CSVOption): any[] {
     const result: any[] = [];
-    while (!src.isEof() && src.peek() !== opt.recordSep) {
+    let endOfRecord = false;
+    while (!endOfRecord) {
       if (!src.skipChars(SPACE_CHARS))
         break;
       result.push(this.readField(src, opt, undefined));
+      endOfRecord = src.isEof() || src.peek() === opt.recordSep;
+      if (!endOfRecord)
+        src.skip();
     }
     if (!src.isEof())
-      src.read();  // Skip the recordSep
+      src.skip();  // Skip the recordSep
     return result;
   }
 
@@ -122,9 +130,6 @@ export class CSVParser {
       }
       src.skipChars(" \t");
     }
-
-    if (!src.isEof() && src.peek() === opt.fieldSep)
-      src.skip();  // Skip fieldSep
 
     const str = sb.toString();
     return isString ? str : ClassUtil.toSimpleObject(str);

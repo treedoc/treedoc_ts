@@ -3,22 +3,23 @@ import { CSVOption } from './CSVOption';
 import { CSVWriter } from './CSVWriter';
 import { StringCharSource, TDJSONParser } from '..';
 
-const testCsv = `
-field1,field2,field3,field4
+const testCsv = 
+`field1,field2,field3,field4
 v11,v12,"",1
 v21, "v2l1,
 V2l2" ,v23,true
 "v31""v31","v32""""v32",v33,"3"
+v41,v42,v43,
 `;
 
-const testObj = `
-"@key","field1","field2"
+const testObj = 
+`"@key","field1","field2"
 k1,v11,v12
 k2,v21,v22
 `
 
-const csvWithJson = `
-val,count,percent
+const csvWithJson = 
+`val,count,percent
 "[{""kind"":""exact"",""field_path"":""k8s_environment"",""value"":""production""}]",73,0.24333333333333335
 "[{""kind"":""exact"",""field_path"":""k8s_environment"",""value"":""production""},{""kind"":""regex"",""field_path"":""k8s_namespace""}]",61,0.20333333333333334
 `
