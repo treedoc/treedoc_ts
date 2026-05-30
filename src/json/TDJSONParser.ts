@@ -7,8 +7,7 @@ import { StringCharSource } from '../core/StringCharSource';
 import { StringBuilder } from '../core/StringBuilder';
 import { TreeDoc } from '../TreeDoc';
 import { ClassUtil } from '../core/ClassUtil';
-import { RecursivePartial } from '../core/LangUtil';
-import { LangUtil } from '..';
+import { RecursivePartial, LangUtil } from '../core/LangUtil';
 
 const EOF = '\uFFFF';
 

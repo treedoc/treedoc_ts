@@ -207,7 +207,7 @@ describe('TDJsonParser', () => {
   function verifyParsePartialJson(name: string, src: string, expected: string) {
     try {
       TDJSONParser.get().parse(src);
-      fail(name + ":Expected ParseRuntimeException");
+      throw new Error(name + ":Expected ParseRuntimeException");
     } catch (e) {
       expect(ParseRuntimeException.is(e)).toBe(true);
       const node = (e as ParseRuntimeException).partialObject as TDNode;

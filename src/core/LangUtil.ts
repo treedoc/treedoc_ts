@@ -27,7 +27,7 @@ export class LangUtil {
    * Deep merge two objects.
    * Reference:  https://stackoverflow.com/questions/27936772/how-to-deep-merge-instead-of-shallow-merge
    */
-  static mergeDeep<T>(target: T, ...sources: any): T {
+  static mergeDeep<T extends object>(target: T, ...sources: any): T {
     if (!sources.length) return target;
     const source = sources.shift();
 

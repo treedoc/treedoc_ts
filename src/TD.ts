@@ -1,7 +1,9 @@
-import { TDJSONWriterOption, TDJSONWriter, TDObjectCoder, TDJSONParser } from '.';
-import { TDObjectCoderOption } from '.';
+import { TDJSONWriterOption } from './json/TDJSONWriterOption';
+import { TDJSONWriter } from './json/TDJSONWriter';
+import { TDObjectCoder, TDObjectCoderOption } from './objcoder/TDObjectCoder';
 import { LangUtil, RecursivePartial } from './core/LangUtil';
 import { TDJSONParserOption } from './json/TDJSONParserOption';
+import { TDJSONParser } from './json/TDJSONParser';
 
 export class TDEncodeOption {
   constructor(

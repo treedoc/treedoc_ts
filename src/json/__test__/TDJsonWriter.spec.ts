@@ -26,7 +26,6 @@ describe('TDJsonWriter', () => {
   test('testQuote', () => {
     const node = TDJSONParser.get().parse(testData.testQuote);
     const opt = TDJSONWriterOption.ofIndentFactor(2)
-      .setQuoteChars('"\'')
       .setAlwaysQuoteKey(false)
       .setAlwaysQuoteValue(false);
     const result = TD.stringify(node.toObject(), { jsonOption: opt }) + '\n';
@@ -41,7 +40,7 @@ describe('TDJsonWriter', () => {
   test('testQuote1', () => {
     const obj = { name: 'test', columns: [{ field: '#' }, { field2: 'val2' }] };
     const result = TD.stringify(obj, { jsonOption: { alwaysQuoteKey: false, alwaysQuoteValue: false } });
-    expect(result).toMatchInlineSnapshot(`"{name:test,columns:[{field:\\"#\\"},{field2:val2}]}"`);
+    expect(result).toMatchInlineSnapshot(`"{name:test,columns:[{field:"#"},{field2:val2}]}"`);
   });
 
   test('testWriterWithTextDeco', () => {
@@ -71,6 +70,6 @@ describe('TDJsonWriter', () => {
     const node = TDJSONParser.get().parse('{key:113, $type: someType}');
     const opt = TDJSONWriterOption.ofIndentFactor(0).setUseTypeWrapper(true);
     const str = TDJSONWriter.get().writeAsString(node, opt);
-    expect(str).toMatchInlineSnapshot(`"someType{\\"key\\":113,}"`);
+    expect(str).toMatchInlineSnapshot(`"someType{\"key\":113,}"`);
   });
 });

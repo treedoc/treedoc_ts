@@ -1,57 +1,57 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`CSVParser and CSVWriter JSONValue 1`] = `
+exports[`CSVParser and CSVWriter > JSONValue 1`] = `
 "f1,f2,f3
 v1,{a: 1},
 0,,
 "
 `;
 
-exports[`CSVParser and CSVWriter JSONValueSingleColumn 1`] = `
+exports[`CSVParser and CSVWriter > JSONValueSingleColumn 1`] = `
 "@value
 v1
 v2
 "
 `;
 
-exports[`CSVParser and CSVWriter ParseAndWriteObj 1`] = `"{k1: {field1: 'v11', field2: 'v12'}, k2: {field1: 'v21', field2: 'v22'}}"`;
+exports[`CSVParser and CSVWriter > ParseAndWriteObj 1`] = `"{k1: {field1: 'v11', field2: 'v12'}, k2: {field1: 'v21', field2: 'v22'}}"`;
 
-exports[`CSVParser and CSVWriter ParseAndWriteObj 2`] = `
+exports[`CSVParser and CSVWriter > ParseAndWriteObj 2`] = `
 "@key|field1|field2
 k1|v11|v12
 k2|v21|v22
 "
 `;
 
-exports[`CSVParser and CSVWriter ParseAndWriteWithHeader 1`] = `"[{field1: 'v11', field2: 'v12', field3: '', field4: 1}, {field1: 'v21', field2: 'v2l1,\\\\nV2l2', field3: 'v23', field4: true}, {field1: 'v31\\"v31', field2: 'v32\\"\\"v32', field3: 'v33', field4: '3'}, {field1: 'v41', field2: 'v42', field3: 'v43', field4: ''}]"`;
+exports[`CSVParser and CSVWriter > ParseAndWriteWithHeader 1`] = `"[{field1: 'v11', field2: 'v12', field3: '', field4: 1}, {field1: 'v21', field2: 'v2l1,\\nV2l2', field3: 'v23', field4: true}, {field1: 'v31"v31', field2: 'v32""v32', field3: 'v33', field4: '3'}, {field1: 'v41', field2: 'v42', field3: 'v43', field4: ''}]"`;
 
-exports[`CSVParser and CSVWriter ParseAndWriteWithHeader 2`] = `
+exports[`CSVParser and CSVWriter > ParseAndWriteWithHeader 2`] = `
 "field1|field2|field3|field4
 v11|v12||1
-v21|\\"v2l1,
-V2l2\\"|v23|true
-\\"v31\\"\\"v31\\"|\\"v32\\"\\"\\"\\"v32\\"|v33|\\"3\\"
+v21|"v2l1,
+V2l2"|v23|true
+"v31""v31"|"v32""""v32"|v33|"3"
 v41|v42|v43|
 "
 `;
 
-exports[`CSVParser and CSVWriter ParseAndWriteWithoutHeader 1`] = `"[['field1', 'field2', 'field3', 'field4'], ['v11', 'v12', '', 1], ['v21', 'v2l1,\\\\nV2l2', 'v23', true], ['v31\\"v31', 'v32\\"\\"v32', 'v33', '3'], ['v41', 'v42', 'v43', '']]"`;
+exports[`CSVParser and CSVWriter > ParseAndWriteWithoutHeader 1`] = `"[['field1', 'field2', 'field3', 'field4'], ['v11', 'v12', '', 1], ['v21', 'v2l1,\\nV2l2', 'v23', true], ['v31"v31', 'v32""v32', 'v33', '3'], ['v41', 'v42', 'v43', '']]"`;
 
-exports[`CSVParser and CSVWriter ParseAndWriteWithoutHeader 2`] = `
+exports[`CSVParser and CSVWriter > ParseAndWriteWithoutHeader 2`] = `
 "field1|field2|field3|field4
 v11|v12||1
-v21|\\"v2l1,
-V2l2\\"|v23|true
-\\"v31\\"\\"v31\\"|\\"v32\\"\\"\\"\\"v32\\"|v33|\\"3\\"
+v21|"v2l1,
+V2l2"|v23|true
+"v31""v31"|"v32""""v32"|v33|"3"
 v41|v42|v43|
 "
 `;
 
-exports[`CSVParser and CSVWriter testParseAndWriteJson 1`] = `"[{val: '[{\\"kind\\":\\"exact\\",\\"field_path\\":\\"k8s_environment\\",\\"value\\":\\"production\\"}]', count: 73, percent: 0.24333333333333335}, {val: '[{\\"kind\\":\\"exact\\",\\"field_path\\":\\"k8s_environment\\",\\"value\\":\\"production\\"},{\\"kind\\":\\"regex\\",\\"field_path\\":\\"k8s_namespace\\"}]', count: 61, percent: 0.20333333333333334}]"`;
+exports[`CSVParser and CSVWriter > testParseAndWriteJson 1`] = `"[{val: '[{"kind":"exact","field_path":"k8s_environment","value":"production"}]', count: 73, percent: 0.24333333333333335}, {val: '[{"kind":"exact","field_path":"k8s_environment","value":"production"},{"kind":"regex","field_path":"k8s_namespace"}]', count: 61, percent: 0.20333333333333334}]"`;
 
-exports[`CSVParser and CSVWriter testParseAndWriteJson 2`] = `
+exports[`CSVParser and CSVWriter > testParseAndWriteJson 2`] = `
 "val|count|percent
-\\"[{\\"\\"kind\\"\\":\\"\\"exact\\"\\",\\"\\"field_path\\"\\":\\"\\"k8s_environment\\"\\",\\"\\"value\\"\\":\\"\\"production\\"\\"}]\\"|73|0.24333333333333335
-\\"[{\\"\\"kind\\"\\":\\"\\"exact\\"\\",\\"\\"field_path\\"\\":\\"\\"k8s_environment\\"\\",\\"\\"value\\"\\":\\"\\"production\\"\\"},{\\"\\"kind\\"\\":\\"\\"regex\\"\\",\\"\\"field_path\\"\\":\\"\\"k8s_namespace\\"\\"}]\\"|61|0.20333333333333334
+"[{""kind"":""exact"",""field_path"":""k8s_environment"",""value"":""production""}]"|73|0.24333333333333335
+"[{""kind"":""exact"",""field_path"":""k8s_environment"",""value"":""production""},{""kind"":""regex"",""field_path"":""k8s_namespace""}]"|61|0.20333333333333334
 "
 `;

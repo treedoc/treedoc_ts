@@ -1,9 +1,9 @@
-import { TDNode } from '..';
+import { TDNode } from '../TDNode';
 import { TDNodeType } from '../TDNode';
 import { TreeDoc } from '../TreeDoc';
 import { CustomCoder } from './CustomCoder';
 import { StringUtil } from '../core/StringUtil';
-import { LangUtil } from '..';
+import { LangUtil } from '../core/LangUtil';
 
 export class ObjectCoderContext {
   public nextId = 1;
